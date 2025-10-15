@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import {
-  Briefcase,
   Mail,
   Linkedin,
   Twitter,
@@ -14,6 +13,7 @@ import {
   Zap,
 } from "lucide-react";
 import Button from "../ui/Button";
+import logoImage from "../../../assets/images/careerist-logo.png";
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -28,7 +28,7 @@ const Footer: React.FC = () => {
 
   const resources = [
     { name: "Career Blog", href: "#", badge: "New" },
-    { name: "Industry Reports", href: "#", badge: "Popular" },
+    { name: "Industry Reports", href: "#" },
     { name: "Salary Guide", href: "#" },
     { name: "Interview Tips", href: "#" },
     { name: "Resume Templates", href: "#" },
@@ -36,44 +36,23 @@ const Footer: React.FC = () => {
 
   const company = [
     { name: "About", href: "#about" },
-    { name: "Careers", href: "#", badge: "We're hiring!" },
+    { name: "Careers", href: "#", badge: "Hiring!" },
     { name: "Press", href: "#" },
     { name: "Partners", href: "#" },
     { name: "Contact", href: "#" },
   ];
 
   const socialLinks = [
-    { 
-      icon: <Linkedin className="h-5 w-5" />, 
-      href: "#", 
-      label: "LinkedIn",
-      color: "hover:bg-blue-600"
-    },
-    { 
-      icon: <Twitter className="h-5 w-5" />, 
-      href: "#", 
-      label: "Twitter",
-      color: "hover:bg-sky-500"
-    },
-    { 
-      icon: <Facebook className="h-5 w-5" />, 
-      href: "#", 
-      label: "Facebook",
-      color: "hover:bg-blue-700"
-    },
-    { 
-      icon: <Instagram className="h-5 w-5" />, 
-      href: "#", 
-      label: "Instagram",
-      color: "hover:bg-pink-600"
-    },
+    { icon: <Linkedin className="h-5 w-5" />, href: "#", label: "LinkedIn" },
+    { icon: <Twitter className="h-5 w-5" />, href: "#", label: "Twitter" },
+    { icon: <Facebook className="h-5 w-5" />, href: "#", label: "Facebook" },
+    { icon: <Instagram className="h-5 w-5" />, href: "#", label: "Instagram" },
   ];
 
   const legalLinks = [
     { name: "Privacy Policy", href: "#" },
     { name: "Terms of Service", href: "#" },
     { name: "Cookie Policy", href: "#" },
-    { name: "GDPR Compliance", href: "#" },
   ];
 
   const trustIndicators = [
@@ -83,13 +62,11 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-full h-full opacity-5">
-          <div className="absolute top-20 left-20 w-64 h-64 bg-primary-500 rounded-full filter blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-64 h-64 bg-secondary-500 rounded-full filter blur-3xl"></div>
-        </div>
+    <footer className="bg-gradient-to-br from-[#2B3674] via-gray-900 to-[#2B3674] text-white relative overflow-hidden">
+      {/* Background Decoration */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-20 left-20 w-64 h-64 bg-[#3EBFB0] rounded-full filter blur-3xl"></div>
+        <div className="absolute bottom-20 right-20 w-64 h-64 bg-[#C8A860] rounded-full filter blur-3xl"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -101,20 +78,18 @@ const Footer: React.FC = () => {
                 Stay Ahead in Your Career Journey
               </h3>
               <p className="text-gray-300 text-lg">
-                Get weekly insights, career tips, and exclusive resources delivered to your inbox.
+                Get weekly insights, career tips, and exclusive resources.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <input
-                  type="email"
-                  placeholder="Enter your email address"
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300"
-                />
-              </div>
-              <Button className="group shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3EBFB0] focus:border-transparent transition-all"
+              />
+              <Button className="bg-gradient-to-r from-[#3EBFB0] to-[#C8A860] hover:shadow-xl transform hover:scale-105 transition-all group">
                 Subscribe
-                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
           </div>
@@ -126,20 +101,22 @@ const Footer: React.FC = () => {
             {/* Company Info */}
             <div className="lg:col-span-2 space-y-6">
               <Link to="/" className="flex items-center space-x-3 group">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <Briefcase className="h-7 w-7 text-white" />
-                </div>
+                <img 
+                  src={logoImage}
+                  alt="Careerist Logo" 
+                  className="h-12 w-auto group-hover:scale-110 transition-transform duration-300"
+                />
                 <div>
-                  <span className="text-2xl font-bold group-hover:text-primary-400 transition-colors duration-300">
+                  <span className="text-2xl font-bold group-hover:text-[#3EBFB0] transition-colors">
                     Careerist
                   </span>
-                  <div className="text-sm text-gray-400 -mt-1">AI Career Guidance</div>
+                  <div className="text-sm text-gray-400">AI Career Guidance</div>
                 </div>
               </Link>
 
               <p className="text-gray-300 leading-relaxed max-w-md">
                 Empowering careers through AI-driven insights and personalized guidance. 
-                Join thousands who have transformed their professional lives with our platform.
+                Join thousands who have transformed their professional lives.
               </p>
 
               {/* Social Links */}
@@ -148,7 +125,7 @@ const Footer: React.FC = () => {
                   <a
                     key={index}
                     href={social.href}
-                    className={`w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-white ${social.color} transition-all duration-300 transform hover:scale-110 hover:shadow-lg`}
+                    className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#3EBFB0] transition-all duration-300 transform hover:scale-110"
                     aria-label={social.label}
                   >
                     {social.icon}
@@ -159,8 +136,8 @@ const Footer: React.FC = () => {
               {/* Trust Indicators */}
               <div className="flex flex-wrap gap-4 pt-4">
                 {trustIndicators.map((indicator, index) => (
-                  <div key={index} className="flex items-center space-x-2 text-sm text-gray-400">
-                    {indicator.icon}
+                  <div key={index} className="flex items-center gap-2 text-sm text-gray-400">
+                    <span className="text-[#3EBFB0]">{indicator.icon}</span>
                     <span>{indicator.text}</span>
                   </div>
                 ))}
@@ -177,10 +154,10 @@ const Footer: React.FC = () => {
                   <li key={index}>
                     <a
                       href={link.href}
-                      className="text-gray-300 hover:text-primary-400 transition-colors duration-200 flex items-center group"
+                      className="text-gray-300 hover:text-[#3EBFB0] transition-colors flex items-center group"
                     >
                       <span>{link.name}</span>
-                      <ArrowRight className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                      <ArrowRight className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                     </a>
                   </li>
                 ))}
@@ -197,15 +174,15 @@ const Footer: React.FC = () => {
                   <li key={index}>
                     <a
                       href={resource.href}
-                      className="text-gray-300 hover:text-primary-400 transition-colors duration-200 flex items-center group"
+                      className="text-gray-300 hover:text-[#3EBFB0] transition-colors flex items-center group"
                     >
                       <span>{resource.name}</span>
                       {resource.badge && (
-                        <span className="ml-2 px-2 py-0.5 bg-primary-600 text-white text-xs rounded-full">
+                        <span className="ml-2 px-2 py-0.5 bg-[#3EBFB0] text-white text-xs rounded-full">
                           {resource.badge}
                         </span>
                       )}
-                      <ArrowRight className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                      <ArrowRight className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                     </a>
                   </li>
                 ))}
@@ -222,27 +199,27 @@ const Footer: React.FC = () => {
                   <li key={index}>
                     <a
                       href={item.href}
-                      className="text-gray-300 hover:text-primary-400 transition-colors duration-200 flex items-center group"
+                      className="text-gray-300 hover:text-[#3EBFB0] transition-colors flex items-center group"
                     >
                       <span>{item.name}</span>
                       {item.badge && (
-                        <span className="ml-2 px-2 py-0.5 bg-green-600 text-white text-xs rounded-full animate-pulse">
+                        <span className="ml-2 px-2 py-0.5 bg-[#C8A860] text-white text-xs rounded-full">
                           {item.badge}
                         </span>
                       )}
-                      <ArrowRight className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                      <ArrowRight className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                     </a>
                   </li>
                 ))}
               </ul>
 
-              {/* Contact Info */}
+              {/* Contact */}
               <div className="mt-8 space-y-3">
-                <div className="flex items-center space-x-3 text-gray-300">
-                  <Mail className="h-5 w-5 text-primary-400" />
+                <div className="flex items-center gap-3 text-gray-300">
+                  <Mail className="h-5 w-5 text-[#3EBFB0]" />
                   <a
                     href="mailto:hello@careerist.ai"
-                    className="hover:text-primary-400 transition-colors duration-200"
+                    className="hover:text-[#3EBFB0] transition-colors"
                   >
                     hello@careerist.ai
                   </a>
@@ -254,19 +231,19 @@ const Footer: React.FC = () => {
 
         {/* Bottom Section */}
         <div className="border-t border-gray-700 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center text-gray-400 text-sm">
               <span>© {currentYear} Careerist AI. Made with</span>
-              <Heart className="h-4 w-4 text-red-500 mx-1 animate-pulse" />
+              <Heart className="h-4 w-4 text-[#C8A860] mx-1" />
               <span>for your career success.</span>
             </div>
 
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center gap-6">
               {legalLinks.map((link, index) => (
                 <a
                   key={index}
                   href={link.href}
-                  className="text-gray-400 hover:text-primary-400 text-sm transition-colors duration-200"
+                  className="text-gray-400 hover:text-[#3EBFB0] text-sm transition-colors"
                 >
                   {link.name}
                 </a>

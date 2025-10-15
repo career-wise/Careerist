@@ -26,6 +26,14 @@ import {
   commonShortcuts,
 } from "./hooks/useKeyboardShortcuts";
 
+// Import Interview Practice Components
+import InterviewSetup from "./components/student/prepareforfuture/InterviewSetup";
+import AIInterviewSession from "./components/student/prepareforfuture/AIInterviewSession";
+import InterviewReport from "./components/student/prepareforfuture/InterviewReport";
+
+// Import MediaStream Context
+import { MediaStreamProvider } from "./contexts/MediaStreamContext";
+
 // Landing Page Component
 const LandingPage: React.FC = () => {
   return (
@@ -53,7 +61,6 @@ const OnboardingPage: React.FC = () => {
   const handleOnboardingComplete = async (data: any) => {
     try {
       console.log("🎉 Onboarding completed with data:", data);
-
 
       localStorage.setItem("careerwise_onboarding_completed", "true");
       localStorage.removeItem("careerwise_needs_onboarding");
@@ -104,17 +111,24 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-white font-sans">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/chat" element={<ChatPage />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/onboarding" element={<OnboardingPage />} />
-          <Route path="/student-dashboard/*" element={<StudentDashboard />} />
-          <Route path="/dashboard/*" element={<DashboardLayout />} />
-        </Routes>
-        <ToastContainer toasts={toasts} onRemove={removeToast} />
-      </div>
+      <MediaStreamProvider>
+        <div className="min-h-screen bg-white font-sans">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/chat" element={<ChatPage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route path="/student-dashboard/*" element={<StudentDashboard />} />
+            <Route path="/dashboard/*" element={<DashboardLayout />} />
+            
+            {/* Interview Practice Routes */}
+            <Route path="/interview-practice/:type/setup" element={<InterviewSetup />} />
+            <Route path="/interview-practice/:type/session" element={<AIInterviewSession />} />
+            <Route path="/interview-practice/:type/report" element={<InterviewReport />} />
+          </Routes>
+          <ToastContainer toasts={toasts} onRemove={removeToast} />
+        </div>
+      </MediaStreamProvider>
     </Router>
   );
 }

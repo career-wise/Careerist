@@ -1,42 +1,51 @@
 import React, { useState } from "react";
-import { 
-  Briefcase, 
-  FileText, 
-  Users, 
-  Target, 
-  Play, 
-  Video, 
-  Mic, 
-  Settings,
-  Clock,
-  BarChart3,
+import {
+  Briefcase,
+  FileText,
+  Users,
+  Target,
+  Play,
+  Video,
   Eye,
   Volume2,
   MessageSquare,
-  Download,
-  RotateCcw,
-  Shield,
-  AlertCircle,
   CheckCircle,
   ChevronDown,
   ChevronUp,
-  ExternalLink
+  ExternalLink,
+  Sparkles,
 } from "lucide-react";
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
 import InterviewPracticeModal from "./InterviewPracticeModal";
 
+interface Task {
+  task: string;
+  completed: boolean;
+}
+
+interface PrepStep {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  iconColor: string;
+  tasks: Task[];
+  resources: string[];
+  isInteractive?: boolean;
+}
+
 const InterviewPreparation: React.FC = () => {
   const [showPracticeModal, setShowPracticeModal] = useState(false);
-  const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
 
-  const prepSteps = [
+  const initialSteps: PrepStep[] = [
     {
       id: "research",
       title: "Research Opportunities",
-      description: "Find internships and jobs that align with your interests and career goals",
-      icon: <Target className="h-8 w-8 text-blue-600" />,
+      description: "Find internships and jobs that align with your goals",
+      icon: <Target className="h-8 w-8" />,
+      iconColor: "text-[#3EBFB0]",
       tasks: [
         { task: "Identify target companies", completed: false },
         { task: "Research application requirements", completed: false },
@@ -46,14 +55,15 @@ const InterviewPreparation: React.FC = () => {
         "LinkedIn Job Search",
         "Company Career Pages",
         "Industry Reports",
-        "Professional Networking Events"
-      ]
+        "Professional Networking Events",
+      ],
     },
     {
       id: "materials",
       title: "Prepare Application Materials",
       description: "Create compelling resumes and cover letters",
-      icon: <FileText className="h-8 w-8 text-green-600" />,
+      icon: <FileText className="h-8 w-8" />,
+      iconColor: "text-[#C8A860]",
       tasks: [
         { task: "Update your resume", completed: false },
         { task: "Write tailored cover letters", completed: false },
@@ -63,14 +73,15 @@ const InterviewPreparation: React.FC = () => {
         "Resume Templates",
         "Cover Letter Examples",
         "Reference Request Templates",
-        "ATS Optimization Guide"
-      ]
+        "ATS Optimization Guide",
+      ],
     },
     {
       id: "interview-skills",
       title: "Practice Interview Skills",
-      description: "Get ready for the interview process with AI-powered practice",
-      icon: <Users className="h-8 w-8 text-purple-600" />,
+      description: "Get ready with AI-powered practice sessions",
+      icon: <Users className="h-8 w-8" />,
+      iconColor: "text-[#2B3674]",
       tasks: [
         { task: "Practice common questions", completed: false },
         { task: "Improve body language", completed: false },
@@ -80,7 +91,7 @@ const InterviewPreparation: React.FC = () => {
         "Common Interview Questions",
         "STAR Method Guide",
         "Body Language Tips",
-        "Presentation Skills Training"
+        "Presentation Skills Training",
       ],
       isInteractive: true,
     },
@@ -88,166 +99,181 @@ const InterviewPreparation: React.FC = () => {
       id: "professional-dev",
       title: "Professional Development",
       description: "Build skills that employers value",
-      icon: <Briefcase className="h-8 w-8 text-orange-600" />,
+      icon: <Briefcase className="h-8 w-8" />,
+      iconColor: "text-[#3EBFB0]",
       tasks: [
         { task: "Develop technical skills", completed: false },
         { task: "Improve communication", completed: false },
-        { task: "Learn about workplace etiquette", completed: false },
+        { task: "Learn workplace etiquette", completed: false },
       ],
       resources: [
         "Online Skill Courses",
         "Communication Workshops",
         "Professional Etiquette Guide",
-        "Industry Certifications"
-      ]
+        "Industry Certifications",
+      ],
     },
   ];
 
-  const [steps, setSteps] = useState(prepSteps);
+  const [steps, setSteps] = useState(initialSteps);
 
   const toggleStepExpansion = (stepId: string) => {
     setExpandedStep(expandedStep === stepId ? null : stepId);
   };
 
   const toggleTaskCompletion = (stepId: string, taskIndex: number) => {
-    setSteps(prevSteps => 
-      prevSteps.map(step => 
-        step.id === stepId 
+    setSteps((prevSteps) =>
+      prevSteps.map((step) =>
+        step.id === stepId
           ? {
               ...step,
-              tasks: step.tasks.map((task, index) => 
-                index === taskIndex 
+              tasks: step.tasks.map((task, index) =>
+                index === taskIndex
                   ? { ...task, completed: !task.completed }
                   : task
-              )
+              ),
             }
           : step
       )
     );
   };
 
-  const markStepComplete = (stepId: string) => {
-    setCompletedSteps(prev => 
-      prev.includes(stepId) 
-        ? prev.filter(id => id !== stepId)
-        : [...prev, stepId]
-    );
-  };
-
-  const getStepProgress = (step: any) => {
-    const completedTasks = step.tasks.filter((task: any) => task.completed).length;
+  const getStepProgress = (step: PrepStep) => {
+    const completedTasks = step.tasks.filter((task) => task.completed).length;
     return Math.round((completedTasks / step.tasks.length) * 100);
   };
 
-  const handlePracticeClick = () => {
-    setShowPracticeModal(true);
+  const isStepCompleted = (step: PrepStep) => {
+    return step.tasks.every((task) => task.completed);
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Interview Preparation
-        </h1>
-        <p className="text-gray-600">
-          Get ready for your first professional interview experience with AI-powered practice
-        </p>
-      </div>
-
-      {/* Featured Practice Section */}
-      <Card className="mb-8 bg-gradient-to-br from-purple-50 to-indigo-100 border-purple-200">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <div className="flex items-center mb-4">
-              <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mr-4">
-                <Video className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">AI Interview Practice</h2>
-                <p className="text-purple-700">Real-time coaching with instant feedback</p>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-xl flex items-center justify-center shadow-lg">
+              <Briefcase className="w-7 h-7 text-white" />
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="flex items-center space-x-2">
-                <Eye className="h-5 w-5 text-purple-600" />
-                <span className="text-sm text-gray-700">Body Language Analysis</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Volume2 className="h-5 w-5 text-purple-600" />
-                <span className="text-sm text-gray-700">Voice Coaching</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <MessageSquare className="h-5 w-5 text-purple-600" />
-                <span className="text-sm text-gray-700">Content Feedback</span>
-              </div>
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent">
+                Interview Preparation
+              </h1>
+              <p className="text-gray-600">
+                Master your interview skills with AI-powered practice
+              </p>
             </div>
-          </div>
-          
-          <div className="ml-6">
-            <Button 
-              size="lg" 
-              onClick={handlePracticeClick}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
-            >
-              <Play className="h-5 w-5 mr-2" />
-              Start Practice
-            </Button>
           </div>
         </div>
-      </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {steps.map((step, index) => {
-          const isCompleted = completedSteps.includes(step.id);
-          const isExpanded = expandedStep === step.id;
-          const progress = getStepProgress(step);
-          
-          return (
-            <Card
-              key={step.id}
-              className={`hover:shadow-lg transition-all duration-200 ${
-                isCompleted ? 'border-green-200 bg-green-50' : 'border-gray-200'
-              }`}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-start space-x-4 flex-1">
-                  <div className={`p-2 rounded-xl ${isCompleted ? 'bg-green-100' : 'bg-gray-100'}`}>
-                    {step.icon}
+        {/* Featured AI Practice Section */}
+        <Card className="mb-8 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] border-0 shadow-xl text-white">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div className="flex-1">
+              <div className="flex items-center mb-4">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mr-4">
+                  <Video className="h-7 w-7 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold mb-1">
+                    AI Interview Practice
+                  </h2>
+                  <p className="text-white/90">
+                    Real-time coaching with instant feedback
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-3">
+                  <Eye className="h-5 w-5 text-white" />
+                  <span className="text-sm">Body Language Analysis</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-3">
+                  <Volume2 className="h-5 w-5 text-white" />
+                  <span className="text-sm">Voice Coaching</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-3">
+                  <MessageSquare className="h-5 w-5 text-white" />
+                  <span className="text-sm">Content Feedback</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:ml-6">
+            </div>
+          </div>
+        </Card>
+
+        {/* Preparation Steps */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {steps.map((step) => {
+            const isExpanded = expandedStep === step.id;
+            const progress = getStepProgress(step);
+            const isCompleted = isStepCompleted(step);
+
+            return (
+              <Card
+                key={step.id}
+                className={`hover:shadow-lg transition-all duration-300 border-2 ${
+                  isCompleted
+                    ? "border-green-500 bg-green-50/50"
+                    : "border-[#2B3674]/10"
+                }`}
+              >
+                {/* Step Header */}
+                <div className="flex items-start gap-4 mb-4">
+                  <div
+                    className={`p-3 rounded-xl ${
+                      isCompleted
+                        ? "bg-green-500 text-white"
+                        : "bg-[#2B3674]/10"
+                    } transition-all`}
+                  >
+                    {isCompleted ? (
+                      <CheckCircle className="h-8 w-8 text-white" />
+                    ) : (
+                      <span className={step.iconColor}>{step.icon}</span>
+                    )}
                   </div>
+
                   <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="text-lg font-bold text-[#2B3674]">
                         {step.title}
                       </h3>
-                      <div className="flex items-center space-x-2">
-                        {isCompleted && (
-                          <CheckCircle className="h-5 w-5 text-green-600" />
+                      <button
+                        onClick={() => toggleStepExpansion(step.id)}
+                        className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        {isExpanded ? (
+                          <ChevronUp className="h-5 w-5 text-gray-500" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-gray-500" />
                         )}
-                        <button
-                          onClick={() => toggleStepExpansion(step.id)}
-                          className="p-1 hover:bg-gray-100 rounded transition-colors"
-                        >
-                          {isExpanded ? (
-                            <ChevronUp className="h-4 w-4 text-gray-500" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4 text-gray-500" />
-                          )}
-                        </button>
-                      </div>
+                      </button>
                     </div>
-                    <p className="text-gray-600 mb-4">{step.description}</p>
-                    
+                    <p className="text-sm text-gray-600 mb-4">
+                      {step.description}
+                    </p>
+
                     {/* Progress Bar */}
-                    <div className="mb-4">
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-600">Progress</span>
-                        <span className="font-medium">{progress}%</span>
+                    <div>
+                      <div className="flex justify-between text-xs mb-2">
+                        <span className="text-gray-600 font-medium">
+                          Progress
+                        </span>
+                        <span className="font-bold text-[#2B3674]">
+                          {progress}%
+                        </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                         <div
-                          className={`h-2 rounded-full transition-all duration-300 ${
-                            progress === 100 ? 'bg-green-500' : 'bg-blue-500'
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            progress === 100
+                              ? "bg-green-500"
+                              : "bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]"
                           }`}
                           style={{ width: `${progress}%` }}
                         ></div>
@@ -255,101 +281,100 @@ const InterviewPreparation: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Expanded Content */}
-              {isExpanded && (
-                <div className="space-y-6 pt-4 border-t border-gray-200">
-                  {/* Tasks Checklist */}
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-3">Action Items:</h4>
-                    <div className="space-y-2">
-                      {step.tasks.map((taskItem, taskIndex) => (
-                        <div
-                          key={taskIndex}
-                          className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                        >
+                {/* Expanded Content */}
+                {isExpanded && (
+                  <div className="space-y-6 pt-4 border-t border-gray-200 animate-fade-in">
+                    {/* Tasks */}
+                    <div>
+                      <h4 className="font-semibold text-[#2B3674] mb-3 flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-[#3EBFB0]" />
+                        Action Items
+                      </h4>
+                      <div className="space-y-2">
+                        {step.tasks.map((taskItem, taskIndex) => (
                           <button
-                            onClick={() => toggleTaskCompletion(step.id, taskIndex)}
-                            className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                            key={taskIndex}
+                            onClick={() =>
+                              toggleTaskCompletion(step.id, taskIndex)
+                            }
+                            className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all ${
                               taskItem.completed
-                                ? 'bg-green-500 border-green-500'
-                                : 'border-gray-300 hover:border-green-400'
+                                ? "bg-green-50 hover:bg-green-100"
+                                : "bg-gray-50 hover:bg-gray-100"
                             }`}
                           >
-                            {taskItem.completed && (
-                              <CheckCircle className="h-3 w-3 text-white" />
-                            )}
+                            <div
+                              className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+                                taskItem.completed
+                                  ? "bg-green-500 border-green-500"
+                                  : "border-gray-300"
+                              }`}
+                            >
+                              {taskItem.completed && (
+                                <CheckCircle className="h-3 w-3 text-white" />
+                              )}
+                            </div>
+                            <span
+                              className={`text-sm flex-1 text-left ${
+                                taskItem.completed
+                                  ? "text-gray-500 line-through"
+                                  : "text-gray-700"
+                              }`}
+                            >
+                              {taskItem.task}
+                            </span>
                           </button>
-                          <span className={`text-sm flex-1 ${
-                            taskItem.completed ? 'text-gray-500 line-through' : 'text-gray-700'
-                          }`}>
-                            {taskItem.task}
-                          </span>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Resources */}
+                    <div>
+                      <h4 className="font-semibold text-[#2B3674] mb-3 flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-[#C8A860]" />
+                        Helpful Resources
+                      </h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        {step.resources.map((resource, idx) => (
+                          <a
+                            key={idx}
+                            href="#"
+                            className="flex items-center gap-2 text-sm text-[#3EBFB0] hover:text-[#2B3674] transition-colors p-2 rounded-lg hover:bg-[#3EBFB0]/10"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            <span>{resource}</span>
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   </div>
-
-                  {/* Resources */}
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-3">Helpful Resources:</h4>
-                    <div className="grid grid-cols-1 gap-2">
-                      {step.resources.map((resource, resourceIndex) => (
-                        <div
-                          key={resourceIndex}
-                          className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-700 cursor-pointer"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                          <span>{resource}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex space-x-3 mt-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => toggleStepExpansion(step.id)}
-                  className="flex-1"
-                >
-                  {isExpanded ? 'Collapse' : 'View Details'}
-                </Button>
-                
-                {step.isInteractive ? (
-                  <Button 
-                    size="sm"
-                    onClick={handlePracticeClick}
-                    className="flex-1"
-                  >
-                    <Play className="h-4 w-4 mr-2" />
-                    Start Practice
-                  </Button>
-                ) : (
-                  <Button
-                    variant={isCompleted ? "secondary" : "primary"}
-                    size="sm"
-                    onClick={() => markStepComplete(step.id)}
-                    className="flex-1"
-                  >
-                    {isCompleted ? (
-                      <>
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Completed
-                      </>
-                    ) : (
-                      "Mark Complete"
-                    )}
-                  </Button>
                 )}
-              </div>
-            </Card>
-          );
-        })}
+
+                {/* Action Button */}
+                <div className="mt-4">
+                  {step.isInteractive ? (
+                    <Button
+                      onClick={() => setShowPracticeModal(true)}
+                      className="w-full bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]"
+                    >
+                      <Play className="h-4 w-4 mr-2" />
+                      Start Practice Session
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      onClick={() => toggleStepExpansion(step.id)}
+                      className="w-full"
+                    >
+                      {isExpanded ? "Hide Details" : "View Details"}
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            );
+          })}
+        </div>
       </div>
 
       {/* Practice Modal */}
