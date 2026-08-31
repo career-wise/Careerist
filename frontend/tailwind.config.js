@@ -4,6 +4,13 @@ export default {
   theme: {
     extend: {
       colors: {
+        brand: {
+          ink: '#101715',
+          mist: '#F4F8F6',
+          neon: '#15C196',
+          slate: '#5C6B67',
+          darkgreen: '#0F4743'
+        },
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',
@@ -45,7 +52,9 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Switzer', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['Clash Display', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,8 +9,8 @@ import Hero from "./components/shared/landing/Hero";
 import UserTypes from "./components/shared/landing/UserTypes";
 import HowItWorks from "./components/shared/landing/HowItWorks";
 import Features from "./components/shared/landing/Features";
+import ProductPreview from "./components/shared/landing/ProductPreview";
 import Testimonials from "./components/shared/landing/Testimonials";
-import About from "./components/shared/landing/About";
 import Footer from "./components/shared/layout/Footer";
 import ChatPage from "./pages/ChatPage";
 import AuthPage from "./components/shared/auth/AuthPage";
@@ -37,19 +36,19 @@ import { MediaStreamProvider } from "./contexts/MediaStreamContext";
 // Landing Page Component
 const LandingPage: React.FC = () => {
   return (
-    <>
+    <div className="bg-brand-mist min-h-screen">
       <Header />
       <main>
         <Hero />
-        <UserTypes />
         <HowItWorks />
+        <UserTypes />
         <Features />
+        <ProductPreview />
         <Testimonials />
-        <About />
       </main>
       <Footer />
       <FloatingChatButton />
-    </>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import StudentSidebar from "./StudentSidebar";
 import StudentDashboardHome from "./StudentDashboardHome";
 
@@ -21,11 +21,14 @@ import StudySkillsTrainer from "../study&succeed/StudySkillsTrainer";
 import TestPrepStrategies from "../study&succeed/TestPrepStrategies";
 
 const StudentDashboard: React.FC = () => {
-  return (
-    <div className="flex h-screen bg-gray-50">
-      <StudentSidebar />
+  const location = useLocation();
+  const isHome = location.pathname === "/student-dashboard" || location.pathname === "/student-dashboard/";
 
-      <div className="flex-1 overflow-auto">
+  return (
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {!isHome && <StudentSidebar />}
+
+      <div className="flex-1 overflow-auto bg-gray-50">
         <Routes>
           <Route path="/" element={<StudentDashboardHome />} />
 

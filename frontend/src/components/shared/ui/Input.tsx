@@ -43,12 +43,12 @@ const Input: React.FC<InputProps> = ({
         <input
           id={inputId}
           className={cn(
-            'block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 placeholder-gray-500 transition-colors duration-200',
-            'focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 focus:outline-none',
-            'disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed',
-            leftIcon && 'pl-10',
-            rightIcon && 'pr-10',
-            error && 'border-red-300 focus:border-red-500 focus:ring-red-500',
+            'block w-full rounded-2xl border-2 border-gray-200 bg-white px-4 py-3 text-brand-ink placeholder-gray-400 transition-colors duration-300',
+            'focus:border-brand-ink focus:ring-0 focus:outline-none',
+            'disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed',
+            leftIcon && 'pl-11',
+            rightIcon && 'pr-11',
+            error && 'border-red-500 focus:border-red-500',
             className
           )}
           {...props}
