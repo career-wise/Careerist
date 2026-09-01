@@ -20,6 +20,8 @@ import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
 import Input from "../../shared/ui/Input";
 
+const getRelativeDate = (days: number) => { const d = new Date(); d.setDate(d.getDate() + days); return d.toISOString().split('T')[0]; };
+
 const DocumentManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -40,7 +42,7 @@ const DocumentManager: React.FC = () => {
       type: "PDF",
       size: "2.4 MB",
       category: "academic",
-      uploadDate: "2024-01-15",
+      uploadDate: getRelativeDate(-2),
       starred: true,
       thumbnail: "📄",
     },
@@ -50,7 +52,7 @@ const DocumentManager: React.FC = () => {
       type: "PDF",
       size: "1.2 MB",
       category: "academic",
-      uploadDate: "2024-01-10",
+      uploadDate: getRelativeDate(-7),
       starred: false,
       thumbnail: "📊",
     },
@@ -60,7 +62,7 @@ const DocumentManager: React.FC = () => {
       type: "PDF",
       size: "800 KB",
       category: "certificates",
-      uploadDate: "2024-01-08",
+      uploadDate: getRelativeDate(-9),
       starred: true,
       thumbnail: "🏆",
     },
@@ -70,7 +72,7 @@ const DocumentManager: React.FC = () => {
       type: "DOCX",
       size: "5.1 MB",
       category: "projects",
-      uploadDate: "2024-01-05",
+      uploadDate: getRelativeDate(-12),
       starred: false,
       thumbnail: "🔬",
     },
@@ -80,7 +82,7 @@ const DocumentManager: React.FC = () => {
       type: "PDF",
       size: "1.8 MB",
       category: "personal",
-      uploadDate: "2024-01-03",
+      uploadDate: getRelativeDate(-14),
       starred: false,
       thumbnail: "📋",
     },
@@ -90,7 +92,7 @@ const DocumentManager: React.FC = () => {
       type: "PDF",
       size: "900 KB",
       category: "certificates",
-      uploadDate: "2024-01-02",
+      uploadDate: getRelativeDate(-15),
       starred: false,
       thumbnail: "🤝",
     },
@@ -114,7 +116,7 @@ const DocumentManager: React.FC = () => {
       case "png":
         return <Image className="h-6 w-6 text-green-500" />;
       default:
-        return <File className="h-6 w-6 text-gray-500" />;
+        return <File className="h-6 w-6 text-brand-slate" />;
     }
   };
 
@@ -134,7 +136,7 @@ const DocumentManager: React.FC = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Document Manager</h1>
-          <p className="text-gray-600">
+          <p className="text-brand-slate">
             Upload, organize, and manage your important documents and certificates
           </p>
         </div>
@@ -154,19 +156,19 @@ const DocumentManager: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card className="text-center" padding="lg">
           <div className="text-2xl font-bold text-blue-600 mb-1">12</div>
-          <div className="text-sm text-gray-600">Total Documents</div>
+          <div className="text-sm text-brand-slate">Total Documents</div>
         </Card>
         <Card className="text-center" padding="lg">
           <div className="text-2xl font-bold text-green-600 mb-1">24.8 MB</div>
-          <div className="text-sm text-gray-600">Storage Used</div>
+          <div className="text-sm text-brand-slate">Storage Used</div>
         </Card>
         <Card className="text-center" padding="lg">
           <div className="text-2xl font-bold text-purple-600 mb-1">3</div>
-          <div className="text-sm text-gray-600">Starred Items</div>
+          <div className="text-sm text-brand-slate">Starred Items</div>
         </Card>
         <Card className="text-center" padding="lg">
           <div className="text-2xl font-bold text-orange-600 mb-1">5</div>
-          <div className="text-sm text-gray-600">Categories</div>
+          <div className="text-sm text-brand-slate">Categories</div>
         </Card>
       </div>
 
@@ -183,14 +185,14 @@ const DocumentManager: React.FC = () => {
                   className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${
                     selectedCategory === category.id
                       ? "bg-primary-50 text-primary-700 border border-primary-200"
-                      : "hover:bg-gray-50 text-gray-700"
+                      : "hover:bg-brand-mist text-brand-slate"
                   }`}
                 >
                   <div className="flex items-center space-x-3">
                     <Folder className="h-4 w-4" />
                     <span className="text-sm font-medium">{category.name}</span>
                   </div>
-                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                  <span className="text-xs text-brand-slate px-2 py-1 rounded-full bg-white border border-brand-slate/10">
                     {category.count}
                   </span>
                 </button>
@@ -239,7 +241,7 @@ const DocumentManager: React.FC = () => {
                 <button
                   onClick={() => setViewMode("grid")}
                   className={`p-2 ${
-                    viewMode === "grid" ? "bg-primary-50 text-primary-600" : "text-gray-500"
+                    viewMode === "grid" ? "bg-primary-50 text-primary-600" : "text-brand-slate"
                   }`}
                 >
                   <div className="w-4 h-4 grid grid-cols-2 gap-0.5">
@@ -252,7 +254,7 @@ const DocumentManager: React.FC = () => {
                 <button
                   onClick={() => setViewMode("list")}
                   className={`p-2 ${
-                    viewMode === "list" ? "bg-primary-50 text-primary-600" : "text-gray-500"
+                    viewMode === "list" ? "bg-primary-50 text-primary-600" : "text-brand-slate"
                   }`}
                 >
                   <div className="w-4 h-4 flex flex-col gap-1">
@@ -282,12 +284,12 @@ const DocumentManager: React.FC = () => {
 
                   <h3 className="font-semibold text-gray-900 mb-2 truncate">{doc.name}</h3>
                   
-                  <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                  <div className="flex items-center space-x-4 text-sm text-brand-slate mb-4">
                     <span>{doc.type}</span>
                     <span>{doc.size}</span>
                   </div>
 
-                  <div className="text-xs text-gray-500 mb-4">
+                  <div className="text-xs text-brand-slate mb-4">
                     Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}
                   </div>
 
@@ -310,13 +312,13 @@ const DocumentManager: React.FC = () => {
                 {filteredDocuments.map((doc) => (
                   <div
                     key={doc.id}
-                    className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors group"
+                    className="flex items-center justify-between p-4 hover:bg-brand-mist rounded-lg transition-colors group"
                   >
                     <div className="flex items-center space-x-4">
                       {getFileIcon(doc.type)}
                       <div>
                         <h3 className="font-medium text-gray-900">{doc.name}</h3>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <div className="flex items-center space-x-4 text-sm text-brand-slate">
                           <span>{doc.type}</span>
                           <span>{doc.size}</span>
                           <span>Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}</span>
@@ -347,7 +349,7 @@ const DocumentManager: React.FC = () => {
             <Card className="text-center" padding="lg">
               <div className="text-6xl mb-4">📁</div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">No documents found</h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-brand-slate mb-6">
                 {searchQuery
                   ? "Try adjusting your search terms"
                   : "Upload your first document to get started"}

@@ -12,6 +12,12 @@ import CareerPathPlanner from "../../student/prepareforfuture/CareerPathPlanner"
 // Graduate specific components
 import DocumentManager from "../resources/DocumentManager";
 
+// Skills & Learning components
+import BasicTechSkills from "../../student/learn&develop/BasicTechSkills";
+import SoftSkills from "../../student/learn&develop/SoftSkills";
+import OnlineCourses from "../../student/learn&develop/OnlineCourses";
+import ProjectIdeas from "../../student/learn&develop/ProjectIdeas";
+
 const GraduateDashboard: React.FC = () => {
   return (
     <div className="flex h-screen bg-brand-mist overflow-hidden">
@@ -30,6 +36,12 @@ const GraduateDashboard: React.FC = () => {
           {/* Resources */}
           <Route path="/resources" element={<DocumentManager />} />
           <Route path="/resources/document-manager" element={<DocumentManager />} />
+          
+          {/* Skills & Learning */}
+          <Route path="skills/tech" element={<BasicTechSkills />} />
+          <Route path="skills/soft" element={<SoftSkills />} />
+          <Route path="learning/courses" element={<OnlineCourses />} />
+          <Route path="learning/projects" element={<ProjectIdeas />} />
         </Routes>
       </div>
     </div>

@@ -137,7 +137,7 @@ const StudySkillsTrainer: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Study Skills Trainer
         </h1>
-        <p className="text-gray-600">
+        <p className="text-brand-slate">
           Master effective study techniques and build better habits
         </p>
       </div>
@@ -152,14 +152,14 @@ const StudySkillsTrainer: React.FC = () => {
             <div className="text-2xl font-bold text-gray-900 mb-1">
               {stat.value}{typeof stat.value === 'number' && stat.label === 'Goal Achievement' ? '%' : ''}
             </div>
-            <div className="text-sm text-gray-600 mb-2">{stat.label}</div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="text-sm text-brand-slate mb-2">{stat.label}</div>
+            <div className="w-full rounded-full h-2 bg-brand-slate/10">
               <div
                 className="bg-primary-500 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${(stat.value / stat.target) * 100}%` }}
               ></div>
             </div>
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xs text-brand-slate mt-1">
               Target: {stat.target}{typeof stat.target === 'number' && stat.label === 'Goal Achievement' ? '%' : ''}
             </div>
           </Card>
@@ -225,19 +225,19 @@ const StudySkillsTrainer: React.FC = () => {
                   className={`p-4 rounded-lg cursor-pointer transition-all duration-300 ${
                     selectedTechnique === technique.id 
                       ? 'bg-primary-50 border-2 border-primary-200' 
-                      : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
+                      : 'bg-brand-mist hover:bg-brand-slate/10 border-2 border-transparent'
                   }`}
                   onClick={() => selectTechnique(technique.id)}
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-2xl">{technique.icon}</div>
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs px-2 py-1 bg-white rounded-full text-gray-600">
+                      <span className="text-xs px-2 py-1 bg-white rounded-full text-brand-slate">
                         {technique.difficulty}
                       </span>
                       <div className="flex items-center">
                         <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                        <span className="text-xs text-gray-600 ml-1">
+                        <span className="text-xs text-brand-slate ml-1">
                           {technique.effectiveness}%
                         </span>
                       </div>
@@ -246,11 +246,11 @@ const StudySkillsTrainer: React.FC = () => {
                   <h3 className="font-semibold text-gray-900 mb-2">
                     {technique.name}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="text-sm text-brand-slate mb-3">
                     {technique.description}
                   </p>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-brand-slate">
                       Duration: {technique.duration}
                     </span>
                   </div>
@@ -258,7 +258,7 @@ const StudySkillsTrainer: React.FC = () => {
                   {selectedTechnique === technique.id && (
                     <div className="mt-4 pt-4 border-t border-primary-200">
                       <h4 className="font-medium text-gray-900 mb-2">Steps:</h4>
-                      <ol className="text-sm text-gray-600 space-y-1">
+                      <ol className="text-sm text-brand-slate space-y-1">
                         {technique.steps.map((step, stepIndex) => (
                           <li key={stepIndex} className="flex items-start space-x-2">
                             <span className="font-medium text-primary-600">{stepIndex + 1}.</span>
@@ -282,7 +282,7 @@ const StudySkillsTrainer: React.FC = () => {
                 <h3 className="font-medium text-gray-900 mb-2">
                   Use the Feynman Technique
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-brand-slate">
                   Explain concepts in simple terms as if teaching someone else.
                   This reveals gaps in understanding.
                 </p>
@@ -293,7 +293,7 @@ const StudySkillsTrainer: React.FC = () => {
                 <h3 className="font-medium text-gray-900 mb-2">
                   Eliminate Distractions
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-brand-slate">
                   Put your phone in another room and use website blockers during study time.
                 </p>
               </div>
@@ -303,7 +303,7 @@ const StudySkillsTrainer: React.FC = () => {
                 <h3 className="font-medium text-gray-900 mb-2">
                   Take Strategic Breaks
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-brand-slate">
                   Short breaks every 25-30 minutes help maintain focus and prevent burnout.
                 </p>
               </div>
@@ -313,7 +313,7 @@ const StudySkillsTrainer: React.FC = () => {
                 <h3 className="font-medium text-gray-900 mb-2">
                   Review Regularly
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-brand-slate">
                   Review material within 24 hours, then again in 3 days, then weekly.
                 </p>
               </div>
@@ -330,7 +330,7 @@ const StudySkillsTrainer: React.FC = () => {
             </h2>
             <div className="space-y-3">
               {studyHabits.map((item, index) => (
-                <div key={index} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                <div key={index} className="flex items-center space-x-3 p-2 hover:bg-brand-mist rounded-lg transition-colors">
                   <CheckCircle
                     className={`h-5 w-5 ${
                       item.completed ? "text-green-600" : "text-gray-300"
@@ -338,7 +338,7 @@ const StudySkillsTrainer: React.FC = () => {
                   />
                   <span
                     className={`text-sm ${
-                      item.completed ? "text-gray-900" : "text-gray-500"
+                      item.completed ? "text-gray-900" : "text-brand-slate"
                     }`}
                   >
                     {item.habit}
@@ -360,24 +360,24 @@ const StudySkillsTrainer: React.FC = () => {
             <div className="space-y-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600 mb-1">18</div>
-                <div className="text-sm text-gray-600">Study Sessions</div>
+                <div className="text-sm text-brand-slate">Study Sessions</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600 mb-1">12h</div>
-                <div className="text-sm text-gray-600">Total Time</div>
+                <div className="text-sm text-brand-slate">Total Time</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600 mb-1">85%</div>
-                <div className="text-sm text-gray-600">Goal Achievement</div>
+                <div className="text-sm text-brand-slate">Goal Achievement</div>
               </div>
             </div>
             
-            <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="mt-4 pt-4 border-t border-brand-slate/10">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Weekly Goal Progress</span>
+                <span className="text-brand-slate">Weekly Goal Progress</span>
                 <span className="font-medium text-gray-900">85%</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+              <div className="w-full rounded-full h-2 mt-2 bg-brand-slate/10">
                 <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style={{ width: '85%' }}></div>
               </div>
             </div>

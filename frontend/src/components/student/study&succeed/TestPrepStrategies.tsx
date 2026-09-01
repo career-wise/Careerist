@@ -179,7 +179,7 @@ const TestPrepStrategies: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Test Prep Strategies
         </h1>
-        <p className="text-gray-600">
+        <p className="text-brand-slate">
           Master standardized tests with proven preparation techniques
         </p>
       </div>
@@ -209,17 +209,17 @@ const TestPrepStrategies: React.FC = () => {
               <div className="text-center">
                 <Clock className="h-8 w-8 text-blue-600 mx-auto mb-2" />
                 <div className="font-semibold text-gray-900">Duration</div>
-                <div className="text-sm text-gray-600">3 hours</div>
+                <div className="text-sm text-brand-slate">3 hours</div>
               </div>
               <div className="text-center">
                 <FileText className="h-8 w-8 text-green-600 mx-auto mb-2" />
                 <div className="font-semibold text-gray-900">Sections</div>
-                <div className="text-sm text-gray-600">4 sections</div>
+                <div className="text-sm text-brand-slate">4 sections</div>
               </div>
               <div className="text-center">
                 <Star className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
                 <div className="font-semibold text-gray-900">Max Score</div>
-                <div className="text-sm text-gray-600">1600</div>
+                <div className="text-sm text-brand-slate">1600</div>
               </div>
             </div>
           </Card>
@@ -232,7 +232,7 @@ const TestPrepStrategies: React.FC = () => {
               </h2>
               <div className="space-y-4">
                 {satSections.map((section, index) => (
-                  <div key={index} className="p-4 bg-gray-50 rounded-lg">
+                  <div key={index} className="p-4 bg-brand-mist rounded-lg">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="font-semibold text-gray-900">
                         {section.section}
@@ -245,15 +245,15 @@ const TestPrepStrategies: React.FC = () => {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                       <div className="text-sm">
-                        <span className="text-gray-600">Time: </span>
+                        <span className="text-brand-slate">Time: </span>
                         <span className="font-medium">{section.duration}</span>
                       </div>
                       <div className="text-sm">
-                        <span className="text-gray-600">Questions: </span>
+                        <span className="text-brand-slate">Questions: </span>
                         <span className="font-medium">{section.questions}</span>
                       </div>
                       <div className="text-sm">
-                        <span className="text-gray-600">Type: </span>
+                        <span className="text-brand-slate">Type: </span>
                         <span className="font-medium">
                           {section.description}
                         </span>
@@ -263,7 +263,7 @@ const TestPrepStrategies: React.FC = () => {
                       <h4 className="text-sm font-medium text-gray-900 mb-2">
                         Key Tips:
                       </h4>
-                      <ul className="text-sm text-gray-600 space-y-1">
+                      <ul className="text-sm text-brand-slate space-y-1">
                         {section.tips.map((tip, tipIndex) => (
                           <li
                             key={tipIndex}
@@ -288,17 +288,17 @@ const TestPrepStrategies: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {strategies.map((strategy, index) => (
-                <div key={index} className="p-4 bg-gray-50 rounded-lg">
+                <div key={index} className="p-4 bg-brand-mist rounded-lg">
                   <div className="flex items-center space-x-3 mb-3">
                     {strategy.icon}
                     <h3 className="font-semibold text-gray-900">
                       {strategy.title}
                     </h3>
                   </div>
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="text-sm text-brand-slate mb-3">
                     {strategy.description}
                   </p>
-                  <ul className="text-sm text-gray-600 space-y-1">
+                  <ul className="text-sm text-brand-slate space-y-1">
                     {strategy.tips.map((tip, tipIndex) => (
                       <li key={tipIndex} className="flex items-start space-x-2">
                         <div className="w-1 h-1 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
@@ -320,7 +320,7 @@ const TestPrepStrategies: React.FC = () => {
               {studyPlan.map((phase, index) => (
                 <div
                   key={index}
-                  className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg"
+                  className="flex items-start space-x-4 p-4 bg-brand-mist rounded-lg"
                 >
                   <div className="flex-shrink-0">
                     <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
@@ -334,7 +334,7 @@ const TestPrepStrategies: React.FC = () => {
                     <h4 className="text-blue-600 font-medium mb-2">
                       {phase.focus}
                     </h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
+                    <ul className="text-sm text-brand-slate space-y-1">
                       {phase.tasks.map((task, taskIndex) => (
                         <li
                           key={taskIndex}
@@ -364,7 +364,7 @@ const TestPrepStrategies: React.FC = () => {
                   <span>Practice Tests Taken</span>
                   <span>6/10</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full rounded-full h-2 bg-brand-slate/10">
                   <div
                     className="bg-blue-600 h-2 rounded-full"
                     style={{ width: "60%" }}
@@ -376,7 +376,7 @@ const TestPrepStrategies: React.FC = () => {
                   <span>Study Hours</span>
                   <span>45/60</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full rounded-full h-2 bg-brand-slate/10">
                   <div
                     className="bg-green-600 h-2 rounded-full"
                     style={{ width: "75%" }}
@@ -388,7 +388,7 @@ const TestPrepStrategies: React.FC = () => {
                   <span>Target Score Progress</span>
                   <span>1420/1500</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full rounded-full h-2 bg-brand-slate/10">
                   <div
                     className="bg-yellow-600 h-2 rounded-full"
                     style={{ width: "85%" }}
@@ -427,7 +427,7 @@ const TestPrepStrategies: React.FC = () => {
                 <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-gray-900">Night Before</h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-brand-slate">
                     Get plenty of sleep and prepare materials
                   </p>
                 </div>
@@ -436,7 +436,7 @@ const TestPrepStrategies: React.FC = () => {
                 <Clock className="h-5 w-5 text-blue-600 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-gray-900">Arrive Early</h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-brand-slate">
                     Get to the test center 30 minutes early
                   </p>
                 </div>
@@ -445,7 +445,7 @@ const TestPrepStrategies: React.FC = () => {
                 <Target className="h-5 w-5 text-green-600 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-gray-900">Stay Calm</h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-brand-slate">
                     Use breathing techniques to manage anxiety
                   </p>
                 </div>

@@ -157,7 +157,7 @@ const SubjectExplorer: React.FC = () => {
       case "Advanced":
         return "text-red-600 bg-red-100";
       default:
-        return "text-gray-600 bg-gray-100";
+        return "text-brand-slate bg-brand-slate/10";
     }
   };
 
@@ -168,7 +168,7 @@ const SubjectExplorer: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Subject Explorer
         </h1>
-        <p className="text-gray-600">
+        <p className="text-brand-slate">
           Discover academic subjects and their career connections
         </p>
       </div>
@@ -184,7 +184,7 @@ const SubjectExplorer: React.FC = () => {
           />
         </div>
         <div className="flex items-center space-x-2">
-          <Filter className="h-4 w-4 text-gray-500" />
+          <Filter className="h-4 w-4 text-brand-slate" />
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -206,17 +206,17 @@ const SubjectExplorer: React.FC = () => {
           <div className="text-2xl font-bold text-gray-900 mb-1">
             {subjects.length}
           </div>
-          <div className="text-sm text-gray-600">Available Subjects</div>
+          <div className="text-sm text-brand-slate">Available Subjects</div>
         </Card>
         <Card className="text-center" padding="lg">
           <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-3" />
           <div className="text-2xl font-bold text-gray-900 mb-1">200+</div>
-          <div className="text-sm text-gray-600">Career Paths</div>
+          <div className="text-sm text-brand-slate">Career Paths</div>
         </Card>
         <Card className="text-center" padding="lg">
           <Users className="h-8 w-8 text-purple-600 mx-auto mb-3" />
           <div className="text-2xl font-bold text-gray-900 mb-1">15k+</div>
-          <div className="text-sm text-gray-600">Students Guided</div>
+          <div className="text-sm text-brand-slate">Students Guided</div>
         </Card>
       </div>
 
@@ -232,7 +232,7 @@ const SubjectExplorer: React.FC = () => {
                 <div className="text-3xl">{subject.image}</div>
                 <div className="flex items-center">
                   <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                  <span className="text-sm text-gray-600 ml-1">
+                  <span className="text-sm text-brand-slate ml-1">
                     {subject.rating}
                   </span>
                 </div>
@@ -241,7 +241,7 @@ const SubjectExplorer: React.FC = () => {
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 {subject.name}
               </h3>
-              <p className="text-gray-600 text-sm mb-4">
+              <p className="text-brand-slate text-sm mb-4">
                 {subject.description}
               </p>
 
@@ -253,24 +253,24 @@ const SubjectExplorer: React.FC = () => {
                 >
                   {subject.difficulty}
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-brand-slate">
                   {subject.category}
                 </span>
               </div>
 
               <div className="space-y-3 mb-4">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Time Commitment:</span>
+                  <span className="text-brand-slate">Time Commitment:</span>
                   <span className="font-medium">{subject.averageTime}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Job Growth:</span>
+                  <span className="text-brand-slate">Job Growth:</span>
                   <span className="font-medium text-green-600">
                     {subject.growth}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Avg Salary:</span>
+                  <span className="text-brand-slate">Avg Salary:</span>
                   <span className="font-medium">{subject.salary}</span>
                 </div>
               </div>
@@ -289,7 +289,7 @@ const SubjectExplorer: React.FC = () => {
                     </span>
                   ))}
                   {subject.careers.length > 3 && (
-                    <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
+                    <span className="px-2 py-1 text-brand-slate rounded text-xs bg-white border border-brand-slate/10">
                       +{subject.careers.length - 3} more
                     </span>
                   )}
@@ -332,7 +332,7 @@ const SubjectExplorer: React.FC = () => {
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             No subjects found
           </h3>
-          <p className="text-gray-600">
+          <p className="text-brand-slate">
             Try adjusting your search or filter criteria
           </p>
         </Card>

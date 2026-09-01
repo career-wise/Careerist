@@ -22,6 +22,12 @@ import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
 import Input from "../../shared/ui/Input";
 
+const getFutureDateString = (monthsAhead: number) => {
+  const d = new Date();
+  d.setMonth(d.getMonth() + monthsAhead);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
 const CollegeExplorer: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
@@ -42,7 +48,7 @@ const CollegeExplorer: React.FC = () => {
       image: "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=800&h=600&fit=crop&q=80",
       matchScore: 95,
       highlights: ["Top CS Program", "Silicon Valley Location", "Strong Alumni Network"],
-      applicationDeadline: "Jan 5, 2026",
+      applicationDeadline: getFutureDateString(5),
     },
     {
       id: 2,
@@ -58,7 +64,7 @@ const CollegeExplorer: React.FC = () => {
       image: "https://images.unsplash.com/photo-1607237138185-eedd9c632b0b?w=800&h=600&fit=crop&q=80",
       matchScore: 88,
       highlights: ["Public Ivy", "Research Opportunities", "Diverse Community"],
-      applicationDeadline: "Nov 30, 2025",
+      applicationDeadline: getFutureDateString(3),
     },
     {
       id: 3,
@@ -74,7 +80,7 @@ const CollegeExplorer: React.FC = () => {
       image: "https://images.unsplash.com/photo-1564981797816-1043664bf78d?w=800&h=600&fit=crop&q=80",
       matchScore: 92,
       highlights: ["World-Class Research", "Innovation Hub", "Tech Focus"],
-      applicationDeadline: "Jan 1, 2026",
+      applicationDeadline: getFutureDateString(4),
     },
     {
       id: 4,
@@ -90,7 +96,7 @@ const CollegeExplorer: React.FC = () => {
       image: "https://images.unsplash.com/photo-1562774053-701939374585?w=800&h=600&fit=crop&q=80",
       matchScore: 90,
       highlights: ["Prestigious", "Global Network", "Financial Aid"],
-      applicationDeadline: "Jan 1, 2026",
+      applicationDeadline: getFutureDateString(4),
     },
     {
       id: 5,
@@ -106,7 +112,7 @@ const CollegeExplorer: React.FC = () => {
       image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=600&fit=crop&q=80",
       matchScore: 87,
       highlights: ["Top CS School", "AI Research", "Interdisciplinary"],
-      applicationDeadline: "Jan 3, 2026",
+      applicationDeadline: getFutureDateString(4),
     },
     {
       id: 6,
@@ -122,7 +128,7 @@ const CollegeExplorer: React.FC = () => {
       image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop&q=80",
       matchScore: 85,
       highlights: ["Big Ten", "Research University", "School Spirit"],
-      applicationDeadline: "Feb 1, 2026",
+      applicationDeadline: getFutureDateString(6),
     },
   ];
 
@@ -163,7 +169,7 @@ const CollegeExplorer: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -175,7 +181,7 @@ const CollegeExplorer: React.FC = () => {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent">
                 College Explorer
               </h1>
-              <p className="text-gray-600">
+              <p className="text-brand-slate">
                 Discover colleges that match your academic goals and preferences
               </p>
             </div>
@@ -191,7 +197,7 @@ const CollegeExplorer: React.FC = () => {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
+                  <p className="text-sm text-brand-slate mb-1">{stat.label}</p>
                   <p className="text-3xl font-bold text-[#2B3674]">{stat.value}</p>
                 </div>
                 <div className={`w-14 h-14 ${stat.bgColor} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
@@ -246,7 +252,7 @@ const CollegeExplorer: React.FC = () => {
 
         {/* Results Count */}
         <div className="flex items-center justify-between mb-6">
-          <p className="text-gray-600">
+          <p className="text-brand-slate">
             Found <span className="font-bold text-[#2B3674]">{filteredColleges.length}</span> colleges
           </p>
           <select className="px-4 py-2 border-2 border-[#2B3674]/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3EBFB0]">
@@ -310,19 +316,19 @@ const CollegeExplorer: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="flex items-center gap-2 text-sm">
                     <MapPin className="w-4 h-4 text-[#3EBFB0]" />
-                    <span className="text-gray-700">{college.location}</span>
+                    <span className="text-brand-slate">{college.location}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Building2 className="w-4 h-4 text-[#3EBFB0]" />
-                    <span className="text-gray-700">{college.type}</span>
+                    <span className="text-brand-slate">{college.type}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Users className="w-4 h-4 text-[#3EBFB0]" />
-                    <span className="text-gray-700">{college.enrollment}</span>
+                    <span className="text-brand-slate">{college.enrollment}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <DollarSign className="w-4 h-4 text-[#3EBFB0]" />
-                    <span className="text-gray-700 truncate">{college.tuition}</span>
+                    <span className="text-brand-slate truncate">{college.tuition}</span>
                   </div>
                 </div>
 
@@ -343,11 +349,11 @@ const CollegeExplorer: React.FC = () => {
                 {/* Admissions Info */}
                 <div className="grid grid-cols-2 gap-4 mb-4 p-4 bg-gradient-to-br from-[#2B3674]/5 to-[#3EBFB0]/5 rounded-xl border border-[#2B3674]/10">
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Acceptance Rate</p>
+                    <p className="text-xs text-brand-slate mb-1">Acceptance Rate</p>
                     <p className="text-lg font-bold text-[#2B3674]">{college.acceptance}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">SAT Range</p>
+                    <p className="text-xs text-brand-slate mb-1">SAT Range</p>
                     <p className="text-lg font-bold text-[#2B3674]">{college.satRange}</p>
                   </div>
                 </div>

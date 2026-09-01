@@ -71,7 +71,7 @@ const InterviewPracticeModal: React.FC<InterviewPracticeModalProps> = ({
         {/* Header */}
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] opacity-10"></div>
-          <div className="relative flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="relative flex items-center justify-between p-6 border-b border-brand-slate/10">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-xl flex items-center justify-center shadow-lg">
                 <Video className="w-6 h-6 text-white" />
@@ -80,17 +80,17 @@ const InterviewPracticeModal: React.FC<InterviewPracticeModalProps> = ({
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent">
                   AI Interview Practice
                 </h2>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-brand-slate">
                   Real-time coaching and feedback
                 </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-brand-slate/10 rounded-lg transition-colors"
               aria-label="Close"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-5 h-5 text-brand-slate" />
             </button>
           </div>
         </div>
@@ -101,7 +101,7 @@ const InterviewPracticeModal: React.FC<InterviewPracticeModalProps> = ({
             <h3 className="text-xl font-bold text-[#2B3674] mb-2">
               Choose Interview Type
             </h3>
-            <p className="text-gray-600">
+            <p className="text-brand-slate">
               Select the type of interview you'd like to practice
             </p>
           </div>
@@ -121,7 +121,7 @@ const InterviewPracticeModal: React.FC<InterviewPracticeModalProps> = ({
                     ${
                       isSelected
                         ? `${type.borderColor} ${type.bgColor} shadow-lg scale-105`
-                        : `border-gray-200 ${type.hoverBg} hover:shadow-md hover:scale-102`
+                        : `border-brand-slate/10 ${type.hoverBg} hover:shadow-md hover:scale-102`
                     }
                   `}
                 >
@@ -155,7 +155,7 @@ const InterviewPracticeModal: React.FC<InterviewPracticeModalProps> = ({
                   <h4 className="text-lg font-bold text-[#2B3674] mb-2">
                     {type.title}
                   </h4>
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm text-brand-slate mb-4">
                     {type.description}
                   </p>
 
@@ -164,7 +164,7 @@ const InterviewPracticeModal: React.FC<InterviewPracticeModalProps> = ({
                     {type.features.map((feature, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center gap-2 text-sm text-gray-700"
+                        className="flex items-center gap-2 text-sm text-brand-slate"
                       >
                         <div
                           className={`w-1.5 h-1.5 rounded-full ${

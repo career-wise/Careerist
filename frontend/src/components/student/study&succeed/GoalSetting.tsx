@@ -19,6 +19,8 @@ import {
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
 
+const getRelativeDate = (days: number) => { const d = new Date(); d.setDate(d.getDate() + days); return d.toISOString().split('T')[0]; };
+
 export const GoalSetting: React.FC = () => {
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -29,7 +31,7 @@ export const GoalSetting: React.FC = () => {
       title: "Maintain 3.8 GPA",
       description: "Keep my cumulative GPA above 3.8 for college applications",
       category: "academic",
-      targetDate: "2024-06-15",
+      targetDate: getRelativeDate(30),
       progress: 85,
       status: "in-progress",
       priority: "high",
@@ -44,7 +46,7 @@ export const GoalSetting: React.FC = () => {
       title: "Learn Python Programming",
       description: "Complete online Python course and build 3 projects",
       category: "skill",
-      targetDate: "2024-04-30",
+      targetDate: getRelativeDate(15),
       progress: 60,
       status: "in-progress",
       priority: "medium",
@@ -60,7 +62,7 @@ export const GoalSetting: React.FC = () => {
       title: "Complete 50 Volunteer Hours",
       description: "Volunteer at local animal shelter and community center",
       category: "personal",
-      targetDate: "2024-05-15",
+      targetDate: getRelativeDate(20),
       progress: 70,
       status: "in-progress",
       priority: "medium",
@@ -76,7 +78,7 @@ export const GoalSetting: React.FC = () => {
       title: "SAT Score 1450+",
       description: "Achieve target SAT score for college applications",
       category: "academic",
-      targetDate: "2024-03-15",
+      targetDate: getRelativeDate(-5),
       progress: 100,
       status: "completed",
       priority: "high",
@@ -90,7 +92,7 @@ export const GoalSetting: React.FC = () => {
   ]);
 
   const categories = [
-    { id: "all", name: "All Goals", icon: Target, color: "text-gray-600" },
+    { id: "all", name: "All Goals", icon: Target, color: "text-brand-slate" },
     { id: "academic", name: "Academic", icon: BookOpen, color: "text-blue-600" },
     { id: "skill", name: "Skills", icon: Zap, color: "text-purple-600" },
     { id: "personal", name: "Personal", icon: Users, color: "text-green-600" },
@@ -106,7 +108,7 @@ export const GoalSetting: React.FC = () => {
       case "overdue":
         return "text-red-600 bg-red-100 border-red-200";
       default:
-        return "text-gray-600 bg-gray-100 border-gray-200";
+        return "text-brand-slate bg-brand-slate/10 border-brand-slate/10";
     }
   };
 
@@ -119,7 +121,7 @@ export const GoalSetting: React.FC = () => {
       case "low":
         return "border-l-green-500 bg-green-50";
       default:
-        return "border-l-gray-500 bg-gray-50";
+        return "border-l-brand-slate bg-brand-mist";
     }
   };
 
@@ -164,7 +166,7 @@ export const GoalSetting: React.FC = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Goal Setting</h1>
-          <p className="text-gray-600">
+          <p className="text-brand-slate">
             Set, track, and achieve your academic and personal goals
           </p>
         </div>
@@ -182,7 +184,7 @@ export const GoalSetting: React.FC = () => {
               <stat.icon className={`h-6 w-6 ${stat.color}`} />
             </div>
             <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
-            <div className="text-sm text-gray-600">{stat.label}</div>
+            <div className="text-sm text-brand-slate">{stat.label}</div>
           </Card>
         ))}
       </div>
@@ -217,14 +219,14 @@ export const GoalSetting: React.FC = () => {
                   <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(goal.status)}`}>
                     {goal.status.replace("-", " ")}
                   </span>
-                  <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs capitalize">
+                  <span className="px-2 py-1 text-brand-slate rounded-full text-xs capitalize bg-white border border-brand-slate/10">
                     {goal.category}
                   </span>
                 </div>
 
-                <p className="text-gray-600 mb-4">{goal.description}</p>
+                <p className="text-brand-slate mb-4">{goal.description}</p>
 
-                <div className="flex items-center space-x-6 text-sm text-gray-500 mb-4">
+                <div className="flex items-center space-x-6 text-sm text-brand-slate mb-4">
                   <div className="flex items-center">
                     <Calendar className="h-4 w-4 mr-1" />
                     Target: {new Date(goal.targetDate).toLocaleDateString()}
@@ -243,7 +245,7 @@ export const GoalSetting: React.FC = () => {
                 </div>
 
                 {/* Progress Bar */}
-                <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                <div className="w-full rounded-full h-3 mb-4 bg-brand-slate/10">
                   <div
                     className={`h-3 rounded-full transition-all duration-500 ${
                       goal.status === "completed"
@@ -259,7 +261,7 @@ export const GoalSetting: React.FC = () => {
                 </div>
 
                 {/* Milestones */}
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <div className="bg-white p-4 rounded-lg border border-brand-slate/10">
                   <h4 className="font-medium text-gray-900 mb-3">Milestones:</h4>
                   <div className="space-y-2">
                     {goal.milestones.map((milestone, index) => (
@@ -268,7 +270,7 @@ export const GoalSetting: React.FC = () => {
                           milestone.completed ? 'text-green-600' : 'text-gray-300'
                         }`} />
                         <span className={`text-sm ${
-                          milestone.completed ? 'text-gray-900 line-through' : 'text-gray-700'
+                          milestone.completed ? 'text-gray-900 line-through' : 'text-brand-slate'
                         }`}>
                           {milestone.task}
                         </span>
@@ -304,41 +306,41 @@ export const GoalSetting: React.FC = () => {
               <span className="font-bold">S</span>
             </div>
             <h3 className="font-semibold text-gray-900 mb-1">Specific</h3>
-            <p className="text-xs text-gray-600">Clear and well-defined</p>
+            <p className="text-xs text-brand-slate">Clear and well-defined</p>
           </div>
           <div className="text-center">
             <div className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
               <span className="font-bold">M</span>
             </div>
             <h3 className="font-semibold text-gray-900 mb-1">Measurable</h3>
-            <p className="text-xs text-gray-600">Track your progress</p>
+            <p className="text-xs text-brand-slate">Track your progress</p>
           </div>
           <div className="text-center">
             <div className="w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
               <span className="font-bold">A</span>
             </div>
             <h3 className="font-semibold text-gray-900 mb-1">Achievable</h3>
-            <p className="text-xs text-gray-600">Realistic and attainable</p>
+            <p className="text-xs text-brand-slate">Realistic and attainable</p>
           </div>
           <div className="text-center">
             <div className="w-12 h-12 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
               <span className="font-bold">R</span>
             </div>
             <h3 className="font-semibold text-gray-900 mb-1">Relevant</h3>
-            <p className="text-xs text-gray-600">Aligned with your values</p>
+            <p className="text-xs text-brand-slate">Aligned with your values</p>
           </div>
           <div className="text-center">
             <div className="w-12 h-12 bg-red-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
               <span className="font-bold">T</span>
             </div>
             <h3 className="font-semibold text-gray-900 mb-1">Time-bound</h3>
-            <p className="text-xs text-gray-600">Has a deadline</p>
+            <p className="text-xs text-brand-slate">Has a deadline</p>
           </div>
         </div>
 
         <div className="bg-white p-4 rounded-lg">
           <h4 className="font-semibold text-gray-900 mb-2">Example SMART Goal:</h4>
-          <p className="text-sm text-gray-700">
+          <p className="text-sm text-brand-slate">
             "I will <strong>improve my math grade from B to A</strong> (Specific & Measurable) 
             by <strong>studying 1 hour daily and getting tutoring</strong> (Achievable & Relevant) 
             <strong>by the end of this semester</strong> (Time-bound)."
@@ -395,7 +397,7 @@ export const GoalSetting: React.FC = () => {
             >
               <div className="text-2xl mb-2">{template.icon}</div>
               <h3 className="font-semibold text-gray-900 mb-1">{template.title}</h3>
-              <p className="text-sm text-gray-600">{template.description}</p>
+              <p className="text-sm text-brand-slate">{template.description}</p>
             </div>
           ))}
         </div>
@@ -408,7 +410,7 @@ export const GoalSetting: React.FC = () => {
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
             You're Making Great Progress! 🎯
           </h3>
-          <p className="text-gray-600 mb-6">
+          <p className="text-brand-slate mb-6">
             {goals.filter(g => g.status === "completed").length} goals completed this year. 
             Keep up the excellent work!
           </p>
@@ -433,12 +435,12 @@ export const GoalSetting: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900">Add New Goal</h3>
               <button
                 onClick={() => setShowAddGoal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-brand-slate"
               >
                 ×
               </button>
             </div>
-            <p className="text-gray-600 mb-4">
+            <p className="text-brand-slate mb-4">
               Goal creation form will be implemented here. For now, you can explore the existing goals and templates.
             </p>
             <Button onClick={() => setShowAddGoal(false)} className="w-full">

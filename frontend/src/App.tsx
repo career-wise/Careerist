@@ -14,7 +14,6 @@ import Testimonials from "./components/shared/landing/Testimonials";
 import Footer from "./components/shared/layout/Footer";
 import ChatPage from "./pages/ChatPage";
 import AuthPage from "./components/shared/auth/AuthPage";
-import DashboardLayout from "./components/shared/layout/DashboardLayout";
 import OnboardingFlow from "./components/shared/onboarding/OnboardingFlow";
 import FloatingChatButton from "./components/shared/chat/FloatingChatButton";
 import { ToastContainer } from "./components/shared/ui/Toast";
@@ -129,7 +128,6 @@ function App() {
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/student-dashboard/*" element={<StudentDashboard />} />
             <Route path="/graduate-dashboard/*" element={<GraduateDashboard />} />
-            <Route path="/dashboard/*" element={<DashboardLayout />} />
             
             {/* Interview Practice Routes */}
             <Route path="/interview-practice/:type/setup" element={<InterviewSetup />} />

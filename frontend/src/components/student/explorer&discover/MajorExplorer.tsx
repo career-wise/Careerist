@@ -238,7 +238,7 @@ const MajorExplorer: React.FC = () => {
       case "High": return "text-red-600 bg-red-50 border-red-200";
       case "Medium": return "text-[#C8A860] bg-[#C8A860]/10 border-[#C8A860]/30";
       case "Low": return "text-green-600 bg-green-50 border-green-200";
-      default: return "text-gray-600 bg-gray-50 border-gray-200";
+      default: return "text-brand-slate bg-brand-mist border-brand-slate/10";
     }
   };
 
@@ -247,7 +247,7 @@ const MajorExplorer: React.FC = () => {
       case "Very High": return "text-green-600 bg-green-50 border-green-200";
       case "High": return "text-[#3EBFB0] bg-[#3EBFB0]/10 border-[#3EBFB0]/30";
       case "Moderate": return "text-[#C8A860] bg-[#C8A860]/10 border-[#C8A860]/30";
-      default: return "text-gray-600 bg-gray-50 border-gray-200";
+      default: return "text-brand-slate bg-brand-mist border-brand-slate/10";
     }
   };
 
@@ -263,7 +263,7 @@ const MajorExplorer: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -275,7 +275,7 @@ const MajorExplorer: React.FC = () => {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent">
                 Major Explorer
               </h1>
-              <p className="text-gray-600">
+              <p className="text-brand-slate">
                 Discover academic majors aligned with your career goals and interests
               </p>
             </div>
@@ -291,7 +291,7 @@ const MajorExplorer: React.FC = () => {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
+                  <p className="text-sm text-brand-slate mb-1">{stat.label}</p>
                   <p className="text-3xl font-bold text-[#2B3674]">{stat.value}</p>
                 </div>
                 <div className={`w-14 h-14 ${stat.bgColor} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
@@ -345,7 +345,7 @@ const MajorExplorer: React.FC = () => {
 
         {/* Results Count */}
         <div className="flex items-center justify-between mb-6">
-          <p className="text-gray-600">
+          <p className="text-brand-slate">
             Found <span className="font-bold text-[#2B3674]">{filteredMajors.length}</span> majors
           </p>
           <select className="px-4 py-2 border-2 border-[#2B3674]/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3EBFB0]">
@@ -408,32 +408,32 @@ const MajorExplorer: React.FC = () => {
                 <h3 className="text-xl font-bold text-[#2B3674] mb-3 group-hover:text-[#3EBFB0] transition-colors">
                   {major.name}
                 </h3>
-                <p className="text-gray-600 mb-4 text-sm leading-relaxed">{major.description}</p>
+                <p className="text-brand-slate mb-4 text-sm leading-relaxed">{major.description}</p>
 
                 {/* Key Metrics Grid */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="p-3 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-200">
                     <div className="flex items-center gap-2 mb-1">
                       <DollarSign className="w-4 h-4 text-green-600" />
-                      <span className="text-xs text-gray-600">Avg Salary</span>
+                      <span className="text-xs text-brand-slate">Avg Salary</span>
                     </div>
                     <p className="text-lg font-bold text-green-600">{major.averageSalary}</p>
-                    <p className="text-xs text-gray-500">Entry: {major.entryLevelSalary}</p>
+                    <p className="text-xs text-brand-slate">Entry: {major.entryLevelSalary}</p>
                   </div>
 
                   <div className="p-3 bg-gradient-to-br from-[#3EBFB0]/10 to-[#3EBFB0]/5 rounded-lg border border-[#3EBFB0]/30">
                     <div className="flex items-center gap-2 mb-1">
                       <TrendingUp className="w-4 h-4 text-[#3EBFB0]" />
-                      <span className="text-xs text-gray-600">Job Growth</span>
+                      <span className="text-xs text-brand-slate">Job Growth</span>
                     </div>
                     <p className="text-lg font-bold text-[#3EBFB0]">{major.jobGrowth}</p>
-                    <p className="text-xs text-gray-500">Next 10 years</p>
+                    <p className="text-xs text-brand-slate">Next 10 years</p>
                   </div>
 
                   <div className="p-3 bg-gradient-to-br from-[#2B3674]/5 to-[#2B3674]/10 rounded-lg border border-[#2B3674]/20">
                     <div className="flex items-center gap-2 mb-1">
                       <Clock className="w-4 h-4 text-[#2B3674]" />
-                      <span className="text-xs text-gray-600">Duration</span>
+                      <span className="text-xs text-brand-slate">Duration</span>
                     </div>
                     <p className="text-lg font-bold text-[#2B3674]">{major.timeToComplete}</p>
                   </div>
@@ -454,7 +454,7 @@ const MajorExplorer: React.FC = () => {
                     <p className="text-sm font-bold">{major.demandLevel}</p>
                   </div>
                   <div className="p-2 bg-[#C8A860]/10 rounded-lg border border-[#C8A860]/30 text-center">
-                    <p className="text-xs text-gray-600 font-medium mb-1">Remote Work</p>
+                    <p className="text-xs text-brand-slate font-medium mb-1">Remote Work</p>
                     <p className="text-sm font-bold text-[#C8A860]">{major.remoteOpportunities}</p>
                   </div>
                 </div>
@@ -501,19 +501,19 @@ const MajorExplorer: React.FC = () => {
                 </div>
 
                 {/* Required Courses */}
-                <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <h4 className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <div className="mb-4 p-3 bg-brand-mist rounded-lg border border-brand-slate/10">
+                  <h4 className="text-xs font-semibold text-brand-slate mb-2 flex items-center gap-2">
                     <BookOpen className="w-3 h-3" />
                     Core Courses ({major.requiredCourses.length})
                   </h4>
                   <div className="flex flex-wrap gap-1">
                     {major.requiredCourses.slice(0, 4).map((course, idx) => (
-                      <span key={idx} className="text-xs text-gray-600">
+                      <span key={idx} className="text-xs text-brand-slate">
                         {course}{idx < 3 && idx < major.requiredCourses.length - 1 ? " •" : ""}
                       </span>
                     ))}
                     {major.requiredCourses.length > 4 && (
-                      <span className="text-xs text-gray-500">+{major.requiredCourses.length - 4} more</span>
+                      <span className="text-xs text-brand-slate">+{major.requiredCourses.length - 4} more</span>
                     )}
                   </div>
                 </div>

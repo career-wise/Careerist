@@ -148,7 +148,7 @@ const InterviewPreparation: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -160,7 +160,7 @@ const InterviewPreparation: React.FC = () => {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent">
                 Interview Preparation
               </h1>
-              <p className="text-gray-600">
+              <p className="text-brand-slate">
                 Master your interview skills with AI-powered practice
               </p>
             </div>
@@ -245,30 +245,30 @@ const InterviewPreparation: React.FC = () => {
                       </h3>
                       <button
                         onClick={() => toggleStepExpansion(step.id)}
-                        className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-1 hover:bg-brand-slate/10 rounded-lg transition-colors"
                       >
                         {isExpanded ? (
-                          <ChevronUp className="h-5 w-5 text-gray-500" />
+                          <ChevronUp className="h-5 w-5 text-brand-slate" />
                         ) : (
-                          <ChevronDown className="h-5 w-5 text-gray-500" />
+                          <ChevronDown className="h-5 w-5 text-brand-slate" />
                         )}
                       </button>
                     </div>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <p className="text-sm text-brand-slate mb-4">
                       {step.description}
                     </p>
 
                     {/* Progress Bar */}
                     <div>
                       <div className="flex justify-between text-xs mb-2">
-                        <span className="text-gray-600 font-medium">
+                        <span className="text-brand-slate font-medium">
                           Progress
                         </span>
                         <span className="font-bold text-[#2B3674]">
                           {progress}%
                         </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div className="w-full rounded-full h-2 overflow-hidden bg-brand-slate/10">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
                             progress === 100
@@ -284,7 +284,7 @@ const InterviewPreparation: React.FC = () => {
 
                 {/* Expanded Content */}
                 {isExpanded && (
-                  <div className="space-y-6 pt-4 border-t border-gray-200 animate-fade-in">
+                  <div className="space-y-6 pt-4 border-t border-brand-slate/10 animate-fade-in">
                     {/* Tasks */}
                     <div>
                       <h4 className="font-semibold text-[#2B3674] mb-3 flex items-center gap-2">
@@ -301,7 +301,7 @@ const InterviewPreparation: React.FC = () => {
                             className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all ${
                               taskItem.completed
                                 ? "bg-green-50 hover:bg-green-100"
-                                : "bg-gray-50 hover:bg-gray-100"
+                                : "bg-brand-mist hover:bg-brand-slate/10"
                             }`}
                           >
                             <div
@@ -318,8 +318,8 @@ const InterviewPreparation: React.FC = () => {
                             <span
                               className={`text-sm flex-1 text-left ${
                                 taskItem.completed
-                                  ? "text-gray-500 line-through"
-                                  : "text-gray-700"
+                                  ? "text-brand-slate line-through"
+                                  : "text-brand-slate"
                               }`}
                             >
                               {taskItem.task}

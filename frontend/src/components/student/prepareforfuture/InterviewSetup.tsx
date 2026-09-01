@@ -231,7 +231,7 @@ const InterviewSetup: React.FC = () => {
       ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -251,7 +251,7 @@ const InterviewSetup: React.FC = () => {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent">
                 {type === "college" ? "College" : "Job"} Interview Setup
               </h1>
-              <p className="text-gray-600">
+              <p className="text-brand-slate">
                 Prepare your camera and microphone for the practice session
               </p>
             </div>
@@ -285,7 +285,7 @@ const InterviewSetup: React.FC = () => {
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
                     <Camera className="w-16 h-16 mb-4 text-gray-400" />
                     <p className="text-gray-400">Camera is off</p>
-                    <p className="text-gray-500 text-sm mt-2">Click "Turn On" to enable</p>
+                    <p className="text-brand-slate text-sm mt-2">Click "Turn On" to enable</p>
                   </div>
                 )}
               </div>
@@ -304,10 +304,10 @@ const InterviewSetup: React.FC = () => {
               {/* Device Controls */}
               <div className="space-y-4">
                 {/* Camera Control */}
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-brand-mist rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      cameraStatus === "success" ? "bg-green-100" : "bg-gray-200"
+                      cameraStatus === "success" ? "bg-green-100" : "bg-brand-slate/10"
                     }`}>
                       <Camera className={`w-5 h-5 ${
                         cameraStatus === "success" ? "text-green-600" : "text-gray-400"
@@ -315,7 +315,7 @@ const InterviewSetup: React.FC = () => {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">Camera</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-brand-slate">
                         {cameraStatus === "checking" && "Checking device..."}
                         {cameraStatus === "success" && cameraEnabled && "Active"}
                         {cameraStatus === "success" && !cameraEnabled && "Ready"}
@@ -337,10 +337,10 @@ const InterviewSetup: React.FC = () => {
                 </div>
 
                 {/* Microphone Control */}
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-brand-mist rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      micStatus === "success" ? "bg-green-100" : "bg-gray-200"
+                      micStatus === "success" ? "bg-green-100" : "bg-brand-slate/10"
                     }`}>
                       <Mic className={`w-5 h-5 ${
                         micStatus === "success" ? "text-green-600" : "text-gray-400"
@@ -348,7 +348,7 @@ const InterviewSetup: React.FC = () => {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">Microphone</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-brand-slate">
                         {micStatus === "checking" && "Checking device..."}
                         {micStatus === "success" && micEnabled && "Active"}
                         {micStatus === "success" && !micEnabled && "Ready"}
@@ -401,7 +401,7 @@ const InterviewSetup: React.FC = () => {
                       <p className="font-medium text-[#2B3674] mb-1">
                         {feature.title}
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-brand-slate">
                         {feature.description}
                       </p>
                     </div>
@@ -423,21 +423,21 @@ const InterviewSetup: React.FC = () => {
                   <Clock className="w-5 h-5 text-[#3EBFB0]" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">Duration</p>
-                    <p className="text-xs text-gray-600">~15-20 minutes</p>
+                    <p className="text-xs text-brand-slate">~15-20 minutes</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-[#C8A860]/5 rounded-lg">
                   <MessageSquare className="w-5 h-5 text-[#C8A860]" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">Questions</p>
-                    <p className="text-xs text-gray-600">5-7 questions</p>
+                    <p className="text-xs text-brand-slate">5-7 questions</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-[#2B3674]/5 rounded-lg">
                   <Sparkles className="w-5 h-5 text-[#2B3674]" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">Feedback</p>
-                    <p className="text-xs text-gray-600">Instant & detailed</p>
+                    <p className="text-xs text-brand-slate">Instant & detailed</p>
                   </div>
                 </div>
               </div>
@@ -450,7 +450,7 @@ const InterviewSetup: React.FC = () => {
               </h3>
               <div className="space-y-2">
                 {tips.map((tip, idx) => (
-                  <div key={idx} className="flex items-start gap-2 text-sm text-gray-700">
+                  <div key={idx} className="flex items-start gap-2 text-sm text-brand-slate">
                     <CheckCircle className="w-4 h-4 text-[#3EBFB0] flex-shrink-0 mt-0.5" />
                     <span>{tip}</span>
                   </div>

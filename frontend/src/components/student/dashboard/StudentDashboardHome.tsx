@@ -1,41 +1,75 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { 
   BookOpen, Target, Zap, FileText, Users,
   Settings, Award, TrendingUp, Briefcase, Activity, Calendar,
-  CheckCircle, PlayCircle, BarChart2, ArrowRight
+  CheckCircle, PlayCircle, BarChart2, ArrowRight,
+  Compass, Map, MapPin, Sparkles, Building,
+  Laptop, Heart, Scale, Palette, Microscope
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import Button from "../../shared/ui/Button";
 
+// Mock Data
+const mockUser = {
+  firstName: "Alex",
+  lastName: "Johnson",
+  initials: "AJ"
+};
+
+const onboardingAnswers = {
+  persona: "high-school",
+  clarityLevel: "torn", // 'no idea', 'torn', 'decided'
+  goal: "choose the right degree/major"
+};
+
+const getStatusMessage = (clarity: string) => {
+  switch(clarity) {
+    case 'no idea': return "Let's discover what you're passionate about.";
+    case 'torn': return "Let's compare your options and find the perfect fit.";
+    case 'decided': return "Let's build the skills to get you into your dream program.";
+    default: return "Let's map out your future journey.";
+  }
+};
+
 const StudentDashboardHome: React.FC = () => {
+  const [hoveredNode, setHoveredNode] = useState<number | null>(null);
+  
+  const journeyNodes = [
+    { id: 1, status: 'completed', label: 'Onboarding', detail: 'Profile & goals set up' },
+    { id: 2, status: 'completed', label: 'First Field', detail: 'Explored Computer Science' },
+    { id: 3, status: 'completed', label: 'Skills Module', detail: 'Started Intro to Logic' },
+    { id: 4, status: 'current', label: 'Compare Options', detail: 'Compare 3 potential majors' },
+    { id: 5, status: 'upcoming', label: 'Colleges', detail: 'Shortlist top colleges' }
+  ];
+
   return (
-    <div className="bg-gray-50 min-h-screen p-4 md:p-6 lg:p-8 font-sans">
+    <div className="bg-brand-mist min-h-screen p-4 md:p-6 lg:p-8 font-sans">
       <div className="max-w-[1600px] mx-auto w-full">
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold text-brand-ink mb-2">Welcome back, Alex.</h1>
-            <p className="text-gray-600 text-lg font-medium">You are on track for your <strong>Software Engineer</strong> career path.</p>
+            <h1 className="text-3xl font-display font-bold text-brand-ink mb-2">Welcome back, {mockUser.firstName}.</h1>
+            <p className="text-brand-slate text-lg font-medium">
+              {getStatusMessage(onboardingAnswers.clarityLevel)}
+            </p>
           </div>
           
           {/* High-level User Profile Snippet */}
-          <div className="bg-white rounded-[1.5rem] p-4 flex items-center gap-4 border border-gray-200 shadow-sm">
-            <img 
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150&h=150" 
-              alt="Profile" 
-              className="w-12 h-12 rounded-[1rem] object-cover border border-gray-100"
-            />
+          <div className="bg-white rounded-[1.5rem] p-4 flex items-center gap-4 border border-brand-slate/20 shadow-sm">
+            <div className="w-12 h-12 rounded-full bg-brand-ink flex items-center justify-center border border-brand-slate/10">
+              <span className="text-white font-bold text-lg tracking-wider">{mockUser.initials}</span>
+            </div>
             <div>
-              <p className="text-sm font-bold text-brand-ink">Profile Score</p>
+              <p className="text-sm font-bold text-brand-ink">Profile Setup</p>
               <div className="flex items-center gap-2 mt-1">
-                <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-brand-teal w-[89%] rounded-full"></div>
+                <div className="w-24 h-2 bg-brand-mist rounded-full overflow-hidden">
+                  <div className="h-full bg-brand-neon w-[75%] rounded-full"></div>
                 </div>
-                <span className="text-sm font-bold text-brand-teal">89%</span>
+                <span className="text-sm font-bold text-brand-neon">75%</span>
               </div>
             </div>
-            <button className="w-8 h-8 ml-2 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-500 transition-colors">
+            <button className="w-8 h-8 ml-2 rounded-full bg-brand-mist hover:bg-brand-slate/10 flex items-center justify-center text-brand-slate transition-colors">
               <Settings className="w-4 h-4" />
             </button>
           </div>
@@ -44,12 +78,12 @@ const StudentDashboardHome: React.FC = () => {
         {/* Quick Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Target Role", value: "Software Eng.", icon: Target, color: "text-brand-ink", bg: "bg-gray-50" },
-            { label: "Applications", value: "12/15", icon: Briefcase, color: "text-brand-ink", bg: "bg-gray-50" },
-            { label: "Skill Growth", value: "24%", icon: TrendingUp, color: "text-brand-teal", bg: "bg-brand-teal/10" },
-            { label: "Interviews", value: "2", icon: Users, color: "text-brand-ink", bg: "bg-gray-50" }
+            { label: "Fields Explored", value: "3", icon: Compass, color: "text-brand-ink", bg: "bg-brand-mist" },
+            { label: "Colleges Saved", value: "5", icon: BookOpen, color: "text-brand-ink", bg: "bg-brand-mist" },
+            { label: "Modules Started", value: "2", icon: Zap, color: "text-brand-neon", bg: "bg-brand-neon/10" },
+            { label: "Mock Interviews", value: "0", icon: Users, color: "text-brand-ink", bg: "bg-brand-mist" }
           ].map((stat, i) => (
-            <div key={i} className="bg-white p-5 rounded-[1.5rem] border border-gray-200 shadow-sm flex items-center justify-between">
+            <div key={i} className="bg-white p-5 rounded-[1.5rem] border border-brand-slate/20 shadow-sm flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold text-brand-slate uppercase tracking-wider mb-1">{stat.label}</p>
                 <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
@@ -61,83 +95,197 @@ const StudentDashboardHome: React.FC = () => {
           ))}
         </div>
 
+        {/* AI Insight Card */}
+        <div className="bg-white rounded-[2rem] p-6 lg:p-8 border-l-4 border-brand-neon border-y border-r border-brand-slate/20 shadow-sm mb-8 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex-1">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-neon/10 text-[#0f9f7a] text-xs font-bold uppercase tracking-wide mb-4">
+              <Sparkles className="w-3.5 h-3.5" />
+              AI Insight
+            </div>
+            <p className="text-brand-ink text-lg font-medium leading-relaxed max-w-3xl">
+              Because you're exploring <strong className="text-brand-ink">Computer Science</strong> and your strongest subjects are <strong className="text-brand-ink">Math and Physics</strong>, students with a similar profile also explore Data Science and Electronics Engineering 78% of the time.
+            </p>
+          </div>
+          <div className="flex-shrink-0 md:ml-4">
+            <Link to="/student-dashboard/college/majors">
+              <Button variant="primary" className="whitespace-nowrap px-6 py-3">
+                Compare These Fields <ArrowRight className="w-4 h-4 ml-2 inline-block" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {/* NEW Your Journey Section */}
+        <div className="bg-white rounded-[2rem] p-6 lg:p-8 border border-brand-slate/20 shadow-sm mb-8">
+          <h3 className="text-xl font-bold text-brand-ink mb-8 flex items-center gap-2">
+            <Map className="w-5 h-5 text-brand-neon" />
+            Your Journey
+          </h3>
+          
+          <div className="relative flex items-center justify-between max-w-4xl mx-auto py-4 mb-8">
+            {/* Background line */}
+            <div className="absolute left-0 right-0 h-1 bg-brand-slate/10 top-1/2 -translate-y-1/2 z-0"></div>
+            
+            {/* Active background line */}
+            <div className="absolute left-0 h-1 bg-brand-neon top-1/2 -translate-y-1/2 z-0 transition-all duration-1000" style={{ width: '75%' }}></div>
+            
+            {/* Nodes */}
+            {journeyNodes.map((node, index) => (
+              <div 
+                key={node.id} 
+                className="relative z-10 flex flex-col items-center"
+                onMouseEnter={() => setHoveredNode(node.id)}
+                onMouseLeave={() => setHoveredNode(null)}
+              >
+                {/* Node Circle */}
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-white cursor-pointer transition-transform duration-300 ${
+                  node.status === 'completed' ? 'border-2 border-brand-neon text-brand-neon shadow-[0_0_10px_rgba(21,193,150,0.3)]' :
+                  node.status === 'current' ? 'border-[3px] border-brand-ink text-brand-ink scale-110 shadow-lg' :
+                  'border-2 border-brand-slate/20 text-brand-slate/40'
+                }`}>
+                  {node.status === 'completed' ? <CheckCircle className="w-5 h-5" /> : 
+                   node.status === 'current' ? <MapPin className="w-5 h-5 animate-pulse" /> :
+                   <span className="text-sm font-bold">{node.id}</span>}
+                </div>
+                
+                {/* Label (always visible) */}
+                <p className={`absolute top-12 text-xs font-bold text-center whitespace-nowrap transition-colors ${
+                  node.status === 'current' ? 'text-brand-ink' : 
+                  node.status === 'completed' ? 'text-brand-slate' : 'text-brand-slate/40'
+                }`}>
+                  {node.label}
+                </p>
+
+                {/* Tooltip on hover */}
+                {hoveredNode === node.id && (
+                  <div className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-brand-ink text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-20">
+                    {node.detail}
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-brand-ink rotate-45"></div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Left Column (2/3) */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             
+            {/* Recent Milestones */}
+            <div className="bg-white rounded-[2rem] p-6 lg:p-8 border border-brand-slate/20 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-brand-ink flex items-center gap-2">
+                  <Award className="w-5 h-5 text-brand-neon" />
+                  Recent Milestones
+                </h3>
+              </div>
+              
+              <div className="flex flex-col gap-4">
+                {[
+                  { text: 'Started: Intro to Programming Module', active: true, time: 'Today' },
+                  { text: 'Explored: Computer Science Field Guide', active: false, time: 'Yesterday' },
+                  { text: 'Completed: Career Interest Assessment', active: false, time: '3 days ago' },
+                ].map((milestone, idx) => (
+                  <div key={idx} className={`flex items-start gap-4 p-4 rounded-2xl border ${milestone.active ? 'bg-brand-mist border-brand-slate/20' : 'bg-transparent border-brand-slate/10'} transition-all`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${milestone.active ? 'bg-brand-neon/20 text-brand-neon' : 'bg-brand-slate/10 text-brand-slate'}`}>
+                       <CheckCircle className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className={`font-semibold ${milestone.active ? 'text-brand-ink' : 'text-brand-slate'}`}>{milestone.text}</p>
+                      <p className="text-xs font-medium text-brand-slate mt-1">{milestone.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Current Focus Area */}
             <div className="bg-brand-ink rounded-[2rem] p-8 relative overflow-hidden shadow-md">
               <div className="relative z-10">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-8 h-8 rounded-full bg-brand-neon/20 flex items-center justify-center">
-                    <Zap className="w-4 h-4 text-brand-neon" />
+                    <Compass className="w-4 h-4 text-brand-neon" />
                   </div>
                   <span className="text-brand-neon font-bold text-sm tracking-widest uppercase">Current Focus</span>
                 </div>
                 
-                <h2 className="text-3xl font-display font-bold text-white mb-4">Mastering React & TS</h2>
-                <p className="text-gray-300 mb-6 max-w-lg font-medium leading-relaxed">You are currently taking the Advanced Frontend Architecture course. Completing this module will boost your profile match for target roles by 15%.</p>
+                <h2 className="text-3xl font-display font-bold text-white mb-4">Exploring Computer Science</h2>
+                <p className="text-gray-300 mb-6 max-w-lg font-medium leading-relaxed">
+                  You're halfway through exploring CS. Complete your field comparison to unlock personalized college recommendations and degree requirements.
+                </p>
                 
                 <div className="bg-white/10 rounded-[1.25rem] p-4 mb-6 max-w-md backdrop-blur-sm border border-white/10">
                    <div className="flex justify-between items-center mb-2">
-                     <span className="text-white text-sm font-semibold">Module Progress</span>
-                     <span className="text-brand-neon text-sm font-bold">60%</span>
+                     <span className="text-white text-sm font-semibold">Exploration Progress</span>
+                     <span className="text-brand-neon text-sm font-bold">50%</span>
                    </div>
                    <div className="w-full h-2.5 bg-brand-ink/50 rounded-full overflow-hidden">
-                     <div className="h-full bg-brand-neon w-[60%] rounded-full shadow-[0_0_10px_rgba(200,168,96,0.5)]"></div>
+                     <div className="h-full bg-brand-neon w-[50%] rounded-full shadow-[0_0_10px_rgba(21,193,150,0.5)]"></div>
                    </div>
                 </div>
 
-                <Button variant="primary" className="bg-white text-brand-ink hover:bg-gray-100 font-semibold px-6">
-                  Continue Learning <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                <Link to="/student-dashboard/college/majors">
+                  <Button variant="primary" className="bg-white text-brand-ink hover:bg-brand-mist font-semibold px-6">
+                    Resume Comparison <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
               </div>
               
               {/* Decorative elements */}
-              <div className="absolute -right-20 -top-20 w-80 h-80 bg-brand-teal/20 rounded-full blur-3xl"></div>
+              <div className="absolute -right-20 -top-20 w-80 h-80 bg-brand-neon/20 rounded-full blur-3xl"></div>
               <div className="absolute bottom-10 right-10 opacity-10">
-                 <BookOpen className="w-32 h-32 text-white" />
+                 <Compass className="w-32 h-32 text-white" />
               </div>
             </div>
 
-            {/* Path & Milestones */}
-            <div className="bg-white rounded-[2rem] p-6 lg:p-8 border border-gray-200 shadow-sm">
-               <div className="flex items-center justify-between mb-6">
-                 <h3 className="text-xl font-bold text-brand-ink flex items-center gap-2">
-                   <Target className="w-5 h-5 text-brand-teal" />
-                   Recent Milestones
-                 </h3>
-                 <Link to="/planning/goals" className="text-sm font-semibold text-brand-slate hover:text-brand-ink transition-colors">
-                   View All
-                 </Link>
-               </div>
-               
-               <div className="flex flex-col gap-4">
-                 {[
-                   { title: "Completed: AWS Practitioner Cert", time: "2 days ago", icon: Award, active: true },
-                   { title: "Applied: Frontend Role at Google", time: "1 week ago", icon: Briefcase, active: false },
-                   { title: "Finished: Fullstack MERN Project", time: "2 weeks ago", icon: CheckCircle, active: false },
-                 ].map((activity, i) => (
-                   <div key={i} className={`flex items-center gap-4 p-4 rounded-[1.25rem] transition-colors border ${
-                     activity.active ? 'bg-gray-50 border-gray-200' : 'bg-white border-gray-100 hover:bg-gray-50'
-                   }`}>
-                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                       activity.active ? 'bg-brand-ink text-white' : 'bg-gray-100 text-gray-500'
-                     }`}>
-                       <activity.icon className="w-5 h-5" />
-                     </div>
-                     <div className="flex-1">
-                       <p className={`font-bold ${activity.active ? 'text-brand-ink' : 'text-gray-700'}`}>{activity.title}</p>
-                       <p className="text-sm font-medium text-gray-500 mt-0.5">{activity.time}</p>
-                     </div>
-                     <Button variant="ghost" className="w-8 h-8 p-0 rounded-full hover:bg-gray-200 text-gray-400">
-                       <ArrowRight className="w-4 h-4" />
-                     </Button>
-                   </div>
-                 ))}
-               </div>
+            {/* Field Comparison Preview */}
+            <div className="bg-white rounded-[2rem] p-6 lg:p-8 border border-brand-slate/20 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-brand-ink flex items-center gap-2">
+                  <BarChart2 className="w-5 h-5 text-brand-neon" />
+                  Field Comparison Preview
+                </h3>
+              </div>
+              
+              <div className="mb-6">
+                <div className="grid grid-cols-2 text-center pb-4 border-b border-brand-slate/10 relative">
+                  <div className="absolute left-1/2 top-0 bottom-0 w-px bg-brand-slate/10 -translate-x-1/2"></div>
+                  <div>
+                    <span className="text-lg font-bold text-brand-ink">Computer Science</span>
+                  </div>
+                  <div>
+                    <span className="text-lg font-bold text-brand-ink">Data Science</span>
+                  </div>
+                </div>
+                
+                {[
+                  { label: "Avg. Starting Salary", val1: "$75,000", val2: "$82,000" },
+                  { label: "Top Colleges", val1: "42 matched", val2: "38 matched" },
+                  { label: "Skill Overlap", val1: "85%", val2: "85%" },
+                  { label: "Job Growth Outlook", val1: "High", val2: "Very High" },
+                ].map((row, idx) => (
+                  <div key={idx} className="grid grid-cols-2 text-center py-4 border-b border-brand-slate/10 last:border-0 relative hover:bg-brand-mist/50 transition-colors">
+                    <div className="absolute left-1/2 top-0 bottom-0 w-px bg-brand-slate/10 -translate-x-1/2"></div>
+                    <div className="px-4">
+                      <p className="text-xs font-semibold text-brand-slate uppercase tracking-wider mb-1">{row.label}</p>
+                      <p className="font-semibold text-brand-ink">{row.val1}</p>
+                    </div>
+                    <div className="px-4">
+                      <p className="text-xs font-semibold text-brand-slate uppercase tracking-wider mb-1 hidden md:block opacity-0 select-none">{row.label}</p>
+                      <p className="font-semibold text-brand-ink mt-auto md:mt-5">{row.val2}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <Link to="/student-dashboard/college/majors" className="block w-full">
+                <Button variant="outline" className="w-full bg-white border-brand-slate/20 hover:bg-brand-mist text-brand-ink font-semibold rounded-xl py-3">
+                  View Full Comparison <ArrowRight className="w-4 h-4 ml-2 inline-block" />
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -145,17 +293,17 @@ const StudentDashboardHome: React.FC = () => {
           <div className="flex flex-col gap-6">
             
             {/* Quick Actions Navigation */}
-            <div className="bg-white rounded-[2rem] p-6 border border-gray-200 shadow-sm">
+            <div className="bg-white rounded-[2rem] p-6 border border-brand-slate/20 shadow-sm">
               <h3 className="font-bold text-brand-ink mb-4">Explore</h3>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { name: 'Learning', icon: BookOpen, link: '/learning/courses' },
-                  { name: 'Resumes', icon: FileText, link: '/resources/document-manager' },
-                  { name: 'Projects', icon: Zap, link: '/learning/projects' },
-                  { name: 'Interviews', icon: Users, link: '/learning/interview-prep' }
+                  { name: 'Learning', icon: BookOpen, link: '/student-dashboard/learning/courses' },
+                  { name: 'Resumes', icon: FileText, link: '/student-dashboard/resources/document-manager' },
+                  { name: 'Projects', icon: Zap, link: '/student-dashboard/learning/projects' },
+                  { name: 'Interviews', icon: Users, link: '/student-dashboard/learning/interview-prep' }
                 ].map((tab, i) => (
                   <Link key={i} to={tab.link}>
-                    <div className="bg-gray-50 hover:bg-gray-100 border border-gray-100 hover:border-gray-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all group">
+                    <div className="bg-brand-mist hover:bg-brand-slate/10 border border-brand-slate/10 hover:border-brand-slate/20 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all group h-full">
                       <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-2 shadow-sm group-hover:scale-110 transition-transform">
                         <tab.icon className="w-5 h-5 text-brand-ink" />
                       </div>
@@ -166,45 +314,122 @@ const StudentDashboardHome: React.FC = () => {
               </div>
             </div>
 
-            {/* Upcoming Deadlines */}
-            <div className="bg-white rounded-[2rem] p-6 border border-gray-200 shadow-sm flex-1">
+            {/* Recommended Colleges */}
+            <div className="bg-white rounded-[2rem] p-6 border border-brand-slate/20 shadow-sm flex flex-col">
                <h3 className="font-bold text-brand-ink mb-5 flex items-center gap-2">
-                 <Calendar className="w-5 h-5 text-brand-ink" />
+                 <Building className="w-5 h-5 text-brand-neon" />
+                 Recommended Colleges
+               </h3>
+               
+               <div className="flex flex-col gap-3 mb-4">
+                 {[
+                   { name: 'Stanford University', location: 'Stanford, CA', match: '96% Match' },
+                   { name: 'MIT', location: 'Cambridge, MA', match: '92% Match' },
+                   { name: 'Carnegie Mellon', location: 'Pittsburgh, PA', match: '88% Match' }
+                 ].map((college, i) => (
+                   <Link key={i} to="/student-dashboard/college/explorer" className="group p-4 rounded-[1.25rem] bg-brand-mist hover:bg-brand-slate/10 border border-brand-slate/10 transition-colors flex items-center justify-between">
+                     <div>
+                       <p className="font-bold text-brand-ink text-sm mb-1 group-hover:text-brand-neon transition-colors">{college.name}</p>
+                       <p className="text-xs font-medium text-brand-slate">{college.location}</p>
+                     </div>
+                     <div className="px-2.5 py-1 rounded-full bg-brand-neon/10 text-[#0f9f7a] text-[10px] font-bold uppercase tracking-wider">
+                       {college.match}
+                     </div>
+                   </Link>
+                 ))}
+               </div>
+               
+               <Link to="/student-dashboard/college/explorer" className="text-sm font-bold text-brand-ink hover:text-brand-neon transition-colors mt-2 self-center flex items-center">
+                 View All Saved Colleges <ArrowRight className="w-3.5 h-3.5 ml-1" />
+               </Link>
+            </div>
+
+            {/* Schedule */}
+            <div className="bg-white rounded-[2rem] p-6 border border-brand-slate/20 shadow-sm flex flex-col">
+               <h3 className="font-bold text-brand-ink mb-5 flex items-center gap-2">
+                 <Calendar className="w-5 h-5 text-brand-neon" />
                  Schedule
                </h3>
                
-               <div className="flex flex-col gap-3">
-                 <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex gap-3 relative overflow-hidden">
+               <div className="flex flex-col gap-4 mb-2">
+                 {[
+                   { title: 'College App Deadline', subtitle: 'Common App', dateLabel: 'In 3 days', color: 'bg-brand-neon' },
+                   { title: 'Mock Interview', subtitle: 'Practice Session', dateLabel: 'In 6 days', color: 'bg-brand-ink' },
+                 ].map((item, idx) => (
+                   <div key={idx} className="flex gap-4 p-4 rounded-[1.25rem] bg-brand-mist border border-brand-slate/10 relative overflow-hidden">
+                     <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${item.color}`}></div>
+                     <div className="flex-shrink-0 bg-white rounded-xl px-3 py-2 text-center border border-brand-slate/10 flex flex-col justify-center min-w-[70px]">
+                       <span className="text-[9px] font-bold text-brand-slate uppercase tracking-wider block leading-none mb-1.5">Due</span>
+                       <span className="text-xs font-bold text-brand-ink leading-none">{item.dateLabel}</span>
+                     </div>
+                     <div className="flex flex-col justify-center">
+                       <p className="font-bold text-brand-ink text-sm leading-tight mb-1">{item.title}</p>
+                       <p className="text-xs font-medium text-brand-slate leading-tight">{item.subtitle}</p>
+                     </div>
+                   </div>
+                 ))}
+               </div>
+            </div>
+
+            {/* Up Next / Recommendation */}
+            <div className="bg-white rounded-[2rem] p-6 border border-brand-slate/20 shadow-sm flex-1 flex flex-col">
+               <h3 className="font-bold text-brand-ink mb-5 flex items-center gap-2">
+                 <Target className="w-5 h-5 text-brand-ink" />
+                 Up Next
+               </h3>
+               
+               <div className="flex-1 flex flex-col">
+                 <div className="bg-brand-mist p-5 rounded-2xl border border-brand-slate/10 mb-6 relative overflow-hidden flex-1">
                    <div className="w-1 bg-brand-neon absolute left-0 top-3 bottom-3 rounded-r-full"></div>
-                   <div className="flex flex-col justify-center text-center min-w-[3rem]">
-                     <span className="text-xs font-bold text-gray-500 uppercase">Oct</span>
-                     <span className="text-xl font-display font-bold text-brand-ink">12</span>
-                   </div>
-                   <div className="flex-1 border-l border-gray-200 pl-3">
-                     <p className="font-bold text-brand-ink">Mock Interview</p>
-                     <p className="text-xs font-medium text-gray-500 mt-1">2:00 PM - 3:00 PM</p>
-                   </div>
+                   <h4 className="font-bold text-brand-ink mb-2">Major Explorer</h4>
+                   <p className="text-sm font-medium text-brand-slate leading-relaxed">
+                     Since your goal is to <strong>{onboardingAnswers.goal}</strong>, start by comparing majors and their career outcomes.
+                   </p>
                  </div>
                  
-                 <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex gap-3 relative overflow-hidden">
-                   <div className="w-1 bg-brand-teal absolute left-0 top-3 bottom-3 rounded-r-full"></div>
-                   <div className="flex flex-col justify-center text-center min-w-[3rem]">
-                     <span className="text-xs font-bold text-gray-500 uppercase">Oct</span>
-                     <span className="text-xl font-display font-bold text-brand-ink">15</span>
-                   </div>
-                   <div className="flex-1 border-l border-gray-200 pl-3">
-                     <p className="font-bold text-brand-ink">Submit Application</p>
-                     <p className="text-xs font-medium text-gray-500 mt-1">Due by 11:59 PM</p>
-                   </div>
-                 </div>
+                 <Link to="/student-dashboard/college/majors" className="w-full mt-auto">
+                   <Button variant="outline" className="w-full bg-white border-brand-slate/20 hover:bg-brand-mist text-brand-ink font-semibold rounded-xl py-3">
+                     Open Major Explorer <ArrowRight className="w-4 h-4 ml-2" />
+                   </Button>
+                 </Link>
                </div>
-               
-               <Button variant="outline" className="w-full mt-6 bg-white border-gray-200 hover:bg-gray-50 text-brand-ink font-semibold rounded-xl py-3">
-                 View Full Calendar
-               </Button>
             </div>
+
           </div>
         </div>
+
+        {/* Explore More Fields */}
+        <div className="mt-10 mb-4">
+          <h3 className="text-xl font-bold text-brand-ink mb-5 flex items-center gap-2">
+            <Compass className="w-5 h-5 text-brand-neon" />
+            Explore More Fields
+          </h3>
+          <div className="flex flex-nowrap md:flex-wrap overflow-x-auto custom-scrollbar pb-4 gap-4">
+            {[
+              { name: 'Engineering & Tech', icon: Laptop, status: '2 saved', explored: true },
+              { name: 'Medicine & Healthcare', icon: Heart, status: 'Not explored yet', explored: false },
+              { name: 'Business & Commerce', icon: Briefcase, status: '1 saved', explored: true },
+              { name: 'Law', icon: Scale, status: 'Not explored yet', explored: false },
+              { name: 'Arts & Design', icon: Palette, status: 'Not explored yet', explored: false },
+              { name: 'Pure Sciences', icon: Microscope, status: 'Not explored yet', explored: false }
+            ].map((field, idx) => (
+              <Link 
+                key={idx} 
+                to="/student-dashboard/college/majors" 
+                className="flex items-center gap-3 bg-white border border-brand-slate/10 px-4 py-3 rounded-2xl hover:bg-brand-mist hover:border-brand-slate/20 transition-all flex-none min-w-[240px] md:flex-1 md:min-w-[200px]"
+              >
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${field.explored ? 'bg-brand-neon/10' : 'bg-brand-slate/5'}`}>
+                  <field.icon className={`w-5 h-5 ${field.explored ? 'text-[#0f9f7a]' : 'text-brand-slate'}`} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-brand-ink whitespace-nowrap">{field.name}</p>
+                  <p className="text-xs font-medium text-brand-slate mt-0.5">{field.status}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   );

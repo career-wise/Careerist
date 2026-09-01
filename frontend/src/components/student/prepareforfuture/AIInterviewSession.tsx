@@ -129,7 +129,7 @@ const AIInterviewSession: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
@@ -141,7 +141,7 @@ const AIInterviewSession: React.FC = () => {
               <h1 className="text-2xl font-bold text-[#2B3674]">
                 AI Interview in Progress
               </h1>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-brand-slate">
                 Question {currentQuestion + 1} of {questions.length}
               </p>
             </div>
@@ -224,7 +224,7 @@ const AIInterviewSession: React.FC = () => {
                   <h3 className="text-lg font-bold text-[#2B3674] mb-3">
                     Question {currentQuestion + 1}
                   </h3>
-                  <p className="text-gray-700 text-lg leading-relaxed mb-6">
+                  <p className="text-brand-slate text-lg leading-relaxed mb-6">
                     {questions[currentQuestion]}
                   </p>
                   
@@ -257,7 +257,7 @@ const AIInterviewSession: React.FC = () => {
                     <h4 className="font-semibold text-[#2B3674] mb-2">
                       Real-time Tip
                     </h4>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm text-brand-slate">
                       {metrics.eyeContact < 70 && "Try to maintain more eye contact with the camera."}
                       {metrics.eyeContact >= 70 && metrics.pace < 75 && "Great eye contact! Try to speak at a steady pace."}
                       {metrics.eyeContact >= 70 && metrics.pace >= 75 && "Excellent! Keep up the confident delivery."}
@@ -287,7 +287,7 @@ const AIInterviewSession: React.FC = () => {
                       {Math.round(metrics.eyeContact)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full rounded-full h-2 bg-brand-slate/10">
                     <div
                       className={`h-2 rounded-full transition-all duration-500 ${getMetricBg(metrics.eyeContact)}`}
                       style={{ width: `${metrics.eyeContact}%` }}
@@ -306,7 +306,7 @@ const AIInterviewSession: React.FC = () => {
                       {Math.round(metrics.voiceClarity)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full rounded-full h-2 bg-brand-slate/10">
                     <div
                       className={`h-2 rounded-full transition-all duration-500 ${getMetricBg(metrics.voiceClarity)}`}
                       style={{ width: `${metrics.voiceClarity}%` }}
@@ -325,7 +325,7 @@ const AIInterviewSession: React.FC = () => {
                       {Math.round(metrics.pace)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full rounded-full h-2 bg-brand-slate/10">
                     <div
                       className={`h-2 rounded-full transition-all duration-500 ${getMetricBg(metrics.pace)}`}
                       style={{ width: `${metrics.pace}%` }}
@@ -344,7 +344,7 @@ const AIInterviewSession: React.FC = () => {
                       {Math.round(metrics.confidence)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full rounded-full h-2 bg-brand-slate/10">
                     <div
                       className={`h-2 rounded-full transition-all duration-500 ${getMetricBg(metrics.confidence)}`}
                       style={{ width: `${metrics.confidence}%` }}
@@ -353,7 +353,7 @@ const AIInterviewSession: React.FC = () => {
                 </div>
 
                 {/* Filler Words */}
-                <div className="pt-4 border-t border-gray-200">
+                <div className="pt-4 border-t border-brand-slate/10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4 text-yellow-600" />
@@ -363,7 +363,7 @@ const AIInterviewSession: React.FC = () => {
                       {metrics.fillerWords}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-xs text-brand-slate mt-1">
                     "um", "uh", "like", "you know"
                   </p>
                 </div>
@@ -384,7 +384,7 @@ const AIInterviewSession: React.FC = () => {
                         ? "bg-green-100 border border-green-300"
                         : idx === currentQuestion
                         ? "bg-[#3EBFB0]/20 border-2 border-[#3EBFB0]"
-                        : "bg-gray-100 border border-gray-200"
+                        : "bg-brand-slate/10 border border-brand-slate/10"
                     }`}
                   >
                     {idx < currentQuestion ? (
@@ -395,7 +395,7 @@ const AIInterviewSession: React.FC = () => {
                       }`}></div>
                     )}
                     <span className={`text-sm font-medium ${
-                      idx === currentQuestion ? "text-[#2B3674]" : "text-gray-600"
+                      idx === currentQuestion ? "text-[#2B3674]" : "text-brand-slate"
                     }`}>
                       Question {idx + 1}
                     </span>
@@ -413,7 +413,7 @@ const AIInterviewSession: React.FC = () => {
               <h3 className="text-xl font-bold text-[#2B3674] mb-3">
                 Exit Interview?
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-brand-slate mb-6">
                 Are you sure you want to exit? Your progress will not be saved.
               </p>
               <div className="flex gap-3">

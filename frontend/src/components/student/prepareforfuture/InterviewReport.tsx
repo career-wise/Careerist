@@ -128,7 +128,7 @@ const InterviewReport: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8 text-center">
@@ -138,7 +138,7 @@ const InterviewReport: React.FC = () => {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent mb-2">
             Interview Complete!
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-brand-slate text-lg">
             Here's your detailed performance analysis
           </p>
         </div>
@@ -147,7 +147,7 @@ const InterviewReport: React.FC = () => {
         <Card className="mb-8 border-2 border-[#2B3674]/10 text-center">
           <div className="flex flex-col md:flex-row items-center justify-around gap-8 py-6">
             <div>
-              <p className="text-gray-600 mb-2">Overall Score</p>
+              <p className="text-brand-slate mb-2">Overall Score</p>
               <div className={`text-7xl font-bold ${scoreGrade.color} mb-2`}>
                 {overallScore}
               </div>
@@ -162,14 +162,14 @@ const InterviewReport: React.FC = () => {
                   <Clock className="w-8 h-8 text-[#3EBFB0]" />
                 </div>
                 <p className="text-2xl font-bold text-[#2B3674]">{formatTime(totalTime)}</p>
-                <p className="text-sm text-gray-600">Duration</p>
+                <p className="text-sm text-brand-slate">Duration</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-[#C8A860]/10 rounded-xl flex items-center justify-center mx-auto mb-2">
                   <Star className="w-8 h-8 text-[#C8A860]" />
                 </div>
                 <p className="text-2xl font-bold text-[#2B3674]">5/5</p>
-                <p className="text-sm text-gray-600">Questions</p>
+                <p className="text-sm text-brand-slate">Questions</p>
               </div>
             </div>
           </div>
@@ -191,7 +191,7 @@ const InterviewReport: React.FC = () => {
                     <h3 className="font-bold text-[#2B3674]">{strength.title}</h3>
                     <span className="text-green-600 font-bold">{Math.round(strength.score)}%</span>
                   </div>
-                  <p className="text-sm text-gray-600">{strength.description}</p>
+                  <p className="text-sm text-brand-slate">{strength.description}</p>
                 </div>
               ))}
             </div>
@@ -211,12 +211,12 @@ const InterviewReport: React.FC = () => {
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-bold text-[#2B3674]">{improvement.title}</h3>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">{Math.round(improvement.current)}%</span>
+                      <span className="text-sm text-brand-slate">{Math.round(improvement.current)}%</span>
                       <TrendingUp className="w-4 h-4 text-yellow-600" />
                       <span className="text-sm font-bold text-yellow-600">{improvement.target}%</span>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600">{improvement.tip}</p>
+                  <p className="text-sm text-brand-slate">{improvement.tip}</p>
                 </div>
               ))}
             </div>
@@ -238,13 +238,13 @@ const InterviewReport: React.FC = () => {
                   {Math.round(finalMetrics.eyeContact)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+              <div className="w-full rounded-full h-3 mb-2 bg-brand-slate/10">
                 <div
                   className="h-3 rounded-full bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]"
                   style={{ width: `${finalMetrics.eyeContact}%` }}
                 ></div>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-brand-slate">
                 {finalMetrics.eyeContact >= 80 ? "Excellent" : "Good"} eye contact maintained throughout.
               </p>
             </div>
@@ -260,13 +260,13 @@ const InterviewReport: React.FC = () => {
                   {Math.round(finalMetrics.voiceClarity)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+              <div className="w-full rounded-full h-3 mb-2 bg-brand-slate/10">
                 <div
                   className="h-3 rounded-full bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]"
                   style={{ width: `${finalMetrics.voiceClarity}%` }}
                 ></div>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-brand-slate">
                 Clear and articulate speech patterns.
               </p>
             </div>
@@ -282,13 +282,13 @@ const InterviewReport: React.FC = () => {
                   {Math.round(finalMetrics.pace)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+              <div className="w-full rounded-full h-3 mb-2 bg-brand-slate/10">
                 <div
                   className="h-3 rounded-full bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]"
                   style={{ width: `${finalMetrics.pace}%` }}
                 ></div>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-brand-slate">
                 {finalMetrics.pace >= 80 ? "Well-paced delivery" : "Consider practicing pace control"}.
               </p>
             </div>
@@ -304,13 +304,13 @@ const InterviewReport: React.FC = () => {
                   {Math.round(finalMetrics.confidence)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+              <div className="w-full rounded-full h-3 mb-2 bg-brand-slate/10">
                 <div
                   className="h-3 rounded-full bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]"
                   style={{ width: `${finalMetrics.confidence}%` }}
                 ></div>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-brand-slate">
                 Strong confident presence demonstrated.
               </p>
             </div>
@@ -330,7 +330,7 @@ const InterviewReport: React.FC = () => {
                     <span className="font-bold text-[#C8A860]">{item.score}/100</span>
                   </div>
                 </div>
-                <p className="text-sm text-gray-700">{item.feedback}</p>
+                <p className="text-sm text-brand-slate">{item.feedback}</p>
               </div>
             ))}
           </div>

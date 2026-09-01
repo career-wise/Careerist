@@ -12,6 +12,8 @@ import {
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
 
+const getRelativeDate = (days: number) => { const d = new Date(); d.setDate(d.getDate() + days); return d.toISOString().split('T')[0]; };
+
 const AcademicGoalTracker: React.FC = () => {
   const [goals, setGoals] = useState([
     {
@@ -19,7 +21,7 @@ const AcademicGoalTracker: React.FC = () => {
       title: "Maintain 3.8 GPA",
       description: "Keep my cumulative GPA above 3.8 for college applications",
       category: "GPA",
-      targetDate: "2024-06-15",
+      targetDate: getRelativeDate(45),
       progress: 85,
       status: "in-progress",
       priority: "high",
@@ -29,7 +31,7 @@ const AcademicGoalTracker: React.FC = () => {
       title: "Complete AP Chemistry",
       description: "Finish AP Chemistry with a grade of A- or better",
       category: "Course",
-      targetDate: "2024-05-30",
+      targetDate: getRelativeDate(30),
       progress: 70,
       status: "in-progress",
       priority: "high",
@@ -39,7 +41,7 @@ const AcademicGoalTracker: React.FC = () => {
       title: "SAT Score 1450+",
       description: "Achieve a SAT score of 1450 or higher",
       category: "Test Prep",
-      targetDate: "2024-03-15",
+      targetDate: getRelativeDate(-10),
       progress: 100,
       status: "completed",
       priority: "high",
@@ -49,7 +51,7 @@ const AcademicGoalTracker: React.FC = () => {
       title: "Complete 40 Community Service Hours",
       description: "Volunteer at local animal shelter and food bank",
       category: "Extracurricular",
-      targetDate: "2024-04-30",
+      targetDate: getRelativeDate(15),
       progress: 60,
       status: "in-progress",
       priority: "medium",
@@ -59,7 +61,7 @@ const AcademicGoalTracker: React.FC = () => {
       title: "Join National Honor Society",
       description: "Meet requirements and apply for NHS membership",
       category: "Achievement",
-      targetDate: "2024-02-28",
+      targetDate: getRelativeDate(-20),
       progress: 90,
       status: "in-progress",
       priority: "medium",
@@ -77,7 +79,7 @@ const AcademicGoalTracker: React.FC = () => {
       case "overdue":
         return "text-red-600 bg-red-100";
       default:
-        return "text-gray-600 bg-gray-100";
+        return "text-brand-slate bg-brand-slate/10";
     }
   };
 
@@ -90,7 +92,7 @@ const AcademicGoalTracker: React.FC = () => {
       case "low":
         return "border-l-green-500";
       default:
-        return "border-l-gray-500";
+        return "border-l-brand-slate";
     }
   };
 
@@ -123,7 +125,7 @@ const AcademicGoalTracker: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Academic Goal Tracker
           </h1>
-          <p className="text-gray-600">
+          <p className="text-brand-slate">
             Track your academic progress and stay on top of your goals
           </p>
         </div>
@@ -143,7 +145,7 @@ const AcademicGoalTracker: React.FC = () => {
             <div className="text-2xl font-bold text-gray-900 mb-1">
               {stat.value}
             </div>
-            <div className="text-sm text-gray-600">{stat.label}</div>
+            <div className="text-sm text-brand-slate">{stat.label}</div>
           </Card>
         ))}
       </div>
@@ -186,14 +188,14 @@ const AcademicGoalTracker: React.FC = () => {
                   >
                     {goal.status.replace("-", " ")}
                   </span>
-                  <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">
+                  <span className="px-2 py-1 text-brand-slate rounded-full text-xs bg-white border border-brand-slate/10">
                     {goal.category}
                   </span>
                 </div>
 
-                <p className="text-gray-600 mb-4">{goal.description}</p>
+                <p className="text-brand-slate mb-4">{goal.description}</p>
 
-                <div className="flex items-center space-x-6 text-sm text-gray-500 mb-4">
+                <div className="flex items-center space-x-6 text-sm text-brand-slate mb-4">
                   <div className="flex items-center">
                     <Calendar className="h-4 w-4 mr-1" />
                     Target: {new Date(goal.targetDate).toLocaleDateString()}
@@ -205,7 +207,7 @@ const AcademicGoalTracker: React.FC = () => {
                 </div>
 
                 {/* Progress Bar */}
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+                <div className="w-full rounded-full h-2 mb-4 bg-brand-slate/10">
                   <div
                     className={`h-2 rounded-full ${
                       goal.status === "completed"
@@ -240,7 +242,7 @@ const AcademicGoalTracker: React.FC = () => {
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
             Keep Going! 🎯
           </h3>
-          <p className="text-gray-600 mb-4">
+          <p className="text-brand-slate mb-4">
             You're making great progress on your academic goals. Stay focused
             and keep pushing forward!
           </p>

@@ -235,17 +235,17 @@ const CareerPathPlanner: React.FC = () => {
         };
       case "locked":
         return {
-          bg: "bg-gray-200",
+          bg: "bg-brand-slate/10",
           border: "border-gray-300",
-          text: "text-gray-500",
+          text: "text-brand-slate",
           hover: "hover:bg-gray-300",
         };
       default:
         return {
           bg: "bg-white",
           border: "border-gray-300",
-          text: "text-gray-700",
-          hover: "hover:bg-gray-50",
+          text: "text-brand-slate",
+          hover: "hover:bg-brand-mist",
         };
     }
   };
@@ -303,7 +303,7 @@ const CareerPathPlanner: React.FC = () => {
                 <h3 className="font-semibold text-gray-900 mb-1">
                   Personalized for You
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-brand-slate">
                   This roadmap is customized based on your interests, goals, and current progress. Click on any node to view details and resources.
                 </p>
               </div>
@@ -312,7 +312,7 @@ const CareerPathPlanner: React.FC = () => {
         </div>
 
         {/* Roadmap Canvas */}
-        <div className="bg-white rounded-xl shadow-lg p-12 relative overflow-hidden border border-gray-200">
+        <div className="bg-white rounded-xl shadow-lg p-12 relative overflow-hidden border border-brand-slate/10">
           {/* SVG for connections */}
           <svg
             className="absolute inset-0 pointer-events-none"
@@ -637,7 +637,7 @@ const CareerPathPlanner: React.FC = () => {
                   <h4 className="font-bold text-[#2B3674] mb-1 text-sm">
                     {box.title}
                   </h4>
-                  <p className="text-xs text-gray-600">{box.description}</p>
+                  <p className="text-xs text-brand-slate">{box.description}</p>
                 </div>
               </div>
             ))}
@@ -645,7 +645,7 @@ const CareerPathPlanner: React.FC = () => {
         </div>
 
         {/* Legend */}
-        <div className="mt-6 bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+        <div className="mt-6 bg-white rounded-lg shadow-sm p-4 border border-brand-slate/10">
           <div className="flex items-center justify-center gap-8 text-sm">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-green-500 rounded"></div>
@@ -656,7 +656,7 @@ const CareerPathPlanner: React.FC = () => {
               <span>In Progress / Available</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-gray-200 rounded"></div>
+              <div className="w-4 h-4 rounded bg-brand-slate/10"></div>
               <span>Locked</span>
             </div>
             <div className="flex items-center gap-2">

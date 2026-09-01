@@ -152,7 +152,7 @@ const ProjectIdeas: React.FC = () => {
       case "Beginner": return "bg-green-50 text-green-700 border-green-200";
       case "Intermediate": return "bg-[#C8A860]/10 text-[#C8A860] border-[#C8A860]/30";
       case "Advanced": return "bg-[#2B3674]/10 text-[#2B3674] border-[#2B3674]/30";
-      default: return "bg-gray-50 text-gray-700 border-gray-200";
+      default: return "bg-brand-mist text-brand-slate border-brand-slate/10";
     }
   };
 
@@ -169,7 +169,7 @@ const ProjectIdeas: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -181,7 +181,7 @@ const ProjectIdeas: React.FC = () => {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent">
                 Project Ideas
               </h1>
-              <p className="text-gray-600">
+              <p className="text-brand-slate">
                 Build your skills and create an impressive portfolio
               </p>
             </div>
@@ -197,7 +197,7 @@ const ProjectIdeas: React.FC = () => {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
+                  <p className="text-sm text-brand-slate mb-1">{stat.label}</p>
                   <p className="text-3xl font-bold text-[#2B3674]">{stat.value}</p>
                 </div>
                 <div className="w-14 h-14 bg-[#2B3674]/10 rounded-xl flex items-center justify-center">
@@ -244,7 +244,7 @@ const ProjectIdeas: React.FC = () => {
 
         {/* Results Count */}
         <div className="mb-6">
-          <p className="text-gray-600">
+          <p className="text-brand-slate">
             Found <span className="font-bold text-[#2B3674]">{filteredProjects.length}</span> project ideas
           </p>
         </div>
@@ -308,11 +308,11 @@ const ProjectIdeas: React.FC = () => {
                   <h3 className="text-lg font-bold text-[#2B3674] mb-2 group-hover:text-[#3EBFB0] transition-colors">
                     {project.title}
                   </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">{project.description}</p>
+                  <p className="text-sm text-brand-slate leading-relaxed">{project.description}</p>
                 </div>
 
                 {/* Duration */}
-                <div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
+                <div className="mb-4 flex items-center gap-2 text-sm text-brand-slate">
                   <Clock className="w-4 h-4 text-[#3EBFB0]" />
                   <span>{project.duration}</span>
                 </div>

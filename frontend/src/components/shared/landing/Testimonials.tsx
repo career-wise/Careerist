@@ -11,8 +11,8 @@ const Testimonials: React.FC = () => {
           </h2>
         </div>
 
-        <div className="flex flex-col items-center justify-center p-16 border-2 border-dashed border-gray-200 rounded-[3rem] bg-gray-50/50">
-           <MessageSquareDashed className="w-16 h-16 text-gray-300 mb-6" />
+        <div className="flex flex-col items-center justify-center p-16 border-2 border-dashed border-brand-slate/10 rounded-[3rem] bg-brand-slate/10">
+           <MessageSquareDashed className="w-16 h-16 text-brand-slate/10 mb-6" />
            <h3 className="text-2xl font-display font-bold text-brand-ink mb-2">
              Real stories coming soon.
            </h3>

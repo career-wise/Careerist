@@ -1,78 +1,152 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { 
-  FileText, 
-  Target, 
-  Zap, 
-  Briefcase, 
-  Calendar,
-  CheckCircle,
-  PlayCircle,
-  TrendingUp,
-  Search,
-  ArrowRight
+  FileText, Users, Briefcase, Zap,
+  Settings, CheckCircle, MapPin, Map,
+  Target, ArrowRight, Compass, Send
 } from "lucide-react";
 import Button from "../../shared/ui/Button";
 
+// Mock Data
+const mockUser = {
+  firstName: "Sarah",
+  lastName: "Chen",
+  initials: "SC"
+};
+
+const onboardingAnswers = {
+  persona: "graduate",
+  status: "actively applying", // 'just preparing', 'actively applying', 'interviewing'
+  urgency: "high",
+  resumeStatus: "don't have one yet" // "don't have one yet" or "ready"
+};
+
+const getStatusMessage = (status: string) => {
+  switch(status) {
+    case 'just preparing': return "Let's build your foundational skills and materials.";
+    case 'actively applying': return "Let's optimize your applications and land those interviews.";
+    case 'interviewing': return "Let's prep for your upcoming interviews and secure offers.";
+    default: return "Let's accelerate your career journey.";
+  }
+};
+
 const GraduateDashboardHome: React.FC = () => {
-  const quickActions = [
-    { title: "Resume Builder", icon: FileText, link: "/graduate-dashboard/resources", color: "bg-brand-neon/20", textColor: "text-brand-neon" },
-    { title: "AI Interview", icon: Zap, link: "/graduate-dashboard/prepare/interview-setup", color: "bg-brand-teal/20", textColor: "text-brand-teal" },
-    { title: "Job Board", icon: Search, link: "/graduate-dashboard/jobs", color: "bg-gray-200", textColor: "text-gray-700" },
-    { title: "Career Path", icon: Target, link: "/graduate-dashboard/career-path", color: "bg-brand-mist", textColor: "text-brand-ink" },
+  const [hoveredNode, setHoveredNode] = useState<number | null>(null);
+  
+  const journeyNodes = [
+    { id: 1, status: 'completed', label: 'Onboarding', detail: 'Profile setup complete' },
+    { id: 2, status: 'completed', label: 'Resume Started', detail: 'Basic information added' },
+    { id: 3, status: 'completed', label: 'First Application', detail: 'Applied to 1 role' },
+    { id: 4, status: 'current', label: 'Skill Building', detail: 'Completing core modules' },
+    { id: 5, status: 'upcoming', label: 'First Interview', detail: 'Prepare for interviews' }
   ];
 
-  const recentActivity = [
-    { title: "Completed: Mock Interview (Google)", time: "2 hours ago", icon: CheckCircle, type: "success" },
-    { title: "Started: Resume V2 Draft", time: "Yesterday", icon: PlayCircle, type: "info" },
-    { title: "Applied: Frontend Developer at Stripe", time: "2 days ago", icon: Briefcase, type: "neutral" },
-  ];
+  const needsResume = onboardingAnswers.resumeStatus === "don't have one yet";
 
   return (
-    <div className="bg-gray-50 min-h-screen p-4 md:p-6 lg:p-8 font-sans">
+    <div className="bg-brand-mist min-h-screen p-4 md:p-6 lg:p-8 font-sans">
       <div className="max-w-[1600px] mx-auto w-full">
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold text-brand-ink mb-2">Welcome back, Alex.</h1>
-            <p className="text-gray-600 text-lg font-medium">You are on track for your <strong>Software Engineer</strong> job hunt.</p>
+            <h1 className="text-3xl font-display font-bold text-brand-ink mb-2">Welcome back, {mockUser.firstName}.</h1>
+            <p className="text-brand-slate text-lg font-medium">
+              {getStatusMessage(onboardingAnswers.status)}
+            </p>
           </div>
           
           {/* High-level User Profile Snippet */}
-          <div className="bg-white rounded-[1.5rem] p-4 flex items-center gap-4 border border-gray-200 shadow-sm">
-            <img 
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150&h=150" 
-              alt="Profile" 
-              className="w-12 h-12 rounded-[1rem] object-cover border border-gray-100"
-            />
+          <div className="bg-white rounded-[1.5rem] p-4 flex items-center gap-4 border border-brand-slate/20 shadow-sm">
+            <div className="w-12 h-12 rounded-full bg-brand-ink flex items-center justify-center border border-brand-slate/10">
+              <span className="text-white font-bold text-lg tracking-wider">{mockUser.initials}</span>
+            </div>
             <div>
-              <p className="text-sm font-bold text-brand-ink">Interview Readiness</p>
+              <p className="text-sm font-bold text-brand-ink">Profile Setup</p>
               <div className="flex items-center gap-2 mt-1">
-                <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-brand-teal w-[75%] rounded-full"></div>
+                <div className="w-24 h-2 bg-brand-mist rounded-full overflow-hidden">
+                  <div className="h-full bg-brand-neon w-[85%] rounded-full"></div>
                 </div>
-                <span className="text-sm font-bold text-brand-teal">75%</span>
+                <span className="text-sm font-bold text-brand-neon">85%</span>
               </div>
             </div>
+            <button className="w-8 h-8 ml-2 rounded-full bg-brand-mist hover:bg-brand-slate/10 flex items-center justify-center text-brand-slate transition-colors">
+              <Settings className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        {/* Quick Actions Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {quickActions.map((action, i) => (
-            <Link key={i} to={action.link}>
-              <div className="p-6 rounded-[1.5rem] border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 bg-white group flex flex-col justify-between h-full min-h-[140px]">
-                <div className={`w-12 h-12 rounded-xl ${action.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <action.icon className={`w-6 h-6 ${action.textColor}`} />
-                </div>
-                <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-brand-ink text-lg">{action.title}</h3>
-                  <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-brand-ink transition-colors" />
-                </div>
+        {/* Quick Stats Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {[
+            { label: "Applications Sent", value: "12", icon: Send, color: "text-brand-ink", bg: "bg-brand-mist" },
+            { label: "Interviews Scheduled", value: "1", icon: Users, color: "text-brand-ink", bg: "bg-brand-mist" },
+            { label: "Resume Status", value: "Draft", icon: FileText, color: "text-brand-neon", bg: "bg-brand-neon/10" },
+            { label: "Skill Match %", value: "92%", icon: Zap, color: "text-brand-ink", bg: "bg-brand-mist" }
+          ].map((stat, i) => (
+            <div key={i} className="bg-white p-5 rounded-[1.5rem] border border-brand-slate/20 shadow-sm flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold text-brand-slate uppercase tracking-wider mb-1">{stat.label}</p>
+                <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
               </div>
-            </Link>
+              <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center`}>
+                <stat.icon className={`w-5 h-5 ${stat.color}`} />
+              </div>
+            </div>
           ))}
+        </div>
+
+        {/* NEW Your Journey Section */}
+        <div className="bg-white rounded-[2rem] p-6 lg:p-8 border border-brand-slate/20 shadow-sm mb-8">
+          <h3 className="text-xl font-bold text-brand-ink mb-8 flex items-center gap-2">
+            <Map className="w-5 h-5 text-brand-neon" />
+            Your Journey
+          </h3>
+          
+          <div className="relative flex items-center justify-between max-w-4xl mx-auto py-4 mb-8">
+            {/* Background line */}
+            <div className="absolute left-0 right-0 h-1 bg-brand-slate/10 top-1/2 -translate-y-1/2 z-0"></div>
+            
+            {/* Active background line */}
+            <div className="absolute left-0 h-1 bg-brand-neon top-1/2 -translate-y-1/2 z-0 transition-all duration-1000" style={{ width: '75%' }}></div>
+            
+            {/* Nodes */}
+            {journeyNodes.map((node) => (
+              <div 
+                key={node.id} 
+                className="relative z-10 flex flex-col items-center"
+                onMouseEnter={() => setHoveredNode(node.id)}
+                onMouseLeave={() => setHoveredNode(null)}
+              >
+                {/* Node Circle */}
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-white cursor-pointer transition-transform duration-300 ${
+                  node.status === 'completed' ? 'border-2 border-brand-neon text-brand-neon shadow-[0_0_10px_rgba(21,193,150,0.3)]' :
+                  node.status === 'current' ? 'border-[3px] border-brand-ink text-brand-ink scale-110 shadow-lg' :
+                  'border-2 border-brand-slate/20 text-brand-slate/40'
+                }`}>
+                  {node.status === 'completed' ? <CheckCircle className="w-5 h-5" /> : 
+                   node.status === 'current' ? <MapPin className="w-5 h-5 animate-pulse" /> :
+                   <span className="text-sm font-bold">{node.id}</span>}
+                </div>
+                
+                {/* Label (always visible) */}
+                <p className={`absolute top-12 text-xs font-bold text-center whitespace-nowrap transition-colors ${
+                  node.status === 'current' ? 'text-brand-ink' : 
+                  node.status === 'completed' ? 'text-brand-slate' : 'text-brand-slate/40'
+                }`}>
+                  {node.label}
+                </p>
+
+                {/* Tooltip on hover */}
+                {hoveredNode === node.id && (
+                  <div className="absolute bottom-14 left-1/2 -translate-x-1/2 bg-brand-ink text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-xl whitespace-nowrap z-20">
+                    {node.detail}
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-brand-ink rotate-45"></div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Main Grid */}
@@ -81,120 +155,104 @@ const GraduateDashboardHome: React.FC = () => {
           {/* Left Column (2/3) */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             
-            {/* Current Goal / Next Milestone */}
-            <div className="bg-brand-ink rounded-[2rem] p-8 relative overflow-hidden shadow-md border border-brand-ink/10">
+            {/* Current Focus Area */}
+            <div className="bg-brand-ink rounded-[2rem] p-8 relative overflow-hidden shadow-md">
               <div className="relative z-10">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-8 h-8 rounded-full bg-brand-neon/20 flex items-center justify-center">
-                    <Target className="w-4 h-4 text-brand-neon" />
+                    {needsResume ? <FileText className="w-4 h-4 text-brand-neon" /> : <Users className="w-4 h-4 text-brand-neon" />}
                   </div>
-                  <span className="text-brand-neon font-bold text-sm tracking-widest uppercase">Next Milestone</span>
+                  <span className="text-brand-neon font-bold text-sm tracking-widest uppercase">Current Focus</span>
                 </div>
                 
-                <h2 className="text-3xl font-display font-bold text-white mb-4">Finalize Tech Resume</h2>
-                <p className="text-gray-300 mb-6 max-w-lg font-medium leading-relaxed">Your resume is currently missing a project portfolio section. A strong portfolio increases interview callbacks by 40%.</p>
+                <h2 className="text-3xl font-display font-bold text-white mb-4">
+                  {needsResume ? "Finish Your Resume" : "Nail the Interview"}
+                </h2>
+                <p className="text-gray-300 mb-6 max-w-lg font-medium leading-relaxed">
+                  {needsResume 
+                    ? "Your resume is your first impression. Let's finish your draft so you can start applying with confidence." 
+                    : "You've got the materials ready. Let's run through a mock interview to ensure you shine in front of employers."}
+                </p>
                 
-                <div className="bg-white/10 rounded-[1.25rem] p-4 border border-white/10 mb-6 max-w-md backdrop-blur-sm">
+                <div className="bg-white/10 rounded-[1.25rem] p-4 mb-6 max-w-md backdrop-blur-sm border border-white/10">
                    <div className="flex justify-between items-center mb-2">
-                     <span className="text-white text-sm font-semibold">Progress</span>
-                     <span className="text-brand-neon text-sm font-bold">85%</span>
+                     <span className="text-white text-sm font-semibold">{needsResume ? "Resume Completion" : "Interview Prep"} Progress</span>
+                     <span className="text-brand-neon text-sm font-bold">{needsResume ? "40%" : "20%"}</span>
                    </div>
                    <div className="w-full h-2.5 bg-brand-ink/50 rounded-full overflow-hidden">
-                     <div className="h-full bg-brand-neon w-[85%] rounded-full shadow-[0_0_10px_rgba(200,168,96,0.5)]"></div>
+                     <div className={`h-full bg-brand-neon rounded-full shadow-[0_0_10px_rgba(21,193,150,0.5)] ${needsResume ? 'w-[40%]' : 'w-[20%]'}`}></div>
                    </div>
                 </div>
 
-                <Button variant="primary" className="bg-white text-brand-ink hover:bg-gray-100 font-semibold px-6">
-                  Continue Editing <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                <Link to={needsResume ? "/graduate-dashboard/resources" : "/graduate-dashboard/prepare/interview-setup"}>
+                  <Button variant="primary" className="bg-white text-brand-ink hover:bg-brand-mist font-semibold px-6">
+                    {needsResume ? "Go to Resume Builder" : "Start Mock Interview"} <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
               </div>
               
               {/* Decorative elements */}
-              <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-brand-teal/20 rounded-full blur-3xl"></div>
-              <div className="absolute top-10 right-10 opacity-10">
-                 <FileText className="w-32 h-32 text-white" />
+              <div className="absolute -right-20 -top-20 w-80 h-80 bg-brand-neon/20 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-10 right-10 opacity-10">
+                 {needsResume ? <FileText className="w-32 h-32 text-white" /> : <Users className="w-32 h-32 text-white" />}
               </div>
             </div>
-
-            {/* Recent Activity */}
-            <div className="bg-white rounded-[2rem] p-6 lg:p-8 border border-gray-200 shadow-sm">
-               <h3 className="text-2xl font-bold text-brand-ink mb-6 flex items-center gap-2">
-                 <TrendingUp className="w-6 h-6 text-brand-teal" />
-                 Recent Activity
-               </h3>
-               
-               <div className="flex flex-col gap-4">
-                 {recentActivity.map((activity, i) => (
-                   <div key={i} className="flex items-center gap-4 p-4 rounded-[1.25rem] bg-gray-50 border border-gray-100 hover:bg-gray-100 transition-colors">
-                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                       activity.type === 'success' ? 'bg-brand-ink text-white' : 
-                       activity.type === 'info' ? 'bg-white text-brand-ink border border-gray-200 shadow-sm' : 
-                       'bg-gray-200 text-gray-600'
-                     }`}>
-                       <activity.icon className="w-5 h-5" />
-                     </div>
-                     <div className="flex-1">
-                       <p className="font-bold text-brand-ink">{activity.title}</p>
-                       <p className="text-sm font-medium text-gray-500 mt-0.5">{activity.time}</p>
-                     </div>
-                   </div>
-                 ))}
-               </div>
-            </div>
-
           </div>
 
           {/* Right Column (1/3) */}
           <div className="flex flex-col gap-6">
             
-            {/* Stats Widget */}
-            <div className="bg-white rounded-[2rem] p-6 border border-gray-200 shadow-sm">
-              <h3 className="font-bold text-brand-ink mb-4">Job Hunt Snapshot</h3>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-[1.25rem] bg-gray-50 border border-gray-100 flex flex-col items-center justify-center text-center">
-                   <p className="text-3xl font-display font-bold text-brand-ink">15</p>
-                   <p className="text-xs text-gray-500 font-semibold mt-1 uppercase tracking-wider">Applications</p>
-                </div>
-                <div className="p-4 rounded-[1.25rem] bg-brand-neon/10 border border-brand-neon/20 flex flex-col items-center justify-center text-center">
-                   <p className="text-3xl font-display font-bold text-brand-ink">2</p>
-                   <p className="text-xs text-brand-ink/70 font-semibold mt-1 uppercase tracking-wider">Interviews</p>
-                </div>
-                <div className="p-4 rounded-[1.25rem] bg-gray-50 border border-gray-100 flex flex-col items-center justify-center text-center col-span-2">
-                   <p className="text-3xl font-display font-bold text-brand-ink">85/100</p>
-                   <p className="text-xs text-gray-500 font-semibold mt-1 uppercase tracking-wider">Average Interview Score</p>
-                </div>
+            {/* Quick Actions Navigation */}
+            <div className="bg-white rounded-[2rem] p-6 border border-brand-slate/20 shadow-sm">
+              <h3 className="font-bold text-brand-ink mb-4">Quick Actions</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { name: 'Resume Builder', icon: FileText, link: '/graduate-dashboard/resources' },
+                  { name: 'AI Interview', icon: Users, link: '/graduate-dashboard/prepare/interview-setup' },
+                  { name: 'Skills Center', icon: Zap, link: '/graduate-dashboard/skills/tech' },
+                  { name: 'Career Path', icon: Briefcase, link: '/graduate-dashboard/career-path' }
+                ].map((tab, i) => (
+                  <Link key={i} to={tab.link}>
+                    <div className="bg-brand-mist hover:bg-brand-slate/10 border border-brand-slate/10 hover:border-brand-slate/20 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all group h-full">
+                      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-2 shadow-sm group-hover:scale-110 transition-transform">
+                        <tab.icon className="w-5 h-5 text-brand-ink" />
+                      </div>
+                      <span className="text-sm font-semibold text-brand-ink">{tab.name}</span>
+                    </div>
+                  </Link>
+                ))}
               </div>
             </div>
 
-            {/* Upcoming Deadlines */}
-            <div className="bg-white rounded-[2rem] p-6 border border-gray-200 shadow-sm flex-1">
+            {/* Up Next / Recommendation */}
+            <div className="bg-white rounded-[2rem] p-6 border border-brand-slate/20 shadow-sm flex-1 flex flex-col">
                <h3 className="font-bold text-brand-ink mb-5 flex items-center gap-2">
-                 <Calendar className="w-5 h-5 text-brand-ink" />
-                 Upcoming
+                 <Target className="w-5 h-5 text-brand-ink" />
+                 Up Next
                </h3>
                
-               <div className="flex flex-col gap-3">
-                 <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex flex-col gap-1 relative overflow-hidden">
-                   <div className="absolute left-0 top-3 bottom-3 w-1 bg-brand-neon rounded-r-full"></div>
-                   <p className="font-bold text-brand-ink pl-3">Meta Phone Screen</p>
-                   <p className="text-xs font-medium text-gray-500 pl-3 mt-1">Tomorrow, 2:00 PM</p>
+               <div className="flex-1 flex flex-col">
+                 <div className="bg-brand-mist p-5 rounded-2xl border border-brand-slate/10 mb-6 relative overflow-hidden flex-1">
+                   <div className="w-1 bg-brand-neon absolute left-0 top-3 bottom-3 rounded-r-full"></div>
+                   <h4 className="font-bold text-brand-ink mb-2">
+                     {needsResume ? "Draft Your Resume" : "Practice Makes Perfect"}
+                   </h4>
+                   <p className="text-sm font-medium text-brand-slate leading-relaxed">
+                     {needsResume 
+                       ? "A complete resume is required to apply for roles. Head over to the resources section to use our builder."
+                       : "You have a solid resume! Now it's time to refine your interview skills with AI."}
+                   </p>
                  </div>
                  
-                 <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex flex-col gap-1 relative overflow-hidden">
-                   <div className="absolute left-0 top-3 bottom-3 w-1 bg-brand-ink rounded-r-full"></div>
-                   <p className="font-bold text-brand-ink pl-3">Stripe Assignment Due</p>
-                   <p className="text-xs font-medium text-gray-500 pl-3 mt-1">Friday, 11:59 PM</p>
-                 </div>
+                 <Link to={needsResume ? "/graduate-dashboard/resources" : "/graduate-dashboard/prepare/interview-setup"} className="w-full mt-auto">
+                   <Button variant="outline" className="w-full bg-white border-brand-slate/20 hover:bg-brand-mist text-brand-ink font-semibold rounded-xl py-3">
+                     {needsResume ? "Open Resume Builder" : "Start Interview Prep"} <ArrowRight className="w-4 h-4 ml-2" />
+                   </Button>
+                 </Link>
                </div>
-               
-               <Button variant="outline" className="w-full mt-6 bg-white border-gray-200 hover:bg-gray-50 text-brand-ink font-semibold rounded-xl py-3">
-                 View Calendar
-               </Button>
             </div>
 
           </div>
-          
         </div>
       </div>
     </div>

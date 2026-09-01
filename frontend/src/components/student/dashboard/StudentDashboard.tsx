@@ -19,6 +19,7 @@ import DocumentManager from "../resources/DocumentManager";
 import SubjectExplorer from "../study&succeed/SubjectExplorer";
 import StudySkillsTrainer from "../study&succeed/StudySkillsTrainer";
 import TestPrepStrategies from "../study&succeed/TestPrepStrategies";
+import AcademicGoalTracker from "../study&succeed/AcademicGoalTracker";
 
 const StudentDashboard: React.FC = () => {
   return (
@@ -34,6 +35,8 @@ const StudentDashboard: React.FC = () => {
           <Route path="/academics/test-prep" element={<TestPrepStrategies />} />
           <Route path="/resources/study" element={<StudyResources />} />
           <Route path="/academics/study-resources" element={<StudyResources />} />
+          <Route path="/academics/goal-tracker" element={<AcademicGoalTracker />} />
+          <Route path="/academics/subject-explorer" element={<SubjectExplorer />} />
 
           {/* College Routes */}
           <Route path="/college/explorer" element={<CollegeExplorer />} />
