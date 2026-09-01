@@ -19,14 +19,21 @@ import {
   Star,
   Zap,
   TrendingDown,
+  Monitor,
+  PieChart,
+  Settings,
+  Activity
 } from "lucide-react";
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
 
+import { useAppContext } from "../../../contexts/AppContext";
+
 const MajorExplorer: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [savedMajors, setSavedMajors] = useState<string[]>([]);
+  const { state, toggleShortlistedMajor } = useAppContext();
+  const savedMajors = state.shortlistedMajors.map(m => m.name);
 
   const majors = [
     {
@@ -44,10 +51,9 @@ const MajorExplorer: React.FC = () => {
         "Product Manager",
         "ML Engineer",
         "Cloud Architect",
-        "Security Analyst",
       ],
-      requiredCourses: ["Calculus", "Physics", "Statistics", "Programming", "Data Structures", "Algorithms"],
-      icon: "💻",
+      requiredCourses: ["Calculus", "Physics", "Statistics", "Programming", "Data Structures"],
+      icon: <Monitor className="w-8 h-8 text-brand-neon" />,
       image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop&q=80",
       matchScore: 95,
       demandLevel: "Very High",
@@ -70,10 +76,9 @@ const MajorExplorer: React.FC = () => {
         "ML Engineer",
         "Business Analyst",
         "Research Scientist",
-        "AI Specialist",
       ],
-      requiredCourses: ["Statistics", "Linear Algebra", "Machine Learning", "Python", "SQL", "Data Visualization"],
-      icon: "📊",
+      requiredCourses: ["Statistics", "Linear Algebra", "Machine Learning", "Python", "SQL"],
+      icon: <PieChart className="w-8 h-8 text-brand-darkgreen" />,
       image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&q=80",
       matchScore: 92,
       demandLevel: "Very High",
@@ -96,10 +101,9 @@ const MajorExplorer: React.FC = () => {
         "Financial Analyst",
         "Entrepreneur",
         "Operations Manager",
-        "Marketing Director",
       ],
-      requiredCourses: ["Accounting", "Economics", "Marketing", "Finance", "Strategy", "Leadership"],
-      icon: "💼",
+      requiredCourses: ["Accounting", "Economics", "Marketing", "Finance", "Strategy"],
+      icon: <Briefcase className="w-8 h-8 text-brand-ink" />,
       image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop&q=80",
       matchScore: 88,
       demandLevel: "High",
@@ -121,7 +125,6 @@ const MajorExplorer: React.FC = () => {
         "Counselor",
         "HR Specialist",
         "UX Researcher",
-        "Organizational Psychologist",
         "Therapist",
       ],
       requiredCourses: [
@@ -130,9 +133,8 @@ const MajorExplorer: React.FC = () => {
         "Research Methods",
         "Social Psychology",
         "Cognitive Psychology",
-        "Abnormal Psychology",
       ],
-      icon: "🧠",
+      icon: <Brain className="w-8 h-8 text-brand-neon" />,
       image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop&q=80",
       matchScore: 85,
       demandLevel: "Moderate",
@@ -153,24 +155,23 @@ const MajorExplorer: React.FC = () => {
         "Mechanical Engineer",
         "Aerospace Engineer",
         "Robotics Engineer",
-        "Product Designer",
         "Manufacturing Engineer",
-        "R&D Engineer",
+        "Design Engineer",
       ],
-      requiredCourses: ["Calculus", "Physics", "Thermodynamics", "Mechanics", "CAD", "Materials Science"],
-      icon: "⚙️",
-      image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&h=600&fit=crop&q=80",
-      matchScore: 87,
+      requiredCourses: ["Calculus", "Physics", "Thermodynamics", "Materials Science", "Fluid Mechanics"],
+      icon: <Settings className="w-8 h-8 text-brand-darkgreen" />,
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop&q=80",
+      matchScore: 82,
       demandLevel: "High",
-      topSkills: ["CAD", "Problem Solving", "Physics", "Innovation"],
-      workLifeBalance: "Good",
-      remoteOpportunities: "Limited",
+      topSkills: ["Mathematics", "Physics", "CAD", "Problem Solving"],
+      workLifeBalance: "Moderate",
+      remoteOpportunities: "Low",
     },
     {
       name: "Nursing",
       category: "Healthcare",
-      description: "Provide compassionate healthcare and medical support to improve patient outcomes",
-      averageSalary: "$80,000",
+      description: "Provide essential patient care and promote health and wellness in clinical settings",
+      averageSalary: "$77,000",
       entryLevelSalary: "$60,000",
       jobGrowth: "+9%",
       difficulty: "High",
@@ -178,368 +179,220 @@ const MajorExplorer: React.FC = () => {
       careers: [
         "Registered Nurse",
         "Nurse Practitioner",
-        "Clinical Nurse",
+        "Clinical Nurse Specialist",
         "Nurse Educator",
-        "Healthcare Administrator",
-        "Travel Nurse",
+        "Health Administrator",
       ],
-      requiredCourses: ["Anatomy", "Pharmacology", "Physiology", "Clinical Practice", "Patient Care", "Medical Ethics"],
-      icon: "⚕️",
-      image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=600&fit=crop&q=80",
-      matchScore: 90,
+      requiredCourses: ["Anatomy", "Physiology", "Microbiology", "Pharmacology", "Nutrition"],
+      icon: <Activity className="w-8 h-8 text-brand-ink" />,
+      image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop&q=80",
+      matchScore: 78,
       demandLevel: "Very High",
-      topSkills: ["Patient Care", "Communication", "Critical Thinking", "Empathy"],
-      workLifeBalance: "Moderate",
-      remoteOpportunities: "Limited",
+      topSkills: ["Empathy", "Communication", "Critical Thinking", "Clinical Skills"],
+      workLifeBalance: "Challenging",
+      remoteOpportunities: "Very Low",
     },
   ];
 
-  const categories = [
-    { name: "All", icon: Sparkles, count: majors.length },
-    { name: "STEM", icon: Brain, count: majors.filter(m => m.category === "STEM").length },
-    { name: "Business", icon: Briefcase, count: majors.filter(m => m.category === "Business").length },
-    { name: "Engineering", icon: Target, count: majors.filter(m => m.category === "Engineering").length },
-    { name: "Healthcare", icon: Heart, count: majors.filter(m => m.category === "Healthcare").length },
-    { name: "Social Sciences", icon: Users, count: majors.filter(m => m.category === "Social Sciences").length },
-  ];
+  const categories = ["All", "STEM", "Business", "Social Sciences", "Engineering", "Healthcare", "Arts", "Humanities"];
 
-  const stats = [
-    {
-      label: "Total Majors",
-      value: majors.length.toString(),
-      icon: BookOpen,
-      color: "from-[#2B3674] to-[#3d4d9e]",
-      bgColor: "bg-[#2B3674]/10",
-    },
-    {
-      label: "Saved Majors",
-      value: savedMajors.length.toString(),
-      icon: Heart,
-      color: "from-[#3EBFB0] to-[#5ed4c7]",
-      bgColor: "bg-[#3EBFB0]/10",
-    },
-    {
-      label: "Avg Match Score",
-      value: "89%",
-      icon: Target,
-      color: "from-[#C8A860] to-[#d4b870]",
-      bgColor: "bg-[#C8A860]/10",
-    },
-  ];
+  const filteredMajors = majors.filter(
+    (major) =>
+      (selectedCategory === "all" || major.category.toLowerCase() === selectedCategory.toLowerCase()) &&
+      (major.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        major.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
-  const toggleSave = (name: string) => {
-    setSavedMajors(prev =>
-      prev.includes(name) ? prev.filter(m => m !== name) : [...prev, name]
-    );
+  const toggleSaveMajor = (major: any) => {
+    toggleShortlistedMajor(major);
   };
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "High": return "text-red-600 bg-red-50 border-red-200";
-      case "Medium": return "text-[#C8A860] bg-[#C8A860]/10 border-[#C8A860]/30";
-      case "Low": return "text-green-600 bg-green-50 border-green-200";
-      default: return "text-brand-slate bg-brand-mist border-brand-slate/10";
-    }
-  };
-
-  const getDemandColor = (demand: string) => {
-    switch (demand) {
-      case "Very High": return "text-green-600 bg-green-50 border-green-200";
-      case "High": return "text-[#3EBFB0] bg-[#3EBFB0]/10 border-[#3EBFB0]/30";
-      case "Moderate": return "text-[#C8A860] bg-[#C8A860]/10 border-[#C8A860]/30";
-      default: return "text-brand-slate bg-brand-mist border-brand-slate/10";
-    }
-  };
-
-  const filteredMajors = majors.filter(major => {
-    const matchesSearch = major.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      major.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      major.careers.some(c => c.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesCategory = selectedCategory === "all" || 
-      major.category.toLowerCase() === selectedCategory.toLowerCase();
-    
-    return matchesSearch && matchesCategory;
-  });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-white to-brand-mist/50 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-xl flex items-center justify-center shadow-lg">
-              <GraduationCap className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent">
-                Major Explorer
-              </h1>
-              <p className="text-brand-slate">
-                Discover academic majors aligned with your career goals and interests
+        <div className="bg-gradient-to-r from-brand-ink to-brand-darkgreen rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-neon opacity-10 rounded-full blur-2xl -ml-10 -mb-10"></div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex-1">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
+                  <GraduationCap className="h-6 w-6 text-brand-neon" />
+                </div>
+                <h1 className="text-3xl md:text-4xl font-bold">Major Explorer</h1>
+              </div>
+              <p className="text-brand-mist/80 text-lg max-w-2xl">
+                Discover degree programs that align with your passions, skills, and career goals.
+                Explore coursework, salary potential, and job market trends.
               </p>
             </div>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          {stats.map((stat, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl p-5 border border-[#2B3674]/10 hover:shadow-lg transition-all group"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-brand-slate mb-1">{stat.label}</p>
-                  <p className="text-3xl font-bold text-[#2B3674]">{stat.value}</p>
+            
+            <div className="flex-shrink-0 w-full md:w-auto flex flex-col gap-3">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 flex items-center justify-between border border-white/10">
+                <div className="flex items-center space-x-3">
+                  <Target className="h-5 w-5 text-brand-neon" />
+                  <span className="text-sm font-medium text-brand-mist">Your Top Match</span>
                 </div>
-                <div className={`w-14 h-14 ${stat.bgColor} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <stat.icon className="w-7 h-7 text-[#2B3674]" />
-                </div>
+                <span className="text-lg font-bold ml-4">Computer Science</span>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Search and Categories */}
-        <div className="bg-white rounded-2xl p-6 mb-8 border border-[#2B3674]/10 shadow-sm">
-          <div className="mb-4">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#2B3674]/40 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search by major, career, or keyword..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-[#3EBFB0]/5 border-2 border-[#2B3674]/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3EBFB0] focus:border-transparent transition-all"
-              />
+              <Button className="w-full bg-brand-neon text-brand-ink hover:bg-brand-mist hover:text-brand-ink transition-colors font-semibold border-none">
+                Take Assessment
+              </Button>
             </div>
           </div>
+        </div>
 
-          {/* Category Filters */}
-          <div className="flex flex-wrap gap-3">
+        {/* Search and Filters */}
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="relative flex-1 w-full md:max-w-md">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-brand-slate/50 h-5 w-5" />
+            <input
+              type="text"
+              placeholder="Search majors, careers, or skills..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 bg-white border border-brand-slate/10 rounded-xl focus:ring-2 focus:ring-brand-neon/50 focus:border-brand-neon transition-all shadow-sm"
+            />
+          </div>
+          <div className="flex items-center space-x-3 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
             {categories.map((category) => (
               <button
-                key={category.name}
-                onClick={() => setSelectedCategory(category.name.toLowerCase())}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  selectedCategory === category.name.toLowerCase()
-                    ? "bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] text-white shadow-md"
-                    : "bg-[#2B3674]/5 text-[#2B3674] hover:bg-[#3EBFB0]/10"
+                key={category}
+                onClick={() => setSelectedCategory(category.toLowerCase())}
+                className={`px-4 py-2 rounded-lg whitespace-nowrap font-medium transition-all ${
+                  selectedCategory === category.toLowerCase()
+                    ? "bg-brand-ink text-white shadow-md"
+                    : "bg-white text-brand-slate hover:bg-brand-mist border border-brand-slate/10"
                 }`}
               >
-                <category.icon className="w-4 h-4" />
-                {category.name}
-                <span className={`px-2 py-0.5 rounded-full text-xs ${
-                  selectedCategory === category.name.toLowerCase()
-                    ? "bg-white/20"
-                    : "bg-[#2B3674]/10"
-                }`}>
-                  {category.count}
-                </span>
+                {category}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Results Count */}
-        <div className="flex items-center justify-between mb-6">
-          <p className="text-brand-slate">
-            Found <span className="font-bold text-[#2B3674]">{filteredMajors.length}</span> majors
-          </p>
-          <select className="px-4 py-2 border-2 border-[#2B3674]/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3EBFB0]">
-            <option>Sort by Match Score</option>
-            <option>Sort by Salary</option>
-            <option>Sort by Job Growth</option>
-            <option>Sort by Difficulty</option>
-          </select>
-        </div>
-
-        {/* Major Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {filteredMajors.map((major, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-2xl overflow-hidden border border-[#2B3674]/10 hover:shadow-2xl transition-all duration-300 group"
-            >
-              {/* Major Image */}
-              <div className="relative h-48 overflow-hidden">
+        {/* Results Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-8">
+          {filteredMajors.map((major) => (
+            <Card key={major.name} className="overflow-hidden border border-brand-slate/10 hover:shadow-xl transition-all duration-300 bg-white group flex flex-col h-full">
+              <div className="h-48 relative overflow-hidden">
                 <img
                   src={major.image}
                   alt={major.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#2B3674]/90 via-[#2B3674]/50 to-transparent"></div>
-
-                {/* Match Score */}
-                <div className="absolute top-4 right-4 bg-gradient-to-r from-[#C8A860] to-[#3EBFB0] text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
-                  <Sparkles className="w-4 h-4" />
-                  {major.matchScore}% Match
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/80 via-brand-ink/20 to-transparent"></div>
+                <div className="absolute top-4 right-4 flex space-x-2">
+                  <div className="bg-brand-neon/90 text-brand-ink text-xs font-bold px-2 py-1 rounded-md flex items-center shadow-lg backdrop-blur-sm">
+                    <Zap className="h-3 w-3 mr-1" /> {major.matchScore}% Match
+                  </div>
+                  <button
+                    onClick={() => toggleSaveMajor(major)}
+                    className="p-2 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/40 transition-colors"
+                  >
+                    <Star
+                      className={`h-4 w-4 ${
+                        savedMajors.includes(major.name) ? "text-yellow-400 fill-current" : "text-white"
+                      }`}
+                    />
+                  </button>
                 </div>
-
-                {/* Save Button */}
-                <button
-                  onClick={() => toggleSave(major.name)}
-                  className="absolute top-4 left-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
-                >
-                  <Heart
-                    className={`w-5 h-5 ${
-                      savedMajors.includes(major.name)
-                        ? "fill-red-500 text-red-500"
-                        : "text-[#2B3674]"
-                    }`}
-                  />
-                </button>
-
-                {/* Icon and Category */}
-                <div className="absolute bottom-4 left-4 flex items-center gap-3">
-                  <div className="text-4xl">{major.icon}</div>
+                <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
                   <div>
-                    <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-[#2B3674] rounded-lg text-xs font-bold shadow-lg">
-                      {major.category}
-                    </span>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <span className="bg-white/20 backdrop-blur-md text-white text-xs px-2 py-1 rounded-md border border-white/20">
+                        {major.category}
+                      </span>
+                      <span className="bg-white/20 backdrop-blur-md text-white text-xs px-2 py-1 rounded-md border border-white/20">
+                        {major.demandLevel} Demand
+                      </span>
+                    </div>
+                    <h2 className="text-2xl font-bold text-white">{major.name}</h2>
+                  </div>
+                  <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20">
+                    {major.icon}
                   </div>
                 </div>
               </div>
 
-              {/* Major Info */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-[#2B3674] mb-3 group-hover:text-[#3EBFB0] transition-colors">
-                  {major.name}
-                </h3>
-                <p className="text-brand-slate mb-4 text-sm leading-relaxed">{major.description}</p>
+              <div className="p-6 flex flex-col flex-grow">
+                <p className="text-brand-slate mb-6 line-clamp-2">{major.description}</p>
 
-                {/* Key Metrics Grid */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="p-3 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-200">
-                    <div className="flex items-center gap-2 mb-1">
-                      <DollarSign className="w-4 h-4 text-green-600" />
-                      <span className="text-xs text-brand-slate">Avg Salary</span>
+                {/* Key Metrics */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-brand-mist rounded-xl p-3 border border-brand-slate/5">
+                    <div className="flex items-center text-brand-slate mb-1">
+                      <DollarSign className="h-4 w-4 mr-1 text-brand-darkgreen" />
+                      <span className="text-xs font-medium">Avg Salary</span>
                     </div>
-                    <p className="text-lg font-bold text-green-600">{major.averageSalary}</p>
-                    <p className="text-xs text-brand-slate">Entry: {major.entryLevelSalary}</p>
+                    <div className="text-lg font-bold text-brand-ink">{major.averageSalary}</div>
+                    <div className="text-xs text-brand-slate/80 mt-1">Entry: {major.entryLevelSalary}</div>
                   </div>
-
-                  <div className="p-3 bg-gradient-to-br from-[#3EBFB0]/10 to-[#3EBFB0]/5 rounded-lg border border-[#3EBFB0]/30">
-                    <div className="flex items-center gap-2 mb-1">
-                      <TrendingUp className="w-4 h-4 text-[#3EBFB0]" />
-                      <span className="text-xs text-brand-slate">Job Growth</span>
+                  <div className="bg-brand-mist rounded-xl p-3 border border-brand-slate/5">
+                    <div className="flex items-center text-brand-slate mb-1">
+                      <TrendingUp className="h-4 w-4 mr-1 text-brand-neon" />
+                      <span className="text-xs font-medium">Job Growth</span>
                     </div>
-                    <p className="text-lg font-bold text-[#3EBFB0]">{major.jobGrowth}</p>
-                    <p className="text-xs text-brand-slate">Next 10 years</p>
-                  </div>
-
-                  <div className="p-3 bg-gradient-to-br from-[#2B3674]/5 to-[#2B3674]/10 rounded-lg border border-[#2B3674]/20">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Clock className="w-4 h-4 text-[#2B3674]" />
-                      <span className="text-xs text-brand-slate">Duration</span>
-                    </div>
-                    <p className="text-lg font-bold text-[#2B3674]">{major.timeToComplete}</p>
-                  </div>
-
-                  <div className={`p-3 rounded-lg border ${getDifficultyColor(major.difficulty)}`}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <BarChart3 className="w-4 h-4" />
-                      <span className="text-xs">Difficulty</span>
-                    </div>
-                    <p className="text-lg font-bold">{major.difficulty}</p>
+                    <div className="text-lg font-bold text-brand-ink">{major.jobGrowth}</div>
+                    <div className="text-xs text-brand-slate/80 mt-1">10-year projection</div>
                   </div>
                 </div>
 
-                {/* Demand and Remote */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className={`p-2 rounded-lg border text-center ${getDemandColor(major.demandLevel)}`}>
-                    <p className="text-xs font-medium mb-1">Market Demand</p>
-                    <p className="text-sm font-bold">{major.demandLevel}</p>
-                  </div>
-                  <div className="p-2 bg-[#C8A860]/10 rounded-lg border border-[#C8A860]/30 text-center">
-                    <p className="text-xs text-brand-slate font-medium mb-1">Remote Work</p>
-                    <p className="text-sm font-bold text-[#C8A860]">{major.remoteOpportunities}</p>
-                  </div>
-                </div>
-
-                {/* Top Skills */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-[#2B3674] mb-2 flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-[#3EBFB0]" />
-                    Top Skills Required
-                  </h4>
+                {/* Top Careers */}
+                <div className="mb-6 flex-grow">
+                  <h3 className="text-sm font-semibold text-brand-ink mb-3 flex items-center">
+                    <Briefcase className="h-4 w-4 mr-2 text-brand-slate" /> Top Careers
+                  </h3>
                   <div className="flex flex-wrap gap-2">
-                    {major.topSkills.map((skill, idx) => (
+                    {major.careers.slice(0, 3).map((career, idx) => (
                       <span
                         key={idx}
-                        className="px-3 py-1 bg-gradient-to-r from-[#2B3674]/10 to-[#3EBFB0]/10 text-[#2B3674] rounded-full text-xs font-medium border border-[#3EBFB0]/20"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Career Options */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-[#2B3674] mb-2 flex items-center gap-2">
-                    <Briefcase className="w-4 h-4 text-[#3EBFB0]" />
-                    Career Paths
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {major.careers.slice(0, 4).map((career, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 bg-[#3EBFB0]/10 text-[#3EBFB0] rounded-lg text-xs font-medium border border-[#3EBFB0]/30"
+                        className="bg-brand-mist text-brand-slate text-xs px-3 py-1.5 rounded-lg border border-brand-slate/10"
                       >
                         {career}
                       </span>
                     ))}
-                    {major.careers.length > 4 && (
-                      <span className="px-3 py-1 bg-[#C8A860]/10 text-[#C8A860] rounded-lg text-xs font-medium">
-                        +{major.careers.length - 4} more
+                    {major.careers.length > 3 && (
+                      <span className="bg-brand-mist text-brand-slate text-xs px-2 py-1.5 rounded-lg border border-brand-slate/10">
+                        +{major.careers.length - 3} more
                       </span>
                     )}
                   </div>
                 </div>
 
-                {/* Required Courses */}
-                <div className="mb-4 p-3 bg-brand-mist rounded-lg border border-brand-slate/10">
-                  <h4 className="text-xs font-semibold text-brand-slate mb-2 flex items-center gap-2">
-                    <BookOpen className="w-3 h-3" />
-                    Core Courses ({major.requiredCourses.length})
-                  </h4>
-                  <div className="flex flex-wrap gap-1">
-                    {major.requiredCourses.slice(0, 4).map((course, idx) => (
-                      <span key={idx} className="text-xs text-brand-slate">
-                        {course}{idx < 3 && idx < major.requiredCourses.length - 1 ? " •" : ""}
-                      </span>
-                    ))}
-                    {major.requiredCourses.length > 4 && (
-                      <span className="text-xs text-brand-slate">+{major.requiredCourses.length - 4} more</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3">
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className="flex-1 bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] hover:from-[#3EBFB0] hover:to-[#2B3674] shadow-md"
-                  >
-                    Explore Major
-                    <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-2 border-[#2B3674]/20 hover:border-[#3EBFB0] hover:bg-[#3EBFB0]/5"
-                  >
-                    <Star className="w-4 h-4" />
+                {/* Footer Action */}
+                <div className="mt-auto pt-4 border-t border-brand-slate/10">
+                  <Button className="w-full bg-white text-brand-ink border-2 border-brand-slate/10 hover:border-brand-neon hover:bg-brand-mist transition-all justify-center group-hover:shadow-md">
+                    Explore Details
+                    <ChevronRight className="h-4 w-4 ml-2 text-brand-slate group-hover:text-brand-neon transition-colors" />
                   </Button>
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
+
+        {filteredMajors.length === 0 && (
+          <div className="text-center py-16 bg-white rounded-3xl border border-brand-slate/10 shadow-sm">
+            <GraduationCap className="h-16 w-16 text-brand-slate/30 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-brand-ink mb-2">No majors found</h3>
+            <p className="text-brand-slate max-w-md mx-auto">
+              We couldn't find any majors matching your current search. Try adjusting your filters or search terms.
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedCategory("all");
+              }}
+              className="mt-6 border-brand-slate/20 hover:bg-brand-mist"
+            >
+              Clear all filters
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

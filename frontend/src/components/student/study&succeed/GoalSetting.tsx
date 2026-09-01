@@ -14,114 +14,62 @@ import {
   BookOpen,
   Users,
   Zap,
-  Lightbulb
+  Lightbulb,
+  GraduationCap,
+  HeartPulse,
+  Palette
 } from "lucide-react";
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
 
-const getRelativeDate = (days: number) => { const d = new Date(); d.setDate(d.getDate() + days); return d.toISOString().split('T')[0]; };
+const getRelativeTimeLabel = (daysAhead: number) => {
+  if (daysAhead < 0) return "Completed";
+  if (daysAhead === 0) return "Due Today";
+  if (daysAhead < 7) return `In ${daysAhead} days`;
+  if (daysAhead < 30) return `In ${Math.floor(daysAhead / 7)} weeks`;
+  return `In ${Math.floor(daysAhead / 30)} months`;
+};
+
+import { useAppContext } from "../../../contexts/AppContext";
 
 export const GoalSetting: React.FC = () => {
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  const [goals, setGoals] = useState([
-    {
-      id: 1,
-      title: "Maintain 3.8 GPA",
-      description: "Keep my cumulative GPA above 3.8 for college applications",
-      category: "academic",
-      targetDate: getRelativeDate(30),
-      progress: 85,
-      status: "in-progress",
-      priority: "high",
-      milestones: [
-        { task: "Complete midterm exams", completed: true },
-        { task: "Submit research paper", completed: true },
-        { task: "Prepare for finals", completed: false },
-      ]
-    },
-    {
-      id: 2,
-      title: "Learn Python Programming",
-      description: "Complete online Python course and build 3 projects",
-      category: "skill",
-      targetDate: getRelativeDate(15),
-      progress: 60,
-      status: "in-progress",
-      priority: "medium",
-      milestones: [
-        { task: "Complete basic syntax", completed: true },
-        { task: "Build calculator app", completed: true },
-        { task: "Create web scraper", completed: false },
-        { task: "Build portfolio website", completed: false },
-      ]
-    },
-    {
-      id: 3,
-      title: "Complete 50 Volunteer Hours",
-      description: "Volunteer at local animal shelter and community center",
-      category: "personal",
-      targetDate: getRelativeDate(20),
-      progress: 70,
-      status: "in-progress",
-      priority: "medium",
-      milestones: [
-        { task: "Register with organizations", completed: true },
-        { task: "Complete 25 hours", completed: true },
-        { task: "Complete 40 hours", completed: false },
-        { task: "Get recommendation letter", completed: false },
-      ]
-    },
-    {
-      id: 4,
-      title: "SAT Score 1450+",
-      description: "Achieve target SAT score for college applications",
-      category: "academic",
-      targetDate: getRelativeDate(-5),
-      progress: 100,
-      status: "completed",
-      priority: "high",
-      milestones: [
-        { task: "Take diagnostic test", completed: true },
-        { task: "Complete prep course", completed: true },
-        { task: "Take practice tests", completed: true },
-        { task: "Take official SAT", completed: true },
-      ]
-    },
-  ]);
+  const { state, addGoal, updateGoalStatus, deleteGoal } = useAppContext();
+  const goals = state.goals;
 
   const categories = [
-    { id: "all", name: "All Goals", icon: Target, color: "text-brand-slate" },
-    { id: "academic", name: "Academic", icon: BookOpen, color: "text-blue-600" },
-    { id: "skill", name: "Skills", icon: Zap, color: "text-purple-600" },
-    { id: "personal", name: "Personal", icon: Users, color: "text-green-600" },
-    { id: "career", name: "Career", icon: Award, color: "text-orange-600" },
+    { id: "all", name: "All Goals", icon: Target },
+    { id: "academic", name: "Academic", icon: BookOpen },
+    { id: "skill", name: "Skills", icon: Zap },
+    { id: "personal", name: "Personal", icon: Users },
+    { id: "career", name: "Career", icon: Award },
   ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
-        return "text-green-600 bg-green-100 border-green-200";
+        return "text-brand-darkgreen bg-brand-neon/10 border-brand-neon/20";
       case "in-progress":
-        return "text-blue-600 bg-blue-100 border-blue-200";
+        return "text-brand-ink bg-brand-mist border-brand-slate/10";
       case "overdue":
-        return "text-red-600 bg-red-100 border-red-200";
+        return "text-red-600 bg-red-50 border-red-200";
       default:
-        return "text-brand-slate bg-brand-slate/10 border-brand-slate/10";
+        return "text-brand-slate bg-brand-slate/5 border-brand-slate/10";
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "high":
-        return "border-l-red-500 bg-red-50";
+        return "border-l-red-500 bg-white";
       case "medium":
-        return "border-l-yellow-500 bg-yellow-50";
+        return "border-l-yellow-500 bg-white";
       case "low":
-        return "border-l-green-500 bg-green-50";
+        return "border-l-brand-neon bg-white";
       default:
-        return "border-l-brand-slate bg-brand-mist";
+        return "border-l-brand-slate bg-white";
     }
   };
 
@@ -134,323 +82,336 @@ export const GoalSetting: React.FC = () => {
       label: "Total Goals",
       value: goals.length,
       icon: Target,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50"
+      bgColor: "bg-brand-mist",
+      iconColor: "text-brand-ink"
     },
     {
       label: "Completed",
       value: goals.filter(g => g.status === "completed").length,
       icon: CheckCircle,
-      color: "text-green-600",
-      bgColor: "bg-green-50"
+      bgColor: "bg-brand-neon/10",
+      iconColor: "text-brand-darkgreen"
     },
     {
       label: "In Progress",
       value: goals.filter(g => g.status === "in-progress").length,
       icon: Clock,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50"
+      bgColor: "bg-brand-mist border border-brand-slate/10",
+      iconColor: "text-brand-ink"
     },
     {
-      label: "Average Progress",
+      label: "Avg Progress",
       value: `${Math.round(goals.reduce((acc, g) => acc + g.progress, 0) / goals.length)}%`,
       icon: TrendingUp,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50"
+      bgColor: "bg-brand-darkgreen/10",
+      iconColor: "text-brand-darkgreen"
     },
   ];
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Goal Setting</h1>
-          <p className="text-brand-slate">
-            Set, track, and achieve your academic and personal goals
-          </p>
-        </div>
-        <Button onClick={() => setShowAddGoal(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Goal
-        </Button>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat, index) => (
-          <Card key={index} className="text-center">
-            <div className={`w-12 h-12 ${stat.bgColor} rounded-xl flex items-center justify-center mx-auto mb-3`}>
-              <stat.icon className={`h-6 w-6 ${stat.color}`} />
-            </div>
-            <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
-            <div className="text-sm text-brand-slate">{stat.label}</div>
-          </Card>
-        ))}
-      </div>
-
-      {/* Category Filter */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {categories.map((category) => (
-          <Button
-            key={category.id}
-            variant={selectedCategory === category.id ? "primary" : "outline"}
-            size="sm"
-            onClick={() => setSelectedCategory(category.id)}
-            className="flex items-center space-x-2"
-          >
-            <category.icon className="h-4 w-4" />
-            <span>{category.name}</span>
-          </Button>
-        ))}
-      </div>
-
-      {/* Goals List */}
-      <div className="space-y-4 mb-8">
-        {filteredGoals.map((goal) => (
-          <Card
-            key={goal.id}
-            className={`border-l-4 ${getPriorityColor(goal.priority)} hover:shadow-lg transition-all duration-200`}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center space-x-3 mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900">{goal.title}</h3>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(goal.status)}`}>
-                    {goal.status.replace("-", " ")}
-                  </span>
-                  <span className="px-2 py-1 text-brand-slate rounded-full text-xs capitalize bg-white border border-brand-slate/10">
-                    {goal.category}
-                  </span>
-                </div>
-
-                <p className="text-brand-slate mb-4">{goal.description}</p>
-
-                <div className="flex items-center space-x-6 text-sm text-brand-slate mb-4">
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    Target: {new Date(goal.targetDate).toLocaleDateString()}
-                  </div>
-                  <div className="flex items-center">
-                    <TrendingUp className="h-4 w-4 mr-1" />
-                    Progress: {goal.progress}%
-                  </div>
-                  <div className="flex items-center">
-                    <Flag className={`h-4 w-4 mr-1 ${
-                      goal.priority === 'high' ? 'text-red-500' :
-                      goal.priority === 'medium' ? 'text-yellow-500' : 'text-green-500'
-                    }`} />
-                    {goal.priority} priority
-                  </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="w-full rounded-full h-3 mb-4 bg-brand-slate/10">
-                  <div
-                    className={`h-3 rounded-full transition-all duration-500 ${
-                      goal.status === "completed"
-                        ? "bg-green-500"
-                        : goal.progress >= 75
-                        ? "bg-blue-500"
-                        : goal.progress >= 50
-                        ? "bg-yellow-500"
-                        : "bg-red-500"
-                    }`}
-                    style={{ width: `${goal.progress}%` }}
-                  ></div>
-                </div>
-
-                {/* Milestones */}
-                <div className="bg-white p-4 rounded-lg border border-brand-slate/10">
-                  <h4 className="font-medium text-gray-900 mb-3">Milestones:</h4>
-                  <div className="space-y-2">
-                    {goal.milestones.map((milestone, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <CheckCircle className={`h-4 w-4 ${
-                          milestone.completed ? 'text-green-600' : 'text-gray-300'
-                        }`} />
-                        <span className={`text-sm ${
-                          milestone.completed ? 'text-gray-900 line-through' : 'text-brand-slate'
-                        }`}>
-                          {milestone.task}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2 ml-4">
-                <Button variant="ghost" size="sm">
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="sm">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      {/* SMART Goals Framework */}
-      <Card className="bg-gradient-to-br from-blue-50 to-indigo-100 border-blue-200">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-          <Lightbulb className="h-6 w-6 text-yellow-500 mr-2" />
-          SMART Goals Framework
-        </h2>
+    <div className="min-h-screen bg-brand-mist/30 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
         
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-              <span className="font-bold">S</span>
+        {/* Header */}
+        <div className="bg-gradient-to-r from-brand-ink to-brand-darkgreen rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-neon opacity-10 rounded-full blur-2xl -ml-10 -mb-10"></div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-lg">
+                <Target className="w-8 h-8 text-brand-neon" />
+              </div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Goal Setting</h1>
+                <p className="text-brand-mist/90 text-lg">
+                  Set, track, and achieve your academic and personal goals
+                </p>
+              </div>
             </div>
-            <h3 className="font-semibold text-gray-900 mb-1">Specific</h3>
-            <p className="text-xs text-brand-slate">Clear and well-defined</p>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-              <span className="font-bold">M</span>
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-1">Measurable</h3>
-            <p className="text-xs text-brand-slate">Track your progress</p>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-              <span className="font-bold">A</span>
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-1">Achievable</h3>
-            <p className="text-xs text-brand-slate">Realistic and attainable</p>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-12 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-              <span className="font-bold">R</span>
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-1">Relevant</h3>
-            <p className="text-xs text-brand-slate">Aligned with your values</p>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-12 bg-red-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-              <span className="font-bold">T</span>
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-1">Time-bound</h3>
-            <p className="text-xs text-brand-slate">Has a deadline</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-lg">
-          <h4 className="font-semibold text-gray-900 mb-2">Example SMART Goal:</h4>
-          <p className="text-sm text-brand-slate">
-            "I will <strong>improve my math grade from B to A</strong> (Specific & Measurable) 
-            by <strong>studying 1 hour daily and getting tutoring</strong> (Achievable & Relevant) 
-            <strong>by the end of this semester</strong> (Time-bound)."
-          </p>
-        </div>
-      </Card>
-
-      {/* Goal Templates */}
-      <Card className="mt-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Goal Templates</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[
-            {
-              title: "Academic Excellence",
-              description: "Improve GPA and academic performance",
-              icon: "📚",
-              color: "bg-blue-50 border-blue-200"
-            },
-            {
-              title: "Skill Development",
-              description: "Learn new technical or soft skills",
-              icon: "⚡",
-              color: "bg-purple-50 border-purple-200"
-            },
-            {
-              title: "College Preparation",
-              description: "Get ready for college applications",
-              icon: "🎓",
-              color: "bg-green-50 border-green-200"
-            },
-            {
-              title: "Leadership Growth",
-              description: "Develop leadership and teamwork skills",
-              icon: "👥",
-              color: "bg-orange-50 border-orange-200"
-            },
-            {
-              title: "Health & Wellness",
-              description: "Maintain physical and mental health",
-              icon: "💪",
-              color: "bg-pink-50 border-pink-200"
-            },
-            {
-              title: "Creative Projects",
-              description: "Complete artistic or creative endeavors",
-              icon: "🎨",
-              color: "bg-indigo-50 border-indigo-200"
-            },
-          ].map((template, index) => (
-            <div
-              key={index}
-              className={`p-4 rounded-lg border-2 cursor-pointer hover:shadow-md transition-all duration-200 ${template.color}`}
+            <Button 
               onClick={() => setShowAddGoal(true)}
+              className="bg-brand-neon text-brand-ink hover:bg-white border-none shadow-lg font-bold"
             >
-              <div className="text-2xl mb-2">{template.icon}</div>
-              <h3 className="font-semibold text-gray-900 mb-1">{template.title}</h3>
-              <p className="text-sm text-brand-slate">{template.description}</p>
-            </div>
+              <Plus className="h-5 w-5 mr-2" />
+              Add Goal
+            </Button>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 2xl:grid-cols-6 4xl:grid-cols-8 gap-6">
+          {stats.map((stat, index) => (
+            <Card key={index} className="text-center p-6 border-brand-slate/10 hover:shadow-xl transition-all duration-300">
+              <div className={`w-14 h-14 ${stat.bgColor} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
+                <stat.icon className={`h-7 w-7 ${stat.iconColor}`} />
+              </div>
+              <div className="text-3xl font-bold text-brand-ink mb-1">{stat.value}</div>
+              <div className="text-sm font-medium text-brand-slate">{stat.label}</div>
+            </Card>
           ))}
         </div>
-      </Card>
 
-      {/* Motivational Section */}
-      <Card className="mt-8 bg-gradient-to-r from-primary-50 to-secondary-50 border-primary-200">
-        <div className="text-center">
-          <Award className="h-12 w-12 text-primary-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            You're Making Great Progress! 🎯
-          </h3>
-          <p className="text-brand-slate mb-6">
-            {goals.filter(g => g.status === "completed").length} goals completed this year. 
-            Keep up the excellent work!
-          </p>
-          <div className="flex justify-center space-x-4">
-            <Button variant="outline" size="sm">
-              <TrendingUp className="h-4 w-4 mr-2" />
-              View Progress Report
+        {/* Category Filter */}
+        <div className="flex flex-wrap gap-3">
+          {categories.map((category) => (
+            <Button
+              key={category.id}
+              variant={selectedCategory === category.id ? "primary" : "outline"}
+              onClick={() => setSelectedCategory(category.id)}
+              className={`flex items-center space-x-2 border-brand-slate/20 rounded-xl px-5 py-2.5 ${
+                selectedCategory === category.id 
+                  ? "bg-brand-ink text-white shadow-md border-transparent" 
+                  : "bg-white text-brand-slate hover:bg-brand-mist hover:text-brand-ink"
+              }`}
+            >
+              <category.icon className="h-4 w-4" />
+              <span className="font-semibold">{category.name}</span>
             </Button>
-            <Button variant="outline" size="sm">
-              <Star className="h-4 w-4 mr-2" />
-              Share Achievement
-            </Button>
+          ))}
+        </div>
+
+        {/* Goals List */}
+        <div className="space-y-6">
+          {filteredGoals.map((goal) => (
+            <Card
+              key={goal.id}
+              className={`border-l-4 ${getPriorityColor(goal.priority)} border-y-brand-slate/10 border-r-brand-slate/10 hover:shadow-xl transition-all duration-300`}
+            >
+              <div className="flex flex-col md:flex-row items-start justify-between gap-6 p-6">
+                <div className="flex-1 w-full">
+                  <div className="flex flex-wrap items-center gap-3 mb-3">
+                    <h3 className="text-xl font-bold text-brand-ink">{goal.title}</h3>
+                    <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${getStatusColor(goal.status)} uppercase tracking-wide`}>
+                      {goal.status.replace("-", " ")}
+                    </span>
+                    <span className="px-3 py-1 text-brand-slate font-semibold rounded-lg text-xs uppercase tracking-wide bg-brand-mist border border-brand-slate/10">
+                      {goal.category}
+                    </span>
+                  </div>
+
+                  <p className="text-brand-slate mb-6 text-sm md:text-base leading-relaxed">{goal.description}</p>
+
+                  <div className="flex flex-wrap items-center gap-6 text-sm text-brand-slate font-medium mb-6">
+                    <div className="flex items-center bg-brand-mist px-3 py-1.5 rounded-lg border border-brand-slate/10">
+                      <Calendar className="h-4 w-4 mr-2 text-brand-darkgreen" />
+                      {goal.targetLabel}
+                    </div>
+                    <div className="flex items-center bg-brand-mist px-3 py-1.5 rounded-lg border border-brand-slate/10">
+                      <TrendingUp className="h-4 w-4 mr-2 text-brand-darkgreen" />
+                      {goal.progress}%
+                    </div>
+                    <div className="flex items-center bg-brand-mist px-3 py-1.5 rounded-lg border border-brand-slate/10">
+                      <Flag className={`h-4 w-4 mr-2 ${
+                        (goal.priority || 'medium') === 'high' ? 'text-red-500' :
+                        (goal.priority || 'medium') === 'medium' ? 'text-yellow-500' : 'text-brand-neon'
+                      }`} />
+                      <span className="capitalize">{goal.priority || 'medium'} Priority</span>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full rounded-full h-2 mb-6 bg-brand-mist border border-brand-slate/5 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-1000 ${
+                        goal.status === "completed"
+                          ? "bg-brand-darkgreen"
+                          : goal.progress >= 75
+                          ? "bg-brand-neon"
+                          : goal.progress >= 50
+                          ? "bg-yellow-400"
+                          : "bg-red-400"
+                      }`}
+                      style={{ width: `${goal.progress}%` }}
+                    ></div>
+                  </div>
+
+                  {/* Milestones */}
+                  <div className="bg-brand-mist/50 p-5 rounded-xl border border-brand-slate/10">
+                    <h4 className="font-bold text-brand-ink mb-4 flex items-center gap-2">
+                      <Target className="w-4 h-4 text-brand-slate" />
+                      Milestones
+                    </h4>
+                    <div className="space-y-3">
+                      {goal.milestones?.map((milestone, index) => (
+                        <div key={index} className="flex items-center space-x-3">
+                          <CheckCircle className={`h-5 w-5 transition-colors ${
+                            milestone.completed ? 'text-brand-neon' : 'text-brand-slate/30'
+                          }`} />
+                          <span className={`text-sm font-medium ${
+                            milestone.completed ? 'text-brand-slate line-through' : 'text-brand-ink'
+                          }`}>
+                            {milestone.task}
+                          </span>
+                        </div>
+                      ))}
+                      {(!goal.milestones || goal.milestones.length === 0) && (
+                        <p className="text-sm text-brand-slate">No milestones set.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2 md:ml-4 w-full md:w-auto justify-end">
+                  <Button variant="outline" className="border-brand-slate/20 hover:bg-brand-mist text-brand-ink">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" className="border-red-200 text-red-500 hover:bg-red-50" onClick={() => deleteGoal(goal.id as string)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* SMART Goals Framework */}
+        <div className="bg-gradient-to-br from-brand-mist to-white rounded-3xl p-8 border border-brand-slate/10 shadow-sm relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-neon/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          
+          <h2 className="text-2xl font-bold text-brand-ink mb-8 flex items-center relative z-10">
+            <Lightbulb className="h-6 w-6 text-brand-neon mr-3" />
+            SMART Goals Framework
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8 relative z-10">
+            {[
+              { letter: 'S', title: 'Specific', desc: 'Clear and well-defined' },
+              { letter: 'M', title: 'Measurable', desc: 'Track your progress' },
+              { letter: 'A', title: 'Achievable', desc: 'Realistic and attainable' },
+              { letter: 'R', title: 'Relevant', desc: 'Aligned with your values' },
+              { letter: 'T', title: 'Time-bound', desc: 'Has a deadline' }
+            ].map((item, idx) => (
+              <div key={idx} className="text-center bg-white p-6 rounded-2xl border border-brand-slate/5 shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-14 h-14 bg-brand-ink text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md font-bold text-xl">
+                  {item.letter}
+                </div>
+                <h3 className="font-bold text-brand-ink mb-1">{item.title}</h3>
+                <p className="text-xs text-brand-slate font-medium">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border border-brand-slate/10 shadow-sm relative z-10 flex items-start gap-4">
+            <div className="mt-1">
+              <CheckCircle className="w-6 h-6 text-brand-neon" />
+            </div>
+            <div>
+              <h4 className="font-bold text-brand-ink mb-2">Example SMART Goal:</h4>
+              <p className="text-sm text-brand-slate leading-relaxed">
+                "I will <strong className="text-brand-ink font-bold">improve my math grade from B to A</strong> (Specific & Measurable) 
+                by <strong className="text-brand-ink font-bold">studying 1 hour daily and getting tutoring</strong> (Achievable & Relevant) 
+                <strong className="text-brand-ink font-bold"> by the end of this semester</strong> (Time-bound)."
+              </p>
+            </div>
           </div>
         </div>
-      </Card>
 
-      {/* Add Goal Modal Placeholder */}
-      {showAddGoal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <Card className="max-w-md w-full">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Add New Goal</h3>
-              <button
-                onClick={() => setShowAddGoal(false)}
-                className="text-gray-400 hover:text-brand-slate"
+        {/* Goal Templates */}
+        <div className="pt-4">
+          <h2 className="text-2xl font-bold text-brand-ink mb-6">Goal Templates</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 4xl:grid-cols-5 gap-6">
+            {[
+              {
+                title: "Academic Excellence",
+                description: "Improve GPA and academic performance",
+                icon: BookOpen,
+              },
+              {
+                title: "Skill Development",
+                description: "Learn new technical or soft skills",
+                icon: Zap,
+              },
+              {
+                title: "College Preparation",
+                description: "Get ready for college applications",
+                icon: GraduationCap,
+              },
+              {
+                title: "Leadership Growth",
+                description: "Develop leadership and teamwork skills",
+                icon: Users,
+              },
+              {
+                title: "Health & Wellness",
+                description: "Maintain physical and mental health",
+                icon: HeartPulse,
+              },
+              {
+                title: "Creative Projects",
+                description: "Complete artistic or creative endeavors",
+                icon: Palette,
+              },
+            ].map((template, index) => (
+              <div
+                key={index}
+                className="bg-white p-6 rounded-2xl border border-brand-slate/10 cursor-pointer hover:shadow-xl hover:border-brand-neon/50 transition-all duration-300 group flex flex-col items-center text-center"
+                onClick={() => setShowAddGoal(true)}
               >
-                ×
-              </button>
-            </div>
-            <p className="text-brand-slate mb-4">
-              Goal creation form will be implemented here. For now, you can explore the existing goals and templates.
-            </p>
-            <Button onClick={() => setShowAddGoal(false)} className="w-full">
-              Close
-            </Button>
-          </Card>
+                <div className="w-16 h-16 bg-brand-mist rounded-2xl flex items-center justify-center mb-4 group-hover:bg-brand-neon/10 transition-colors">
+                  <template.icon className="w-8 h-8 text-brand-ink group-hover:text-brand-darkgreen transition-colors" />
+                </div>
+                <h3 className="font-bold text-brand-ink mb-2 group-hover:text-brand-neon transition-colors">{template.title}</h3>
+                <p className="text-sm font-medium text-brand-slate">{template.description}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      )}
+
+        {/* Motivational Section */}
+        <div className="mt-8 bg-brand-ink rounded-3xl p-8 border border-brand-ink shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-neon opacity-10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          
+          <div className="text-center relative z-10">
+            <Award className="h-16 w-16 text-brand-neon mx-auto mb-6" />
+            <h3 className="text-2xl font-bold text-white mb-3">
+              You're Making Great Progress!
+            </h3>
+            <p className="text-brand-mist/80 mb-8 max-w-lg mx-auto font-medium">
+              {goals.filter(g => g.status === "completed").length} goals completed this year. 
+              Keep up the excellent work! Consistent effort leads to extraordinary results.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+              <Button className="bg-brand-neon text-brand-ink hover:bg-white border-none shadow-lg font-bold w-full sm:w-auto">
+                <TrendingUp className="h-5 w-5 mr-2" />
+                View Progress Report
+              </Button>
+              <Button className="bg-white/10 text-white hover:bg-white/20 border border-white/20 font-bold w-full sm:w-auto">
+                <Star className="h-5 w-5 mr-2" />
+                Share Achievement
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Add Goal Modal Placeholder */}
+        {showAddGoal && (
+          <div className="fixed inset-0 bg-brand-ink/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <Card className="max-w-md w-full border-none shadow-2xl bg-white overflow-hidden">
+              <div className="bg-brand-mist p-6 flex items-center justify-between border-b border-brand-slate/10">
+                <h3 className="text-xl font-bold text-brand-ink flex items-center gap-2">
+                  <Target className="w-5 h-5 text-brand-neon" />
+                  Add New Goal
+                </h3>
+                <button
+                  onClick={() => setShowAddGoal(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white text-brand-slate hover:text-brand-ink transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="p-6">
+                <p className="text-brand-slate mb-8 font-medium">
+                  Goal creation form will be implemented here. For now, you can explore the existing goals and templates.
+                </p>
+                <Button onClick={() => setShowAddGoal(false)} className="w-full bg-brand-ink hover:bg-brand-darkgreen text-white font-bold py-3">
+                  Close
+                </Button>
+              </div>
+            </Card>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
-
-export default GoalSetting;

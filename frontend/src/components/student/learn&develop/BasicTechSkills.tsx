@@ -10,9 +10,11 @@ import {
   Target, 
   ChevronRight, 
   Play,
-  Monitor
+  Monitor,
+  CheckCircle
 } from "lucide-react";
 import Button from "../../shared/ui/Button";
+import Card from "../../shared/ui/Card";
 
 const BasicTechSkills: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -106,58 +108,63 @@ const BasicTechSkills: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-white to-brand-mist/50 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-brand-mist/30 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-brand-ink to-brand-darkgreen rounded-xl flex items-center justify-center shadow-lg">
-              <Monitor className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-brand-ink to-brand-darkgreen bg-clip-text text-transparent">
-                Basic Tech Skills
-              </h1>
-              <p className="text-brand-slate">
-                Build essential digital literacy and technical modules
-              </p>
+        <div className="bg-gradient-to-r from-brand-ink to-brand-darkgreen rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-neon opacity-10 rounded-full blur-2xl -ml-10 -mb-10"></div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-lg">
+                <Monitor className="w-8 h-8 text-brand-neon" />
+              </div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                  Basic Tech Skills
+                </h1>
+                <p className="text-brand-mist/90 text-lg">
+                  Build essential digital literacy and technical modules
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-2xl p-6 mb-8 border border-brand-slate/10 shadow-sm">
-          <div className="mb-4">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-brand-slate/40 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search modules..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-brand-mist border-2 border-brand-slate/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-neon focus:border-transparent transition-all"
-              />
+        <Card className="p-6 border-brand-slate/10 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+          <div className="flex-1 relative w-full">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-brand-slate w-5 h-5 z-10" />
+            <input
+              type="text"
+              placeholder="Search modules..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-brand-mist border-brand-slate/10 focus:border-brand-neon text-brand-ink rounded-xl pl-12 h-12 outline-none border transition-colors"
+            />
+          </div>
+          <div className="w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+            <div className="flex gap-3 min-w-max">
+              {categories.map((category) => (
+                <button
+                  key={category.name}
+                  onClick={() => setSelectedCategory(category.name.toLowerCase())}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                    selectedCategory === category.name.toLowerCase()
+                      ? "bg-brand-ink text-white border-brand-ink shadow-md"
+                      : "bg-white text-brand-ink border-brand-slate/10 hover:border-brand-neon/50 hover:bg-brand-mist"
+                  }`}
+                >
+                  <category.icon className={`w-4 h-4 ${
+                    selectedCategory === category.name.toLowerCase() ? "text-brand-neon" : "text-brand-slate"
+                  }`} />
+                  {category.name}
+                </button>
+              ))}
             </div>
           </div>
-
-          {/* Category Filters */}
-          <div className="flex flex-wrap gap-3">
-            {categories.map((category) => (
-              <button
-                key={category.name}
-                onClick={() => setSelectedCategory(category.name.toLowerCase())}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  selectedCategory === category.name.toLowerCase()
-                    ? "bg-gradient-to-r from-brand-ink to-brand-darkgreen text-white shadow-md"
-                    : "bg-brand-slate/5 text-brand-ink hover:bg-brand-neon/10"
-                }`}
-              >
-                <category.icon className="w-4 h-4" />
-                {category.name}
-              </button>
-            ))}
-          </div>
-        </div>
+        </Card>
 
         {/* Results Count */}
         <div className="mb-6">
@@ -167,7 +174,7 @@ const BasicTechSkills: React.FC = () => {
         </div>
 
         {/* Modules Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 4xl:grid-cols-5 gap-6">
           {filteredModules.map((mod) => (
             <div
               key={mod.id}

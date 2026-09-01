@@ -231,7 +231,7 @@ const InterviewSetup: React.FC = () => {
       ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist/30 via-white to-brand-mist/30 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -244,11 +244,11 @@ const InterviewSetup: React.FC = () => {
             Back
           </Button>
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-brand-ink to-brand-darkgreen rounded-xl flex items-center justify-center shadow-lg">
               <Video className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-brand-ink to-brand-darkgreen bg-clip-text text-transparent">
                 {type === "college" ? "College" : "Job"} Interview Setup
               </h1>
               <p className="text-brand-slate">
@@ -258,15 +258,15 @@ const InterviewSetup: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 4xl:grid-cols-5 gap-6">
           {/* Main Setup Area */}
           <div className="lg:col-span-2 space-y-6">
             {/* Camera Preview */}
-            <Card className="border-2 border-[#2B3674]/10">
-              <h3 className="text-lg font-bold text-[#2B3674] mb-4">
+            <Card className="border-2 border-brand-slate/10">
+              <h3 className="text-lg font-bold text-brand-ink mb-4">
                 Camera Preview
               </h3>
-              <div className="relative bg-gray-900 rounded-xl overflow-hidden aspect-video mb-4">
+              <div className="relative bg-brand-ink rounded-xl overflow-hidden aspect-video mb-4">
                 {cameraEnabled ? (
                   <>
                     <video
@@ -283,8 +283,8 @@ const InterviewSetup: React.FC = () => {
                   </>
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-                    <Camera className="w-16 h-16 mb-4 text-gray-400" />
-                    <p className="text-gray-400">Camera is off</p>
+                    <Camera className="w-16 h-16 mb-4 text-brand-slate/60" />
+                    <p className="text-brand-slate/60">Camera is off</p>
                     <p className="text-brand-slate text-sm mt-2">Click "Turn On" to enable</p>
                   </div>
                 )}
@@ -310,11 +310,11 @@ const InterviewSetup: React.FC = () => {
                       cameraStatus === "success" ? "bg-green-100" : "bg-brand-slate/10"
                     }`}>
                       <Camera className={`w-5 h-5 ${
-                        cameraStatus === "success" ? "text-green-600" : "text-gray-400"
+                        cameraStatus === "success" ? "text-green-600" : "text-brand-slate/60"
                       }`} />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Camera</p>
+                      <p className="font-medium text-brand-ink">Camera</p>
                       <p className="text-sm text-brand-slate">
                         {cameraStatus === "checking" && "Checking device..."}
                         {cameraStatus === "success" && cameraEnabled && "Active"}
@@ -330,7 +330,7 @@ const InterviewSetup: React.FC = () => {
                       cameraEnabled
                         ? "bg-red-500 text-white hover:bg-red-600"
                         : "bg-green-500 text-white hover:bg-green-600"
-                    } disabled:bg-gray-300 disabled:cursor-not-allowed`}
+                    } disabled:bg-brand-slate/20 disabled:cursor-not-allowed`}
                   >
                     {cameraEnabled ? "Turn Off" : "Turn On"}
                   </button>
@@ -343,11 +343,11 @@ const InterviewSetup: React.FC = () => {
                       micStatus === "success" ? "bg-green-100" : "bg-brand-slate/10"
                     }`}>
                       <Mic className={`w-5 h-5 ${
-                        micStatus === "success" ? "text-green-600" : "text-gray-400"
+                        micStatus === "success" ? "text-green-600" : "text-brand-slate/60"
                       }`} />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Microphone</p>
+                      <p className="font-medium text-brand-ink">Microphone</p>
                       <p className="text-sm text-brand-slate">
                         {micStatus === "checking" && "Checking device..."}
                         {micStatus === "success" && micEnabled && "Active"}
@@ -363,7 +363,7 @@ const InterviewSetup: React.FC = () => {
                       micEnabled
                         ? "bg-red-500 text-white hover:bg-red-600"
                         : "bg-green-500 text-white hover:bg-green-600"
-                    } disabled:bg-gray-300 disabled:cursor-not-allowed`}
+                    } disabled:bg-brand-slate/20 disabled:cursor-not-allowed`}
                   >
                     {micEnabled ? "Turn Off" : "Turn On"}
                   </button>
@@ -387,18 +387,18 @@ const InterviewSetup: React.FC = () => {
             </Card>
 
             {/* Features Preview */}
-            <Card className="border-2 border-[#2B3674]/10">
-              <h3 className="text-lg font-bold text-[#2B3674] mb-4">
+            <Card className="border-2 border-brand-slate/10">
+              <h3 className="text-lg font-bold text-brand-ink mb-4">
                 What We'll Analyze
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-4">
                 {features.map((feature, idx) => (
-                  <div key={idx} className="flex items-start gap-3 p-4 bg-[#3EBFB0]/5 rounded-lg">
-                    <div className="w-10 h-10 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-lg flex items-center justify-center">
+                  <div key={idx} className="flex items-start gap-3 p-4 bg-brand-mist rounded-lg">
+                    <div className="w-10 h-10 bg-gradient-to-br from-brand-ink to-brand-darkgreen rounded-lg flex items-center justify-center">
                       <feature.icon className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <p className="font-medium text-[#2B3674] mb-1">
+                      <p className="font-medium text-brand-ink mb-1">
                         {feature.title}
                       </p>
                       <p className="text-sm text-brand-slate">
@@ -414,29 +414,29 @@ const InterviewSetup: React.FC = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Session Info */}
-            <Card className="border-2 border-[#2B3674]/10">
-              <h3 className="text-lg font-bold text-[#2B3674] mb-4">
+            <Card className="border-2 border-brand-slate/10">
+              <h3 className="text-lg font-bold text-brand-ink mb-4">
                 Session Details
               </h3>
               <div className="space-y-3">
-                <div className="flex items-center gap-3 p-3 bg-[#3EBFB0]/5 rounded-lg">
-                  <Clock className="w-5 h-5 text-[#3EBFB0]" />
+                <div className="flex items-center gap-3 p-3 bg-brand-mist rounded-lg">
+                  <Clock className="w-5 h-5 text-brand-darkgreen" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Duration</p>
+                    <p className="text-sm font-medium text-brand-ink">Duration</p>
                     <p className="text-xs text-brand-slate">~15-20 minutes</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-[#C8A860]/5 rounded-lg">
                   <MessageSquare className="w-5 h-5 text-[#C8A860]" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Questions</p>
+                    <p className="text-sm font-medium text-brand-ink">Questions</p>
                     <p className="text-xs text-brand-slate">5-7 questions</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-[#2B3674]/5 rounded-lg">
-                  <Sparkles className="w-5 h-5 text-[#2B3674]" />
+                <div className="flex items-center gap-3 p-3 bg-brand-mist/50 rounded-lg">
+                  <Sparkles className="w-5 h-5 text-brand-ink" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Feedback</p>
+                    <p className="text-sm font-medium text-brand-ink">Feedback</p>
                     <p className="text-xs text-brand-slate">Instant & detailed</p>
                   </div>
                 </div>
@@ -444,14 +444,14 @@ const InterviewSetup: React.FC = () => {
             </Card>
 
             {/* Tips */}
-            <Card className="border-2 border-[#3EBFB0]/20 bg-[#3EBFB0]/5">
-              <h3 className="text-lg font-bold text-[#2B3674] mb-4">
+            <Card className="border-2 border-brand-neon/20 bg-brand-mist">
+              <h3 className="text-lg font-bold text-brand-ink mb-4">
                 Quick Tips
               </h3>
               <div className="space-y-2">
                 {tips.map((tip, idx) => (
                   <div key={idx} className="flex items-start gap-2 text-sm text-brand-slate">
-                    <CheckCircle className="w-4 h-4 text-[#3EBFB0] flex-shrink-0 mt-0.5" />
+                    <CheckCircle className="w-4 h-4 text-brand-darkgreen flex-shrink-0 mt-0.5" />
                     <span>{tip}</span>
                   </div>
                 ))}
@@ -462,7 +462,7 @@ const InterviewSetup: React.FC = () => {
             <Button
               onClick={handleStartInterview}
               disabled={!cameraEnabled || !micEnabled}
-              className="w-full bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] py-6 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-brand-ink to-brand-darkgreen py-6 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Start Interview
               <ArrowRight className="w-5 h-5 ml-2" />

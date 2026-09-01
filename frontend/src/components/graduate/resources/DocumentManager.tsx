@@ -151,7 +151,7 @@ const DocumentManager: React.FC = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 2xl:grid-cols-6 4xl:grid-cols-8 gap-6 mb-8">
         <Card className="text-center" padding="lg">
           <div className="text-2xl font-bold text-brand-ink mb-1">12</div>
           <div className="text-sm text-brand-slate">Total Documents</div>
@@ -267,7 +267,7 @@ const DocumentManager: React.FC = () => {
 
           {/* Documents Grid/List */}
           {viewMode === "grid" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 4xl:grid-cols-5 gap-6">
               {filteredDocuments.map((doc) => (
                 <Card key={doc.id} className="hover:shadow-none border-b-4 border-r-4 border-brand-ink transition-all duration-200 group">
                   <div className="flex items-start justify-between mb-4">

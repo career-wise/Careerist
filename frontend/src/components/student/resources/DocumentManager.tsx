@@ -2,37 +2,44 @@ import React, { useState } from "react";
 import {
   Upload,
   FileText,
-  Image,
+  Image as ImageIcon,
   File,
   Download,
   Eye,
   Trash2,
-  Plus,
   Search,
   Filter,
   FolderPlus,
   Folder,
   Star,
+  Archive,
+  Award,
+  FlaskConical,
+  UserCircle,
+  Briefcase,
   Calendar,
-  User,
+  User
 } from "lucide-react";
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
-import Input from "../../shared/ui/Input";
 
-const getRelativeDate = (days: number) => { const d = new Date(); d.setDate(d.getDate() + days); return d.toISOString().split('T')[0]; };
+const getRelativeDate = (days: number) => { 
+  const d = new Date(); 
+  d.setDate(d.getDate() + days); 
+  return d.toISOString().split('T')[0]; 
+};
 
 const DocumentManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [viewMode, setViewMode] = useState("grid"); // grid or list
+  const [viewMode, setViewMode] = useState("grid");
 
   const categories = [
-    { id: "all", name: "All Documents", count: 12 },
-    { id: "academic", name: "Academic Records", count: 5 },
-    { id: "certificates", name: "Certificates", count: 3 },
-    { id: "projects", name: "Projects", count: 2 },
-    { id: "personal", name: "Personal Documents", count: 2 },
+    { id: "all", name: "All Documents", count: 12, icon: Folder },
+    { id: "academic", name: "Academic Records", count: 5, icon: Archive },
+    { id: "certificates", name: "Certificates", count: 3, icon: Award },
+    { id: "projects", name: "Projects", count: 2, icon: FlaskConical },
+    { id: "personal", name: "Personal Documents", count: 2, icon: UserCircle },
   ];
 
   const documents = [
@@ -44,7 +51,7 @@ const DocumentManager: React.FC = () => {
       category: "academic",
       uploadDate: getRelativeDate(-2),
       starred: true,
-      thumbnail: "📄",
+      icon: <Archive className="w-8 h-8" />
     },
     {
       id: 2,
@@ -54,7 +61,7 @@ const DocumentManager: React.FC = () => {
       category: "academic",
       uploadDate: getRelativeDate(-7),
       starred: false,
-      thumbnail: "📊",
+      icon: <FileText className="w-8 h-8" />
     },
     {
       id: 3,
@@ -64,7 +71,7 @@ const DocumentManager: React.FC = () => {
       category: "certificates",
       uploadDate: getRelativeDate(-9),
       starred: true,
-      thumbnail: "🏆",
+      icon: <Award className="w-8 h-8" />
     },
     {
       id: 4,
@@ -74,7 +81,7 @@ const DocumentManager: React.FC = () => {
       category: "projects",
       uploadDate: getRelativeDate(-12),
       starred: false,
-      thumbnail: "🔬",
+      icon: <FlaskConical className="w-8 h-8" />
     },
     {
       id: 5,
@@ -84,7 +91,7 @@ const DocumentManager: React.FC = () => {
       category: "personal",
       uploadDate: getRelativeDate(-14),
       starred: false,
-      thumbnail: "📋",
+      icon: <UserCircle className="w-8 h-8" />
     },
     {
       id: 6,
@@ -94,8 +101,8 @@ const DocumentManager: React.FC = () => {
       category: "certificates",
       uploadDate: getRelativeDate(-15),
       starred: false,
-      thumbnail: "🤝",
-    },
+      icon: <Briefcase className="w-8 h-8" />
+    }
   ];
 
   const filteredDocuments = documents.filter((doc) => {
@@ -107,259 +114,192 @@ const DocumentManager: React.FC = () => {
   const getFileIcon = (type: string) => {
     switch (type.toLowerCase()) {
       case "pdf":
-        return <FileText className="h-6 w-6 text-red-500" />;
+        return <FileText className="h-5 w-5 text-brand-neon" />;
       case "docx":
       case "doc":
-        return <FileText className="h-6 w-6 text-blue-500" />;
+        return <FileText className="h-5 w-5 text-brand-darkgreen" />;
       case "jpg":
       case "jpeg":
       case "png":
-        return <Image className="h-6 w-6 text-green-500" />;
+        return <ImageIcon className="h-5 w-5 text-brand-neon" />;
       default:
-        return <File className="h-6 w-6 text-brand-slate" />;
+        return <File className="h-5 w-5 text-brand-slate" />;
     }
   };
 
-  const handleUpload = () => {
-    // Handle file upload logic
-    console.log("Upload file");
-  };
-
-  const handleCreateFolder = () => {
-    // Handle folder creation logic
-    console.log("Create folder");
-  };
-
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Document Manager</h1>
-          <p className="text-brand-slate">
-            Upload, organize, and manage your important documents and certificates
-          </p>
-        </div>
-        <div className="flex items-center space-x-3">
-          <Button variant="outline" onClick={handleCreateFolder}>
-            <FolderPlus className="h-4 w-4 mr-2" />
-            New Folder
-          </Button>
-          <Button onClick={handleUpload}>
-            <Upload className="h-4 w-4 mr-2" />
-            Upload Document
-          </Button>
-        </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <Card className="text-center" padding="lg">
-          <div className="text-2xl font-bold text-blue-600 mb-1">12</div>
-          <div className="text-sm text-brand-slate">Total Documents</div>
-        </Card>
-        <Card className="text-center" padding="lg">
-          <div className="text-2xl font-bold text-green-600 mb-1">24.8 MB</div>
-          <div className="text-sm text-brand-slate">Storage Used</div>
-        </Card>
-        <Card className="text-center" padding="lg">
-          <div className="text-2xl font-bold text-purple-600 mb-1">3</div>
-          <div className="text-sm text-brand-slate">Starred Items</div>
-        </Card>
-        <Card className="text-center" padding="lg">
-          <div className="text-2xl font-bold text-orange-600 mb-1">5</div>
-          <div className="text-sm text-brand-slate">Categories</div>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Sidebar */}
-        <div className="lg:col-span-1">
-          <Card>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Categories</h3>
-            <div className="space-y-2">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-colors ${
-                    selectedCategory === category.id
-                      ? "bg-primary-50 text-primary-700 border border-primary-200"
-                      : "hover:bg-brand-mist text-brand-slate"
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <Folder className="h-4 w-4" />
-                    <span className="text-sm font-medium">{category.name}</span>
-                  </div>
-                  <span className="text-xs text-brand-slate px-2 py-1 rounded-full bg-white border border-brand-slate/10">
-                    {category.count}
-                  </span>
-                </button>
-              ))}
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-white to-brand-mist/50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-brand-ink to-brand-darkgreen rounded-xl flex items-center justify-center shadow-lg">
+              <Folder className="w-7 h-7 text-white" />
             </div>
-
-            {/* Quick Actions */}
-            <div className="mt-8">
-              <h4 className="text-sm font-semibold text-gray-900 mb-3">Quick Actions</h4>
-              <div className="space-y-2">
-                <Button variant="outline" size="sm" className="w-full justify-start">
-                  <Star className="h-4 w-4 mr-2" />
-                  Starred Items
-                </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Recent Uploads
-                </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
-                  <User className="h-4 w-4 mr-2" />
-                  Shared with Me
-                </Button>
-              </div>
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-brand-ink to-brand-darkgreen bg-clip-text text-transparent">
+                Document Manager
+              </h1>
+              <p className="text-brand-slate">
+                Upload, organize, and manage your important documents and certificates
+              </p>
             </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Button variant="outline" className="border-brand-slate/20 text-brand-ink hover:bg-brand-mist">
+              <FolderPlus className="h-4 w-4 mr-2" />
+              New Folder
+            </Button>
+            <Button className="bg-gradient-to-r from-brand-ink to-brand-darkgreen hover:from-brand-darkgreen hover:to-brand-ink">
+              <Upload className="h-4 w-4 mr-2" />
+              Upload Document
+            </Button>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 2xl:grid-cols-8 gap-4 mb-8">
+          <Card className="p-4 border-brand-slate/10 text-center hover:shadow-lg transition-all bg-white">
+            <div className="text-3xl font-bold text-brand-ink mb-1">12</div>
+            <div className="text-sm text-brand-slate">Total Documents</div>
+          </Card>
+          <Card className="p-4 border-brand-slate/10 text-center hover:shadow-lg transition-all bg-white">
+            <div className="text-3xl font-bold text-brand-neon mb-1">24.8 MB</div>
+            <div className="text-sm text-brand-slate">Storage Used</div>
+          </Card>
+          <Card className="p-4 border-brand-slate/10 text-center hover:shadow-lg transition-all bg-white">
+            <div className="text-3xl font-bold text-brand-ink mb-1">3</div>
+            <div className="text-sm text-brand-slate">Starred Items</div>
+          </Card>
+          <Card className="p-4 border-brand-slate/10 text-center hover:shadow-lg transition-all bg-white">
+            <div className="text-3xl font-bold text-brand-darkgreen mb-1">5</div>
+            <div className="text-sm text-brand-slate">Categories</div>
           </Card>
         </div>
 
-        {/* Main Content */}
-        <div className="lg:col-span-3">
-          {/* Search and Filter Bar */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="flex-1">
-              <Input
-                placeholder="Search documents..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                leftIcon={<Search className="h-4 w-4 text-gray-400" />}
-              />
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar */}
+          <div className="lg:w-64 flex-shrink-0">
+            <div className="bg-white rounded-2xl border border-brand-slate/10 p-4 shadow-sm mb-6">
+              <h3 className="font-semibold text-brand-ink mb-4 px-2">Categories</h3>
+              <div className="space-y-1">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${
+                      selectedCategory === cat.id
+                        ? "bg-brand-neon/10 text-brand-darkgreen font-medium"
+                        : "text-brand-slate hover:bg-brand-mist hover:text-brand-ink"
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      <cat.icon className="h-4 w-4 mr-3" />
+                      {cat.name}
+                    </div>
+                    <span className={`px-2 py-0.5 rounded-full text-xs ${
+                      selectedCategory === cat.id ? "bg-white" : "bg-brand-mist"
+                    }`}>
+                      {cat.count}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
-              <div className="flex border border-gray-300 rounded-lg">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 ${
-                    viewMode === "grid" ? "bg-primary-50 text-primary-600" : "text-brand-slate"
-                  }`}
-                >
-                  <div className="w-4 h-4 grid grid-cols-2 gap-0.5">
-                    <div className="bg-current rounded-sm"></div>
-                    <div className="bg-current rounded-sm"></div>
-                    <div className="bg-current rounded-sm"></div>
-                    <div className="bg-current rounded-sm"></div>
-                  </div>
+
+            <div className="bg-white rounded-2xl border border-brand-slate/10 p-4 shadow-sm">
+              <h3 className="font-semibold text-brand-ink mb-4 px-2">Quick Actions</h3>
+              <div className="space-y-2">
+                <button className="w-full flex items-center px-3 py-2 text-sm text-brand-slate hover:bg-brand-mist rounded-lg transition-colors border border-transparent hover:border-brand-slate/10">
+                  <Star className="h-4 w-4 mr-3" />
+                  Starred Items
                 </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 ${
-                    viewMode === "list" ? "bg-primary-50 text-primary-600" : "text-brand-slate"
-                  }`}
-                >
-                  <div className="w-4 h-4 flex flex-col gap-1">
-                    <div className="bg-current h-0.5 rounded"></div>
-                    <div className="bg-current h-0.5 rounded"></div>
-                    <div className="bg-current h-0.5 rounded"></div>
-                  </div>
+                <button className="w-full flex items-center px-3 py-2 text-sm text-brand-slate hover:bg-brand-mist rounded-lg transition-colors border border-transparent hover:border-brand-slate/10">
+                  <Calendar className="h-4 w-4 mr-3" />
+                  Recent Uploads
+                </button>
+                <button className="w-full flex items-center px-3 py-2 text-sm text-brand-slate hover:bg-brand-mist rounded-lg transition-colors border border-transparent hover:border-brand-slate/10">
+                  <User className="h-4 w-4 mr-3" />
+                  Shared with Me
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Documents Grid/List */}
-          {viewMode === "grid" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Main Content */}
+          <div className="flex-1">
+            <div className="bg-white rounded-2xl p-6 border border-brand-slate/10 shadow-sm mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="relative flex-1 w-full">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-brand-slate/40 h-5 w-5" />
+                <input
+                  type="text"
+                  placeholder="Search documents..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-brand-mist border border-brand-slate/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-neon transition-all"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button variant="outline" className="border-brand-slate/20 text-brand-ink">
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filter
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {filteredDocuments.map((doc) => (
-                <Card key={doc.id} className="hover:shadow-lg transition-all duration-200 group">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="text-4xl">{doc.thumbnail}</div>
-                    <div className="flex items-center space-x-1">
-                      {doc.starred && <Star className="h-4 w-4 text-yellow-500 fill-current" />}
-                      <button className="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Trash2 className="h-4 w-4 text-gray-400 hover:text-red-500" />
-                      </button>
+                <div
+                  key={doc.id}
+                  className="bg-white rounded-2xl p-5 border border-brand-slate/10 hover:shadow-xl transition-all group flex flex-col relative"
+                >
+                  <div className="absolute top-4 right-4">
+                    <button className="text-brand-slate/40 hover:text-brand-neon transition-colors">
+                      <Star className={`h-5 w-5 ${doc.starred ? "fill-brand-neon text-brand-neon" : ""}`} />
+                    </button>
+                  </div>
+                  
+                  <div className="w-16 h-16 bg-gradient-to-br from-brand-mist to-white border border-brand-slate/10 rounded-2xl flex items-center justify-center mb-4 text-brand-ink group-hover:scale-110 transition-transform shadow-sm">
+                    {doc.icon}
+                  </div>
+                  
+                  <div className="flex-grow">
+                    <h3 className="font-semibold text-brand-ink mb-1 truncate pr-8 group-hover:text-brand-neon transition-colors" title={doc.name}>
+                      {doc.name}
+                    </h3>
+                    <div className="flex items-center text-sm text-brand-slate mb-3">
+                      {getFileIcon(doc.type)}
+                      <span className="mx-2">{doc.type}</span>
+                      <span>•</span>
+                      <span className="mx-2">{doc.size}</span>
+                    </div>
+                    <div className="text-xs text-brand-slate mb-6">
+                      Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}
                     </div>
                   </div>
 
-                  <h3 className="font-semibold text-gray-900 mb-2 truncate">{doc.name}</h3>
-                  
-                  <div className="flex items-center space-x-4 text-sm text-brand-slate mb-4">
-                    <span>{doc.type}</span>
-                    <span>{doc.size}</span>
-                  </div>
-
-                  <div className="text-xs text-brand-slate mb-4">
-                    Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}
-                  </div>
-
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Eye className="h-4 w-4 mr-1" />
+                  <div className="flex gap-2 mt-auto">
+                    <Button variant="outline" size="sm" className="flex-1 text-brand-ink border-brand-slate/20 hover:bg-brand-mist">
+                      <Eye className="h-4 w-4 mr-2" />
                       View
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Download className="h-4 w-4 mr-1" />
+                    <Button variant="outline" size="sm" className="flex-1 text-brand-ink border-brand-slate/20 hover:bg-brand-mist">
+                      <Download className="h-4 w-4 mr-2" />
                       Download
                     </Button>
                   </div>
-                </Card>
+                </div>
               ))}
             </div>
-          ) : (
-            <Card>
-              <div className="space-y-4">
-                {filteredDocuments.map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="flex items-center justify-between p-4 hover:bg-brand-mist rounded-lg transition-colors group"
-                  >
-                    <div className="flex items-center space-x-4">
-                      {getFileIcon(doc.type)}
-                      <div>
-                        <h3 className="font-medium text-gray-900">{doc.name}</h3>
-                        <div className="flex items-center space-x-4 text-sm text-brand-slate">
-                          <span>{doc.type}</span>
-                          <span>{doc.size}</span>
-                          <span>Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      {doc.starred && <Star className="h-4 w-4 text-yellow-500 fill-current" />}
-                      <Button variant="ghost" size="sm">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Download className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100">
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+            
+            {filteredDocuments.length === 0 && (
+              <div className="text-center py-12 bg-white rounded-2xl border border-brand-slate/10">
+                <FileText className="h-12 w-12 text-brand-slate/30 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-brand-ink mb-1">No documents found</h3>
+                <p className="text-brand-slate">Try adjusting your search or filters</p>
               </div>
-            </Card>
-          )}
-
-          {/* Empty State */}
-          {filteredDocuments.length === 0 && (
-            <Card className="text-center" padding="lg">
-              <div className="text-6xl mb-4">📁</div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No documents found</h3>
-              <p className="text-brand-slate mb-6">
-                {searchQuery
-                  ? "Try adjusting your search terms"
-                  : "Upload your first document to get started"}
-              </p>
-              <Button onClick={handleUpload}>
-                <Upload className="h-4 w-4 mr-2" />
-                Upload Document
-              </Button>
-            </Card>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -22,10 +22,14 @@ import {
   Info,
   ArrowRight,
   Settings,
+  HelpCircle,
 } from "lucide-react";
 import Button from "../../shared/ui/Button";
 
+import { useAppContext } from "../../../contexts/AppContext";
+
 const CareerPathPlanner: React.FC = () => {
+  const { state } = useAppContext();
   const [completedNodes, setCompletedNodes] = useState<string[]>([
     "start",
     "assessment",
@@ -123,12 +127,12 @@ const CareerPathPlanner: React.FC = () => {
 
       // Career Path Options
       careerPaths: [
-        { id: "tech-path", label: "Technology", status: "available", x: -300, y: 450, parent: "skill-exploration", color: "yellow" },
-        { id: "business-path", label: "Business", status: "available", x: -300, y: 520, parent: "skill-exploration", color: "yellow" },
-        { id: "creative-path", label: "Creative Arts", status: "available", x: -300, y: 590, parent: "skill-exploration", color: "yellow" },
-        { id: "stem-path", label: "STEM Research", status: "available", x: 300, y: 450, parent: "skill-exploration", color: "yellow" },
-        { id: "healthcare-path", label: "Healthcare", status: "available", x: 300, y: 520, parent: "skill-exploration", color: "yellow" },
-        { id: "social-path", label: "Social Sciences", status: "available", x: 300, y: 590, parent: "skill-exploration", color: "yellow" },
+        { id: "tech-path", label: "Technology", status: "available", x: -300, y: 450, parent: "skill-exploration", color: "brand-mist" },
+        { id: "business-path", label: "Business", status: "available", x: -300, y: 520, parent: "skill-exploration", color: "brand-mist" },
+        { id: "creative-path", label: "Creative Arts", status: "available", x: -300, y: 590, parent: "skill-exploration", color: "brand-mist" },
+        { id: "stem-path", label: "STEM Research", status: "available", x: 300, y: 450, parent: "skill-exploration", color: "brand-mist" },
+        { id: "healthcare-path", label: "Healthcare", status: "available", x: 300, y: 520, parent: "skill-exploration", color: "brand-mist" },
+        { id: "social-path", label: "Social Sciences", status: "available", x: 300, y: 590, parent: "skill-exploration", color: "brand-mist" },
       ],
 
       // Technology specialization details (when tech path selected)
@@ -143,18 +147,18 @@ const CareerPathPlanner: React.FC = () => {
 
       // Portfolio building activities
       portfolioItems: [
-        { id: "projects", label: "Personal Projects", status: "locked", x: -250, y: 850, parent: "build-portfolio", color: "yellow" },
-        { id: "internship", label: "Internships", status: "locked", x: -250, y: 910, parent: "build-portfolio", color: "yellow" },
-        { id: "competitions", label: "Competitions", status: "locked", x: 250, y: 850, parent: "build-portfolio", color: "yellow" },
-        { id: "leadership", label: "Leadership Roles", status: "locked", x: 250, y: 910, parent: "build-portfolio", color: "yellow" },
+        { id: "projects", label: "Personal Projects", status: "locked", x: -250, y: 850, parent: "build-portfolio", color: "brand-mist" },
+        { id: "internship", label: "Internships", status: "locked", x: -250, y: 910, parent: "build-portfolio", color: "brand-mist" },
+        { id: "competitions", label: "Competitions", status: "locked", x: 250, y: 850, parent: "build-portfolio", color: "brand-mist" },
+        { id: "leadership", label: "Leadership Roles", status: "locked", x: 250, y: 910, parent: "build-portfolio", color: "brand-mist" },
       ],
 
       // Advanced preparation items
       advancedItems: [
-        { id: "ap-courses", label: "AP/IB Courses", status: "locked", x: -230, y: 1050, parent: "advanced-prep", color: "beige" },
-        { id: "sat-act", label: "SAT/ACT Prep", status: "locked", x: -230, y: 1110, parent: "advanced-prep", color: "beige" },
-        { id: "subject-tests", label: "Subject Tests", status: "locked", x: 230, y: 1050, parent: "advanced-prep", color: "beige" },
-        { id: "research", label: "Research Papers", status: "locked", x: 230, y: 1110, parent: "advanced-prep", color: "beige" },
+        { id: "ap-courses", label: "AP/IB Courses", status: "locked", x: -230, y: 1050, parent: "advanced-prep", color: "brand-mist" },
+        { id: "sat-act", label: "SAT/ACT Prep", status: "locked", x: -230, y: 1110, parent: "advanced-prep", color: "brand-mist" },
+        { id: "subject-tests", label: "Subject Tests", status: "locked", x: 230, y: 1050, parent: "advanced-prep", color: "brand-mist" },
+        { id: "research", label: "Research Papers", status: "locked", x: 230, y: 1110, parent: "advanced-prep", color: "brand-mist" },
       ],
 
       // Question nodes (side info)
@@ -194,56 +198,33 @@ const CareerPathPlanner: React.FC = () => {
   };
 
   const getNodeColor = (status: string, customColor?: string) => {
-    if (customColor === "yellow") {
-      return {
-        bg: "bg-[#FFE66D]",
-        border: "border-[#FFE66D]",
-        text: "text-gray-900",
-        hover: "hover:bg-[#FFD93D]",
-      };
-    }
-    if (customColor === "beige") {
-      return {
-        bg: "bg-[#FFF4E0]",
-        border: "border-[#FFE4B5]",
-        text: "text-gray-900",
-        hover: "hover:bg-[#FFE4B5]",
-      };
-    }
-
     switch (status) {
       case "completed":
         return {
-          bg: "bg-green-500",
-          border: "border-green-600",
-          text: "text-white",
-          hover: "hover:bg-green-600",
+          bg: "bg-brand-neon",
+          border: "border-brand-neon",
+          text: "text-brand-ink",
+          hover: "hover:bg-brand-neon/90 hover:border-brand-neon/90",
         };
       case "in-progress":
-        return {
-          bg: "bg-[#FFE66D]",
-          border: "border-[#FFD93D]",
-          text: "text-gray-900",
-          hover: "hover:bg-[#FFD93D]",
-        };
       case "available":
         return {
-          bg: "bg-[#FFE66D]",
-          border: "border-[#FFD93D]",
-          text: "text-gray-900",
-          hover: "hover:bg-[#FFD93D]",
+          bg: "bg-brand-mist",
+          border: "border-brand-neon",
+          text: "text-brand-ink",
+          hover: "hover:bg-brand-neon hover:text-brand-ink",
         };
       case "locked":
         return {
-          bg: "bg-brand-slate/10",
-          border: "border-gray-300",
+          bg: "bg-white",
+          border: "border-brand-slate/20",
           text: "text-brand-slate",
-          hover: "hover:bg-gray-300",
+          hover: "hover:bg-brand-mist",
         };
       default:
         return {
           bg: "bg-white",
-          border: "border-gray-300",
+          border: "border-brand-slate/20",
           text: "text-brand-slate",
           hover: "hover:bg-brand-mist",
         };
@@ -251,32 +232,33 @@ const CareerPathPlanner: React.FC = () => {
   };
 
   const getStatusIcon = (status: string) => {
-    if (status === "completed") return "✓";
-    if (status === "in-progress") return "○";
-    if (status === "locked") return "🔒";
-    return "○";
+    if (status === "completed") return <CheckCircle className="w-5 h-5 text-brand-ink" />;
+    if (status === "in-progress") return <Circle className="w-5 h-5 text-brand-neon" />;
+    if (status === "locked") return <Lock className="w-4 h-4 text-brand-slate/60" />;
+    return <Circle className="w-5 h-5 text-brand-neon" />;
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] p-6">
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-white to-brand-mist/50 p-6">
       <div className="max-w-[1400px] mx-auto">
+        
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
             <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-lg flex items-center justify-center shadow-lg">
-                  <Map className="w-6 h-6 text-white" />
+              <div className="flex items-center gap-4 mb-2">
+                <div className="w-12 h-12 bg-gradient-to-br from-brand-ink to-brand-darkgreen rounded-xl flex items-center justify-center shadow-lg">
+                  <Map className="w-7 h-7 text-white" />
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-brand-ink to-brand-darkgreen bg-clip-text text-transparent">
                   {roadmapStructure.title}
                 </h1>
               </div>
-              <div className="flex items-center gap-4 ml-13">
-                <span className="px-3 py-1 bg-[#FFE66D] text-gray-900 rounded-full text-sm font-medium">
+              <div className="flex items-center gap-4 ml-16">
+                <span className="px-3 py-1 bg-brand-neon/20 text-brand-ink border border-brand-neon/30 rounded-full text-sm font-semibold">
                   {roadmapStructure.progress}
                 </span>
-                <button className="text-sm text-[#3EBFB0] hover:underline flex items-center gap-1">
+                <button className="text-sm text-brand-darkgreen font-medium hover:text-brand-neon transition-colors flex items-center gap-1">
                   <MessageCircle className="w-4 h-4" />
                   Track Progress
                 </button>
@@ -284,11 +266,11 @@ const CareerPathPlanner: React.FC = () => {
             </div>
 
             <div className="flex gap-3">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" className="border-brand-slate/20 text-brand-ink hover:bg-brand-mist">
                 <ExternalLink className="w-4 h-4 mr-2" />
                 Share
               </Button>
-              <Button size="sm" className="bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]">
+              <Button className="bg-gradient-to-r from-brand-ink to-brand-darkgreen hover:from-brand-darkgreen hover:to-brand-ink border-none">
                 <Sparkles className="w-4 h-4 mr-2" />
                 Personalize
               </Button>
@@ -296,14 +278,17 @@ const CareerPathPlanner: React.FC = () => {
           </div>
 
           {/* Info Banner */}
-          <div className="bg-white border-l-4 border-[#3EBFB0] rounded-lg p-4 shadow-sm">
-            <div className="flex items-start gap-3">
-              <Info className="w-5 h-5 text-[#3EBFB0] flex-shrink-0 mt-0.5" />
+          <div className="bg-white border-l-4 border-brand-neon rounded-xl p-4 shadow-sm relative overflow-hidden">
+             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-neon/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
+            <div className="flex items-start gap-4 relative z-10">
+              <div className="bg-brand-mist p-2 rounded-lg">
+                <Info className="w-5 h-5 text-brand-neon flex-shrink-0" />
+              </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">
-                  Personalized for You
+                <h3 className="font-bold text-brand-ink mb-1 text-lg">
+                  Personalized for {state.user.firstName}
                 </h3>
-                <p className="text-sm text-brand-slate">
+                <p className="text-sm text-brand-slate max-w-3xl">
                   This roadmap is customized based on your interests, goals, and current progress. Click on any node to view details and resources.
                 </p>
               </div>
@@ -312,10 +297,13 @@ const CareerPathPlanner: React.FC = () => {
         </div>
 
         {/* Roadmap Canvas */}
-        <div className="bg-white rounded-xl shadow-lg p-12 relative overflow-hidden border border-brand-slate/10">
+        <div className="bg-white rounded-3xl shadow-xl p-12 relative overflow-hidden border border-brand-slate/10">
+          {/* Subtle Grid Background */}
+          <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+
           {/* SVG for connections */}
           <svg
-            className="absolute inset-0 pointer-events-none"
+            className="absolute inset-0 pointer-events-none z-10"
             style={{ width: "100%", height: "100%" }}
           >
             <defs>
@@ -327,7 +315,17 @@ const CareerPathPlanner: React.FC = () => {
                 refY="3"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3, 0 6" fill="#3B82F6" />
+                <polygon points="0 0, 10 3, 0 6" fill="#15C196" /> {/* brand-neon */}
+              </marker>
+              <marker
+                id="arrowhead-inactive"
+                markerWidth="10"
+                markerHeight="10"
+                refX="9"
+                refY="3"
+                orient="auto"
+              >
+                <polygon points="0 0, 10 3, 0 6" fill="#5C6B67" opacity="0.3" /> {/* brand-slate */}
               </marker>
             </defs>
 
@@ -343,9 +341,9 @@ const CareerPathPlanner: React.FC = () => {
                   y1={node.y + 40}
                   x2="50%"
                   y2={nextNode.y - 20}
-                  stroke={isCompleted ? "#3EBFB0" : "#3B82F6"}
+                  stroke={isCompleted ? "#15C196" : "rgba(92, 107, 103, 0.2)"}
                   strokeWidth="3"
-                  markerEnd="url(#arrowhead)"
+                  markerEnd={isCompleted ? "url(#arrowhead)" : "url(#arrowhead-inactive)"}
                 />
               );
             })}
@@ -358,7 +356,7 @@ const CareerPathPlanner: React.FC = () => {
                 y1={250}
                 x2={`calc(50% + ${branch.x}px)`}
                 y2={branch.y}
-                stroke="#D1D5DB"
+                stroke="rgba(92, 107, 103, 0.2)"
                 strokeWidth="2"
                 strokeDasharray="5,5"
               />
@@ -372,7 +370,7 @@ const CareerPathPlanner: React.FC = () => {
                 y1={400}
                 x2={`calc(50% + ${branch.x}px)`}
                 y2={branch.y}
-                stroke="#3B82F6"
+                stroke="rgba(92, 107, 103, 0.3)"
                 strokeWidth="2"
                 strokeDasharray="5,5"
               />
@@ -386,7 +384,7 @@ const CareerPathPlanner: React.FC = () => {
                 y1={650}
                 x2={`calc(50% + ${branch.x}px)`}
                 y2={branch.y}
-                stroke="#D1D5DB"
+                stroke="rgba(92, 107, 103, 0.2)"
                 strokeWidth="2"
                 strokeDasharray="5,5"
               />
@@ -400,7 +398,7 @@ const CareerPathPlanner: React.FC = () => {
                 y1={850}
                 x2={`calc(50% + ${branch.x}px)`}
                 y2={branch.y}
-                stroke="#3B82F6"
+                stroke="rgba(92, 107, 103, 0.2)"
                 strokeWidth="2"
               />
             ))}
@@ -413,7 +411,7 @@ const CareerPathPlanner: React.FC = () => {
                 y1={1050}
                 x2={`calc(50% + ${branch.x}px)`}
                 y2={branch.y}
-                stroke="#3B82F6"
+                stroke="rgba(92, 107, 103, 0.2)"
                 strokeWidth="2"
               />
             ))}
@@ -429,7 +427,7 @@ const CareerPathPlanner: React.FC = () => {
                     y1={q.y}
                     x2={`calc(50% + ${q.x}px - 100)`}
                     y2={q.y}
-                    stroke="#E5E7EB"
+                    stroke="rgba(92, 107, 103, 0.2)"
                     strokeWidth="2"
                     strokeDasharray="3,3"
                   />
@@ -440,7 +438,7 @@ const CareerPathPlanner: React.FC = () => {
           </svg>
 
           {/* Render all nodes */}
-          <div className="relative" style={{ minHeight: "1500px" }}>
+          <div className="relative z-20" style={{ minHeight: "1500px" }}>
             {/* Main path nodes */}
             {roadmapStructure.mainPath.map((node) => {
               const colors = getNodeColor(node.status);
@@ -458,24 +456,22 @@ const CareerPathPlanner: React.FC = () => {
                   <div
                     className={`
                       ${colors.bg} ${colors.border} ${colors.text} ${colors.hover}
-                      border-2 rounded-xl px-6 py-3 font-medium text-center cursor-pointer
-                      transition-all duration-200 shadow-md
+                      border-2 rounded-2xl px-6 py-4 font-bold text-center cursor-pointer
+                      transition-all duration-300 shadow-md
                       ${isHovered ? "scale-105 shadow-xl" : ""}
-                      ${node.type === "start" || node.type === "end" ? "px-8 py-4 text-lg font-bold" : ""}
-                      min-w-[200px] relative
+                      ${node.type === "start" || node.type === "end" ? "px-8 py-5 text-lg" : ""}
+                      min-w-[220px] relative flex items-center justify-center gap-3
                     `}
                   >
-                    <div className="flex items-center justify-center gap-2">
-                      <span>{getStatusIcon(node.status)}</span>
-                      <span>{node.label}</span>
-                    </div>
+                    {getStatusIcon(node.status)}
+                    <span>{node.label}</span>
                     
                     {/* Hover tooltip */}
                     {isHovered && node.description && (
-                      <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 w-64 bg-[#2B3674] text-white p-4 rounded-lg shadow-2xl z-50 text-sm">
-                        <p>{node.description}</p>
-                        <div className="mt-2 flex gap-2">
-                          <button className="flex-1 bg-[#3EBFB0] hover:bg-[#3EBFB0]/90 px-3 py-1 rounded text-xs font-medium">
+                      <div className="absolute top-full mt-3 left-1/2 transform -translate-x-1/2 w-72 bg-white text-brand-ink p-5 rounded-2xl shadow-2xl z-50 text-sm border border-brand-slate/10 animate-in fade-in slide-in-from-top-2">
+                        <p className="font-medium text-brand-slate">{node.description}</p>
+                        <div className="mt-4 flex gap-2">
+                          <button className="flex-1 bg-gradient-to-r from-brand-ink to-brand-darkgreen text-white hover:opacity-90 px-4 py-2 rounded-lg text-sm font-semibold transition-opacity">
                             View Details
                           </button>
                         </div>
@@ -500,8 +496,8 @@ const CareerPathPlanner: React.FC = () => {
                   <div
                     className={`
                       ${colors.bg} ${colors.border} ${colors.text} ${colors.hover}
-                      border-2 rounded-lg px-4 py-2 text-sm font-medium cursor-pointer
-                      transition-all duration-200 shadow-sm hover:shadow-md
+                      border-2 rounded-xl px-4 py-2 text-sm font-semibold cursor-pointer
+                      transition-all duration-300 shadow-sm hover:shadow-lg flex items-center gap-2
                       whitespace-nowrap
                     `}
                   >
@@ -525,8 +521,8 @@ const CareerPathPlanner: React.FC = () => {
                   <div
                     className={`
                       ${colors.bg} ${colors.border} ${colors.text} ${colors.hover}
-                      border-2 rounded-lg px-4 py-2 text-sm font-medium cursor-pointer
-                      transition-all duration-200 shadow-md hover:shadow-lg
+                      border-2 rounded-xl px-4 py-2 text-sm font-semibold cursor-pointer
+                      transition-all duration-300 shadow-sm hover:shadow-lg flex items-center gap-2
                       whitespace-nowrap
                     `}
                   >
@@ -550,12 +546,12 @@ const CareerPathPlanner: React.FC = () => {
                   <div
                     className={`
                       ${colors.bg} ${colors.border} ${colors.text} ${colors.hover}
-                      border-2 rounded-lg px-4 py-2 text-sm font-medium cursor-pointer
-                      transition-all duration-200 shadow-sm
-                      whitespace-nowrap
+                      border-2 rounded-xl px-4 py-2 text-sm font-semibold cursor-pointer
+                      transition-all duration-300 shadow-sm
+                      whitespace-nowrap flex items-center gap-2
                     `}
                   >
-                    {node.label}
+                    {getStatusIcon(node.status)} {node.label}
                   </div>
                 </div>
               );
@@ -575,8 +571,8 @@ const CareerPathPlanner: React.FC = () => {
                   <div
                     className={`
                       ${colors.bg} ${colors.border} ${colors.text} ${colors.hover}
-                      border-2 rounded-lg px-4 py-2 text-sm font-medium cursor-pointer
-                      transition-all duration-200 shadow-md
+                      border-2 rounded-xl px-4 py-2 text-sm font-semibold cursor-pointer
+                      transition-all duration-300 shadow-sm hover:shadow-lg
                       whitespace-nowrap
                     `}
                   >
@@ -600,8 +596,8 @@ const CareerPathPlanner: React.FC = () => {
                   <div
                     className={`
                       ${colors.bg} ${colors.border} ${colors.text} ${colors.hover}
-                      border-2 rounded-lg px-4 py-2 text-sm font-medium cursor-pointer
-                      transition-all duration-200 shadow-md
+                      border-2 rounded-xl px-4 py-2 text-sm font-semibold cursor-pointer
+                      transition-all duration-300 shadow-sm hover:shadow-lg
                       whitespace-nowrap
                     `}
                   >
@@ -620,8 +616,9 @@ const CareerPathPlanner: React.FC = () => {
                 onMouseEnter={() => setHoveredNode(node.id)}
                 onMouseLeave={() => setHoveredNode(null)}
               >
-                <div className="bg-purple-50 border-2 border-purple-300 rounded-lg px-3 py-2 text-sm text-purple-700 cursor-pointer hover:bg-purple-100 transition-all whitespace-nowrap shadow-sm">
-                  ❓ {node.label}
+                <div className="bg-white border border-brand-slate/20 shadow-sm rounded-xl px-4 py-3 text-sm text-brand-ink cursor-pointer hover:bg-brand-mist hover:border-brand-neon transition-all whitespace-nowrap flex items-center font-medium">
+                  <HelpCircle className="w-4 h-4 text-brand-neon mr-2" />
+                  {node.label}
                 </div>
               </div>
             ))}
@@ -633,11 +630,11 @@ const CareerPathPlanner: React.FC = () => {
                 className="absolute"
                 style={{ top: `${box.y}px`, left: `calc(50% + ${box.x}px)` }}
               >
-                <div className="bg-blue-50 border-l-4 border-[#3EBFB0] rounded-lg p-4 shadow-sm max-w-xs">
-                  <h4 className="font-bold text-[#2B3674] mb-1 text-sm">
+                <div className="bg-white border-l-4 border-brand-neon rounded-xl p-5 shadow-lg max-w-xs transition-transform hover:scale-105 duration-300">
+                  <h4 className="font-bold text-brand-ink mb-2 text-base">
                     {box.title}
                   </h4>
-                  <p className="text-xs text-brand-slate">{box.description}</p>
+                  <p className="text-sm text-brand-slate leading-relaxed">{box.description}</p>
                 </div>
               </div>
             ))}
@@ -645,23 +642,29 @@ const CareerPathPlanner: React.FC = () => {
         </div>
 
         {/* Legend */}
-        <div className="mt-6 bg-white rounded-lg shadow-sm p-4 border border-brand-slate/10">
-          <div className="flex items-center justify-center gap-8 text-sm">
+        <div className="mt-8 bg-white rounded-2xl shadow-sm p-6 border border-brand-slate/10">
+          <div className="flex flex-wrap items-center justify-center gap-8 text-sm font-medium">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-500 rounded"></div>
-              <span>Completed</span>
+              <div className="w-5 h-5 bg-brand-neon rounded-md flex items-center justify-center">
+                 <CheckCircle className="w-3 h-3 text-brand-ink" />
+              </div>
+              <span className="text-brand-ink">Completed</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-[#FFE66D] rounded"></div>
-              <span>In Progress / Available</span>
+              <div className="w-5 h-5 bg-brand-mist border-2 border-brand-neon rounded-md"></div>
+              <span className="text-brand-ink">In Progress / Available</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-brand-slate/10"></div>
-              <span>Locked</span>
+              <div className="w-5 h-5 bg-white border-2 border-brand-slate/20 rounded-md flex items-center justify-center">
+                <Lock className="w-3 h-3 text-brand-slate/60" />
+              </div>
+              <span className="text-brand-slate">Locked</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-purple-100 border-2 border-purple-300 rounded"></div>
-              <span>Tips & Questions</span>
+              <div className="w-5 h-5 bg-white border border-brand-slate/20 rounded-md flex items-center justify-center">
+                 <HelpCircle className="w-3 h-3 text-brand-neon" />
+              </div>
+              <span className="text-brand-ink">Tips & Questions</span>
             </div>
           </div>
         </div>

@@ -17,7 +17,11 @@ import {
   Bell,
 } from "lucide-react";
 
-const StudentSidebar: React.FC = () => {
+interface StudentSidebarProps {
+  onClose?: () => void;
+}
+
+const StudentSidebar: React.FC<StudentSidebarProps> = ({ onClose }) => {
   const location = useLocation();
   const [expandedSections, setExpandedSections] = useState<string[]>([
     "explore",
@@ -56,37 +60,22 @@ const StudentSidebar: React.FC = () => {
       ],
     },
     {
-      id: "learn",
-      title: "Learn & Develop",
-      icon: <Zap className="h-5 w-5" />,
-      basePath: "/student-dashboard/skills",
-      description: "Skill development and learning resources",
+      id: "prepare",
+      title: "Prepare for Future",
+      icon: <Target className="h-5 w-5" />,
+      basePath: "/student-dashboard/planning",
+      description: "Future preparation and career readiness",
       items: [
         {
-          path: "/student-dashboard/skills/tech",
-          label: "Tech Skills",
-          description: "Build essential digital literacy skills"
+          path: "/student-dashboard/planning/career-path",
+          label: "Career Path Planner",
+          description: "Map out your career journey"
         },
         {
-          path: "/student-dashboard/skills/soft",
-          label: "Soft Skills",
-          description: "Develop interpersonal and communication skills"
-        },
-        {
-          path: "/student-dashboard/skills/creative",
-          label: "Creative Skills",
-          description: "Develop artistic abilities and creative expression"
-        },
-        {
-          path: "/student-dashboard/learning/courses",
-          label: "Online Courses",
-          description: "High-quality online courses to supplement education"
-        },
-        {
-          path: "/student-dashboard/learning/projects",
-          label: "Project Ideas",
-          description: "Creative projects to build skills and portfolio"
-        },
+          path: "/student-dashboard/learning/interview-prep",
+          label: "AI Interview Practice",
+          description: "AI-powered interview practice and coaching"
+        }
       ],
     },
     {
@@ -97,22 +86,6 @@ const StudentSidebar: React.FC = () => {
       description: "Academic success and study tools",
       items: [
         {
-          path: "/student-dashboard/academics/study-resources",
-          label: "Study Resources",
-          description: "Tools and materials to enhance learning"
-        },
-        {
-          path: "/student-dashboard/academics/study-skills",
-          label: "Study Skills Trainer",
-          badge: "New",
-          description: "Master effective study techniques"
-        },
-        {
-          path: "/student-dashboard/academics/test-prep",
-          label: "Test Prep Strategies",
-          description: "Prepare for standardized tests"
-        },
-        {
           path: "/student-dashboard/planning/goals",
           label: "Set Goals",
           description: "Set and track your objectives"
@@ -120,41 +93,9 @@ const StudentSidebar: React.FC = () => {
         {
           path: "/student-dashboard/academics/goal-tracker",
           label: "Track Progress",
-          description: "Monitor your academic progress"
-        },
-        {
-          path: "/student-dashboard/academics/subject-explorer",
-          label: "Subject Explorer",
-          description: "Discover new academic subjects"
+          description: "Monitor your academic progress",
         },
       ],
-    },
-    {
-      id: "prepare",
-      title: "Prepare for Future",
-      icon: <Target className="h-5 w-5" />,
-      basePath: "/student-dashboard/planning",
-      description: "Future preparation and career readiness",
-      items: [
-        {
-          path: "/student-dashboard/learning/interview-prep",
-          label: "Interview Preparation",
-          description: "AI-powered interview practice and coaching"
-        },
-        {
-          path: "/student-dashboard/planning/career-path",
-          label: "Career Path Planner",
-          description: "Plan your educational and career journey"
-        },
-      ],
-    },
-    {
-      id: "resources",
-      title: "Resources",
-      icon: <Library className="h-5 w-5" />,
-      basePath: "/student-dashboard/resources",
-      description: "Document management and resources",
-      items: [],
     },
   ];
 
@@ -162,7 +103,7 @@ const StudentSidebar: React.FC = () => {
     <div className="w-64 bg-white h-full flex flex-col border-r border-brand-slate/20">
       {/* Header */}
       <div className="p-6 border-b border-brand-slate/20 bg-white">
-        <Link to="/" className="flex items-center space-x-3 group">
+        <Link onClick={() => onClose?.()} to="/" className="flex items-center space-x-3 group">
           <div className="w-10 h-10 bg-brand-ink rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
             <Briefcase className="h-5 w-5 text-white" />
           </div>
@@ -179,6 +120,7 @@ const StudentSidebar: React.FC = () => {
       <div className="flex-1 overflow-y-auto py-6 custom-scrollbar px-3 space-y-1">
         {/* Dashboard Home */}
         <Link
+          onClick={() => onClose?.()}
           to="/student-dashboard"
           className={`flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ${
             isActive("/student-dashboard")
@@ -192,6 +134,7 @@ const StudentSidebar: React.FC = () => {
 
         {/* AI Chat */}
         <Link
+          onClick={() => onClose?.()}
           to="/chat"
           className="flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 text-brand-slate hover:text-brand-ink hover:bg-brand-mist"
         >
@@ -210,6 +153,7 @@ const StudentSidebar: React.FC = () => {
             {/* Handle Resources as a direct button */}
             {section.id === "resources" ? (
               <Link
+                onClick={() => onClose?.()}
                 to="/student-dashboard/resources/document-manager"
                 className={`w-full flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ${
                   location.pathname.startsWith("/student-dashboard/resources") || expandedSections.includes(section.id)
@@ -252,6 +196,7 @@ const StudentSidebar: React.FC = () => {
                 {section.items.map((item) => (
                   <Link
                     key={item.path}
+                    onClick={() => onClose?.()}
                     to={item.path}
                     className={`flex items-center py-2 pr-3 text-sm rounded-lg transition-all duration-300 ${
                       isActive(item.path)
@@ -296,6 +241,7 @@ const StudentSidebar: React.FC = () => {
             Settings
           </button>
           <Link
+            onClick={() => onClose?.()}
             to="/"
             className="flex items-center justify-center px-3 py-2 text-xs font-semibold text-brand-slate hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-300"
           >

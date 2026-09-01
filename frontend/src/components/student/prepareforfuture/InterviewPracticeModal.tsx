@@ -31,9 +31,9 @@ const InterviewPracticeModal: React.FC<InterviewPracticeModalProps> = ({
       description: "Practice for college admissions",
       icon: GraduationCap,
       gradient: "from-[#2B3674] to-[#3EBFB0]",
-      bgColor: "bg-[#2B3674]/5",
+      bgColor: "bg-brand-mist/50",
       borderColor: "border-[#2B3674]",
-      hoverBg: "hover:bg-[#2B3674]/10",
+      hoverBg: "hover:bg-brand-mist",
       features: [
         "Personal motivation questions",
         "Academic interest discussions",
@@ -46,9 +46,9 @@ const InterviewPracticeModal: React.FC<InterviewPracticeModalProps> = ({
       description: "Practice for internships and jobs",
       icon: Briefcase,
       gradient: "from-[#3EBFB0] to-[#C8A860]",
-      bgColor: "bg-[#3EBFB0]/5",
+      bgColor: "bg-brand-mist",
       borderColor: "border-[#3EBFB0]",
-      hoverBg: "hover:bg-[#3EBFB0]/10",
+      hoverBg: "hover:bg-brand-neon/10",
       features: [
         "Behavioral questions",
         "Skills and experience",
@@ -70,14 +70,14 @@ const InterviewPracticeModal: React.FC<InterviewPracticeModalProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden animate-fade-in">
         {/* Header */}
         <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] opacity-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-brand-ink to-brand-darkgreen opacity-10"></div>
           <div className="relative flex items-center justify-between p-6 border-b border-brand-slate/10">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-ink to-brand-darkgreen rounded-xl flex items-center justify-center shadow-lg">
                 <Video className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-brand-ink to-brand-darkgreen bg-clip-text text-transparent">
                   AI Interview Practice
                 </h2>
                 <p className="text-sm text-brand-slate">
@@ -98,7 +98,7 @@ const InterviewPracticeModal: React.FC<InterviewPracticeModalProps> = ({
         {/* Content */}
         <div className="p-8">
           <div className="text-center mb-8">
-            <h3 className="text-xl font-bold text-[#2B3674] mb-2">
+            <h3 className="text-xl font-bold text-brand-ink mb-2">
               Choose Interview Type
             </h3>
             <p className="text-brand-slate">
@@ -107,7 +107,7 @@ const InterviewPracticeModal: React.FC<InterviewPracticeModalProps> = ({
           </div>
 
           {/* Interview Type Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-6 mb-8">
             {interviewTypes.map((type) => {
               const Icon = type.icon;
               const isSelected = selectedType === type.id;
@@ -146,13 +146,13 @@ const InterviewPracticeModal: React.FC<InterviewPracticeModalProps> = ({
                   >
                     <Icon
                       className={`w-8 h-8 ${
-                        isSelected ? "text-white" : "text-[#2B3674]"
+                        isSelected ? "text-white" : "text-brand-ink"
                       }`}
                     />
                   </div>
 
                   {/* Content */}
-                  <h4 className="text-lg font-bold text-[#2B3674] mb-2">
+                  <h4 className="text-lg font-bold text-brand-ink mb-2">
                     {type.title}
                   </h4>
                   <p className="text-sm text-brand-slate mb-4">
@@ -196,8 +196,8 @@ const InterviewPracticeModal: React.FC<InterviewPracticeModalProps> = ({
               disabled={!selectedType}
               className={`min-w-[200px] ${
                 selectedType
-                  ? "bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]"
-                  : "bg-gray-300"
+                  ? "bg-gradient-to-r from-brand-ink to-brand-darkgreen"
+                  : "bg-brand-slate/20"
               }`}
             >
               Continue

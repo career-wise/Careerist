@@ -19,8 +19,11 @@ import {
   ChevronRight,
   Star,
   Briefcase,
+  FolderOpen
 } from "lucide-react";
+import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
+import Input from "../../shared/ui/Input";
 
 const ProjectIdeas: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -36,7 +39,7 @@ const ProjectIdeas: React.FC = () => {
       duration: "2-3 weeks",
       description: "Create a portfolio website to showcase your projects and skills to colleges and employers",
       skills: ["HTML/CSS", "JavaScript", "Web Design"],
-      icon: <Code className="h-8 w-8" />,
+      icon: Code,
       image: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&h=600&fit=crop&q=80",
       matchScore: 95,
     },
@@ -48,7 +51,7 @@ const ProjectIdeas: React.FC = () => {
       duration: "1-2 weeks",
       description: "Document your creative journey by sharing your photography work online",
       skills: ["Photography", "Content Writing", "Social Media"],
-      icon: <Camera className="h-8 w-8" />,
+      icon: Camera,
       image: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=800&h=600&fit=crop&q=80",
       matchScore: 88,
     },
@@ -60,7 +63,7 @@ const ProjectIdeas: React.FC = () => {
       duration: "6-8 weeks",
       description: "Investigate a topic you're passionate about and publish your findings",
       skills: ["Research Methods", "Academic Writing", "Data Analysis"],
-      icon: <BookOpen className="h-8 w-8" />,
+      icon: BookOpen,
       image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&h=600&fit=crop&q=80",
       matchScore: 92,
     },
@@ -72,7 +75,7 @@ const ProjectIdeas: React.FC = () => {
       duration: "4-6 weeks",
       description: "Build a mobile app that solves a real problem in your community",
       skills: ["Flutter/React Native", "UI/UX Design", "Problem Solving"],
-      icon: <Rocket className="h-8 w-8" />,
+      icon: Rocket,
       image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop&q=80",
       matchScore: 94,
     },
@@ -84,7 +87,7 @@ const ProjectIdeas: React.FC = () => {
       duration: "8-12 weeks",
       description: "Make a difference in your community while developing leadership skills",
       skills: ["Leadership", "Project Management", "Communication"],
-      icon: <Heart className="h-8 w-8" />,
+      icon: Heart,
       image: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800&h=600&fit=crop&q=80",
       matchScore: 90,
     },
@@ -96,7 +99,7 @@ const ProjectIdeas: React.FC = () => {
       duration: "4-6 weeks",
       description: "Build a professional art portfolio for college applications",
       skills: ["Digital Art", "Adobe Suite", "Composition"],
-      icon: <Palette className="h-8 w-8" />,
+      icon: Palette,
       image: "https://images.unsplash.com/photo-1561998338-13ad7883b20f?w=800&h=600&fit=crop&q=80",
       matchScore: 85,
     },
@@ -108,7 +111,7 @@ const ProjectIdeas: React.FC = () => {
       duration: "3-5 weeks",
       description: "Share your voice and ideas by creating your own podcast show",
       skills: ["Audio Production", "Content Creation", "Public Speaking"],
-      icon: <Music className="h-8 w-8" />,
+      icon: Music,
       image: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&h=600&fit=crop&q=80",
       matchScore: 89,
     },
@@ -120,7 +123,7 @@ const ProjectIdeas: React.FC = () => {
       duration: "4-6 weeks",
       description: "Turn your entrepreneurial ideas into a comprehensive business plan",
       skills: ["Business Strategy", "Financial Planning", "Market Research"],
-      icon: <TrendingUp className="h-8 w-8" />,
+      icon: TrendingUp,
       image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop&q=80",
       matchScore: 91,
     },
@@ -149,182 +152,205 @@ const ProjectIdeas: React.FC = () => {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case "Beginner": return "bg-green-50 text-green-700 border-green-200";
-      case "Intermediate": return "bg-[#C8A860]/10 text-[#C8A860] border-[#C8A860]/30";
-      case "Advanced": return "bg-[#2B3674]/10 text-[#2B3674] border-[#2B3674]/30";
-      default: return "bg-brand-mist text-brand-slate border-brand-slate/10";
+      case "Beginner": return "text-green-600 bg-green-100 border-green-200";
+      case "Intermediate": return "text-yellow-600 bg-yellow-100 border-yellow-200";
+      case "Advanced": return "text-red-600 bg-red-100 border-red-200";
+      default: return "text-brand-slate bg-brand-mist border-brand-slate/10";
     }
   };
 
   const filteredProjects = projects.filter(project => {
-    const matchesSearch =
+    const matchesSearch = 
       project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.skills.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    const matchesCategory = selectedCategory === "all" ||
+    
+    const matchesCategory = selectedCategory === "all" || 
       project.category.toLowerCase() === selectedCategory.toLowerCase();
-
+    
     return matchesSearch && matchesCategory;
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-brand-mist/30 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-xl flex items-center justify-center shadow-lg">
-              <Lightbulb className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent">
-                Project Ideas
-              </h1>
-              <p className="text-brand-slate">
-                Build your skills and create an impressive portfolio
-              </p>
+        <div className="bg-gradient-to-r from-brand-ink to-brand-darkgreen rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-neon opacity-10 rounded-full blur-2xl -ml-10 -mb-10"></div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-lg">
+                <Lightbulb className="w-8 h-8 text-brand-neon" />
+              </div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                  Project Ideas
+                </h1>
+                <p className="text-brand-mist/90 text-lg">
+                  Hands-on projects to build your portfolio and real-world skills
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-4 4xl:grid-cols-5 gap-4">
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl p-5 border border-[#2B3674]/10 hover:shadow-lg transition-all"
+              className="bg-white rounded-2xl p-5 border border-brand-slate/10 hover:shadow-lg transition-all group flex items-center justify-between"
             >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-brand-slate mb-1">{stat.label}</p>
-                  <p className="text-3xl font-bold text-[#2B3674]">{stat.value}</p>
-                </div>
-                <div className="w-14 h-14 bg-[#2B3674]/10 rounded-xl flex items-center justify-center">
-                  <stat.icon className="w-7 h-7 text-[#2B3674]" />
-                </div>
+              <div>
+                <p className="text-sm font-bold text-brand-slate uppercase tracking-wide mb-1">{stat.label}</p>
+                <p className="text-2xl font-bold text-brand-ink">{stat.value}</p>
+              </div>
+              <div className="w-14 h-14 bg-brand-mist rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:bg-brand-neon/10 transition-all border border-brand-slate/5">
+                <stat.icon className="w-7 h-7 text-brand-ink group-hover:text-brand-darkgreen transition-colors" />
               </div>
             </div>
           ))}
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-2xl p-6 mb-8 border border-[#2B3674]/10 shadow-sm">
-          <div className="mb-4">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#2B3674]/40 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search projects..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-[#3EBFB0]/5 border-2 border-[#2B3674]/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3EBFB0] focus:border-transparent transition-all"
-              />
+        <Card className="p-6 border-brand-slate/10 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+          <div className="flex-1 relative w-full">
+            <Input
+              placeholder="Search by project name, skill, or topic..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              leftIcon={<Search className="h-5 w-5 text-brand-slate" />}
+              className="w-full bg-brand-mist border-brand-slate/10 focus:border-brand-neon text-brand-ink rounded-xl pl-12 h-12"
+            />
+          </div>
+          <div className="w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+            <div className="flex gap-3 min-w-max">
+              {categories.map((category) => (
+                <button
+                  key={category.name}
+                  onClick={() => setSelectedCategory(category.name.toLowerCase())}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                    selectedCategory === category.name.toLowerCase()
+                      ? "bg-brand-ink text-white border-brand-ink shadow-md"
+                      : "bg-white text-brand-ink border-brand-slate/10 hover:border-brand-neon/50 hover:bg-brand-mist"
+                  }`}
+                >
+                  <category.icon className={`w-4 h-4 ${
+                    selectedCategory === category.name.toLowerCase() ? "text-brand-neon" : "text-brand-slate"
+                  }`} />
+                  {category.name}
+                </button>
+              ))}
             </div>
           </div>
+        </Card>
 
-          {/* Category Filters */}
-          <div className="flex flex-wrap gap-3">
-            {categories.map((category) => (
-              <button
-                key={category.name}
-                onClick={() => setSelectedCategory(category.name.toLowerCase())}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  selectedCategory === category.name.toLowerCase()
-                    ? "bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] text-white shadow-md"
-                    : "bg-[#2B3674]/5 text-[#2B3674] hover:bg-[#3EBFB0]/10"
-                }`}
-              >
-                <category.icon className="w-4 h-4" />
-                {category.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-brand-slate">
-            Found <span className="font-bold text-[#2B3674]">{filteredProjects.length}</span> project ideas
+        {/* Results Header */}
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-brand-slate font-medium">
+            Found <span className="font-bold text-brand-ink">{filteredProjects.length}</span> projects
           </p>
+          <select className="bg-transparent text-brand-ink font-bold text-sm outline-none cursor-pointer hover:text-brand-darkgreen transition-colors">
+            <option>Sort by Match Score</option>
+            <option>Sort by Duration</option>
+            <option>Sort by Difficulty</option>
+          </select>
         </div>
 
-        {/* Project Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {/* Projects Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-6">
           {filteredProjects.map((project) => (
-            <div
+            <Card
               key={project.id}
-              className="bg-white rounded-2xl overflow-hidden border border-[#2B3674]/10 hover:shadow-2xl transition-all duration-300 group"
+              className="group overflow-hidden flex flex-col h-full bg-white border-brand-slate/10 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-0"
             >
-              {/* Project Image */}
-              <div className="relative h-48 overflow-hidden">
+              {/* Project Image Header */}
+              <div className="relative h-48 overflow-hidden shrink-0">
                 <img
                   src={project.image}
                   alt={project.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#2B3674]/90 via-[#2B3674]/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/90 via-brand-ink/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
 
-                {/* Match Score & Save */}
                 <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-                  <div className="bg-gradient-to-r from-[#C8A860] to-[#3EBFB0] text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
-                    <Sparkles className="w-4 h-4" />
+                  <div className="bg-brand-neon text-brand-ink px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5 uppercase tracking-wide">
+                    <Sparkles className="w-3.5 h-3.5" />
                     {project.matchScore}% Match
                   </div>
                   <button
-                    onClick={() => toggleSave(project.id)}
-                    className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                    onClick={(e) => { e.preventDefault(); toggleSave(project.id); }}
+                    className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white hover:scale-110 transition-all shadow-lg border border-white/20"
                   >
                     <Heart
-                      className={`w-5 h-5 ${
+                      className={`w-5 h-5 transition-colors ${
                         savedProjects.includes(project.id)
-                          ? "fill-red-500 text-red-500"
-                          : "text-[#2B3674]"
+                          ? "fill-brand-neon text-brand-neon"
+                          : "text-white"
                       }`}
                     />
                   </button>
                 </div>
-
-                {/* Icon */}
-                <div className="absolute bottom-4 left-4">
-                  <div className="w-14 h-14 bg-white/95 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg text-[#2B3674]">
-                    {project.icon}
-                  </div>
-                </div>
               </div>
 
-              {/* Project Info */}
-              <div className="p-6">
-                {/* Header */}
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${getDifficultyColor(project.difficulty)}`}>
-                      {project.difficulty}
-                    </span>
-                    <span className="px-3 py-1 bg-[#3EBFB0]/10 text-[#3EBFB0] rounded-lg text-xs font-bold border border-[#3EBFB0]/30">
-                      {project.category}
-                    </span>
+              {/* Project Info Body */}
+              <div className="p-6 flex-grow flex flex-col">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-brand-mist rounded-xl flex items-center justify-center border border-brand-slate/5 group-hover:bg-brand-neon/10 transition-colors">
+                    <project.icon className="w-6 h-6 text-brand-ink group-hover:text-brand-darkgreen" />
                   </div>
-                  <h3 className="text-lg font-bold text-[#2B3674] mb-2 group-hover:text-[#3EBFB0] transition-colors">
-                    {project.title}
-                  </h3>
-                  <p className="text-sm text-brand-slate leading-relaxed">{project.description}</p>
+                  <div>
+                    <h3 className="text-xl font-bold text-brand-ink group-hover:text-brand-darkgreen transition-colors line-clamp-1">
+                      {project.title}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="px-2.5 py-0.5 bg-brand-mist text-brand-slate rounded-md text-xs font-bold border border-brand-slate/10 uppercase tracking-wider">
+                        {project.category}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Duration */}
-                <div className="mb-4 flex items-center gap-2 text-sm text-brand-slate">
-                  <Clock className="w-4 h-4 text-[#3EBFB0]" />
-                  <span>{project.duration}</span>
+                <p className="text-sm text-brand-slate leading-relaxed mb-5 flex-grow">
+                  {project.description}
+                </p>
+
+                <div className="flex items-center justify-between mb-5 bg-brand-mist p-3 rounded-xl border border-brand-slate/5">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-brand-slate" />
+                    <div>
+                      <p className="text-xs font-bold text-brand-slate uppercase tracking-wide">Duration</p>
+                      <p className="text-sm font-bold text-brand-ink">{project.duration}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Target className="w-4 h-4 text-brand-slate" />
+                    <div>
+                      <p className="text-xs font-bold text-brand-slate uppercase tracking-wide">Difficulty</p>
+                      <span className={`text-sm font-bold ${
+                        project.difficulty === 'Beginner' ? 'text-green-600' :
+                        project.difficulty === 'Intermediate' ? 'text-yellow-600' :
+                        'text-red-600'
+                      }`}>
+                        {project.difficulty}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Skills */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-[#2B3674] mb-2">Skills You'll Build</h4>
+                {/* Skills Tags */}
+                <div className="mb-6">
+                  <h4 className="text-xs font-bold text-brand-ink uppercase tracking-wide mb-2 opacity-70">
+                    Skills Developed
+                  </h4>
                   <div className="flex flex-wrap gap-2">
                     {project.skills.map((skill, idx) => (
                       <span
                         key={idx}
-                        className="px-3 py-1 bg-gradient-to-r from-[#2B3674]/10 to-[#3EBFB0]/10 text-[#2B3674] rounded-full text-xs font-medium border border-[#3EBFB0]/20"
+                        className="px-2.5 py-1 bg-white border border-brand-slate/10 text-brand-ink rounded-md text-xs font-bold shadow-sm"
                       >
                         {skill}
                       </span>
@@ -332,20 +358,30 @@ const ProjectIdeas: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Action Button */}
+                {/* Action Buttons */}
                 <Button
                   variant="primary"
-                  size="sm"
-                  className="w-full bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] hover:from-[#3EBFB0] hover:to-[#2B3674] shadow-md"
+                  className="w-full bg-brand-ink hover:bg-brand-darkgreen text-white shadow-md font-bold"
                 >
-                  <Rocket className="w-4 h-4 mr-2" />
-                  Start Project
-                  <ChevronRight className="w-4 h-4 ml-2" />
+                  View Project Details
                 </Button>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
+
+        {/* No Results state */}
+        {filteredProjects.length === 0 && (
+          <div className="text-center py-16 bg-white rounded-3xl border border-brand-slate/10 shadow-sm">
+            <FolderOpen className="h-16 w-16 text-brand-slate opacity-20 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-brand-ink mb-2">
+              No projects found
+            </h3>
+            <p className="text-brand-slate">
+              Try adjusting your search or filters to find what you're looking for.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

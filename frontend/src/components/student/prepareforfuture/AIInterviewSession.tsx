@@ -129,16 +129,16 @@ const AIInterviewSession: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist/30 via-white to-brand-mist/30 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-brand-ink to-brand-darkgreen rounded-lg flex items-center justify-center">
               <Camera className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-[#2B3674]">
+              <h1 className="text-2xl font-bold text-brand-ink">
                 AI Interview in Progress
               </h1>
               <p className="text-sm text-brand-slate">
@@ -156,12 +156,12 @@ const AIInterviewSession: React.FC = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 4xl:grid-cols-5 gap-6">
           {/* Main Interview Area */}
           <div className="lg:col-span-2 space-y-6">
             {/* Video Feed */}
-            <Card className="border-2 border-[#2B3674]/10">
-              <div className="relative bg-gray-900 rounded-xl overflow-hidden aspect-video">
+            <Card className="border-2 border-brand-slate/10">
+              <div className="relative bg-brand-ink rounded-xl overflow-hidden aspect-video">
                 {/* Real video feed */}
                 {stream ? (
                   <video
@@ -173,7 +173,7 @@ const AIInterviewSession: React.FC = () => {
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-40 h-40 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-full animate-pulse"></div>
+                    <div className="w-40 h-40 bg-gradient-to-br from-brand-ink to-brand-darkgreen rounded-full animate-pulse"></div>
                   </div>
                 )}
                 
@@ -215,13 +215,13 @@ const AIInterviewSession: React.FC = () => {
             </Card>
 
             {/* Question Card */}
-            <Card className="border-2 border-[#3EBFB0]/20 bg-[#3EBFB0]/5">
+            <Card className="border-2 border-brand-neon/20 bg-brand-mist">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-gradient-to-br from-brand-ink to-brand-darkgreen rounded-lg flex items-center justify-center flex-shrink-0">
                   <MessageSquare className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-[#2B3674] mb-3">
+                  <h3 className="text-lg font-bold text-brand-ink mb-3">
                     Question {currentQuestion + 1}
                   </h3>
                   <p className="text-brand-slate text-lg leading-relaxed mb-6">
@@ -231,7 +231,7 @@ const AIInterviewSession: React.FC = () => {
                   {!isAnswering ? (
                     <Button
                       onClick={handleStartAnswer}
-                      className="bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]"
+                      className="bg-gradient-to-r from-brand-ink to-brand-darkgreen"
                     >
                       <Mic className="w-4 h-4 mr-2" />
                       Start Answering
@@ -254,7 +254,7 @@ const AIInterviewSession: React.FC = () => {
                 <div className="flex items-start gap-3">
                   <Sparkles className="w-5 h-5 text-[#C8A860] flex-shrink-0 mt-1" />
                   <div>
-                    <h4 className="font-semibold text-[#2B3674] mb-2">
+                    <h4 className="font-semibold text-brand-ink mb-2">
                       Real-time Tip
                     </h4>
                     <p className="text-sm text-brand-slate">
@@ -271,8 +271,8 @@ const AIInterviewSession: React.FC = () => {
           {/* Metrics Sidebar */}
           <div className="space-y-6">
             {/* Performance Metrics */}
-            <Card className="border-2 border-[#2B3674]/10">
-              <h3 className="text-lg font-bold text-[#2B3674] mb-4">
+            <Card className="border-2 border-brand-slate/10">
+              <h3 className="text-lg font-bold text-brand-ink mb-4">
                 Live Performance Metrics
               </h3>
               <div className="space-y-4">
@@ -280,7 +280,7 @@ const AIInterviewSession: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Eye className="w-4 h-4 text-[#3EBFB0]" />
+                      <Eye className="w-4 h-4 text-brand-darkgreen" />
                       <span className="text-sm font-medium">Eye Contact</span>
                     </div>
                     <span className={`text-sm font-bold ${getMetricColor(metrics.eyeContact)}`}>
@@ -299,7 +299,7 @@ const AIInterviewSession: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Volume2 className="w-4 h-4 text-[#3EBFB0]" />
+                      <Volume2 className="w-4 h-4 text-brand-darkgreen" />
                       <span className="text-sm font-medium">Voice Clarity</span>
                     </div>
                     <span className={`text-sm font-bold ${getMetricColor(metrics.voiceClarity)}`}>
@@ -318,7 +318,7 @@ const AIInterviewSession: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-[#3EBFB0]" />
+                      <TrendingUp className="w-4 h-4 text-brand-darkgreen" />
                       <span className="text-sm font-medium">Speaking Pace</span>
                     </div>
                     <span className={`text-sm font-bold ${getMetricColor(metrics.pace)}`}>
@@ -337,7 +337,7 @@ const AIInterviewSession: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#3EBFB0]" />
+                      <Sparkles className="w-4 h-4 text-brand-darkgreen" />
                       <span className="text-sm font-medium">Confidence</span>
                     </div>
                     <span className={`text-sm font-bold ${getMetricColor(metrics.confidence)}`}>
@@ -372,7 +372,7 @@ const AIInterviewSession: React.FC = () => {
 
             {/* Progress */}
             <Card className="border-2 border-[#C8A860]/20 bg-[#C8A860]/5">
-              <h3 className="text-lg font-bold text-[#2B3674] mb-4">
+              <h3 className="text-lg font-bold text-brand-ink mb-4">
                 Interview Progress
               </h3>
               <div className="space-y-2">
@@ -391,11 +391,11 @@ const AIInterviewSession: React.FC = () => {
                       <CheckCircle className="w-5 h-5 text-green-600" />
                     ) : (
                       <div className={`w-5 h-5 rounded-full border-2 ${
-                        idx === currentQuestion ? "border-[#3EBFB0]" : "border-gray-300"
+                        idx === currentQuestion ? "border-[#3EBFB0]" : "border-brand-slate/20"
                       }`}></div>
                     )}
                     <span className={`text-sm font-medium ${
-                      idx === currentQuestion ? "text-[#2B3674]" : "text-brand-slate"
+                      idx === currentQuestion ? "text-brand-ink" : "text-brand-slate"
                     }`}>
                       Question {idx + 1}
                     </span>
@@ -410,7 +410,7 @@ const AIInterviewSession: React.FC = () => {
         {showExitModal && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <Card className="max-w-md w-full">
-              <h3 className="text-xl font-bold text-[#2B3674] mb-3">
+              <h3 className="text-xl font-bold text-brand-ink mb-3">
                 Exit Interview?
               </h3>
               <p className="text-brand-slate mb-6">

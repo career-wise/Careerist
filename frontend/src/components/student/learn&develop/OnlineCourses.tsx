@@ -11,18 +11,17 @@ import {
   Search,
   Filter,
   Sparkles,
-  CheckCircle,
   Video,
   FileText,
   Target,
   Zap,
   ExternalLink,
-  ChevronRight,
-  Calendar,
   BarChart3,
+  Library
 } from "lucide-react";
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
+import Input from "../../shared/ui/Input";
 
 const OnlineCourses: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -99,54 +98,23 @@ const OnlineCourses: React.FC = () => {
       description: "Build essential financial skills for a secure future - budgeting, investing, and smart money management",
       topics: ["Budgeting", "Saving", "Investing", "Credit", "Taxes", "Retirement Planning"],
       price: "Free",
-      image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&h=600&fit=crop&q=80",
-      skills: ["Budgeting", "Financial Planning", "Investment", "Money Management"],
+      image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=600&fit=crop&q=80",
+      skills: ["Budgeting", "Investment Basics", "Credit Management", "Financial Planning"],
       certificate: true,
       selfPaced: true,
-      videos: 32,
-      assignments: 8,
-      matchScore: 82,
-      completionRate: "92%",
+      videos: 24,
+      assignments: 6,
+      matchScore: 92,
+      completionRate: "94%",
       difficulty: "Beginner",
-    },
-    {
-      id: "writing",
-      title: "Creative Writing Workshop",
-      provider: "MasterClass",
-      instructor: "Margaret Atwood",
-      rating: 4.9,
-      reviews: 15234,
-      duration: "8 weeks",
-      students: "12,000+",
-      level: "Intermediate",
-      category: "Arts",
-      description: "Develop your storytelling craft with one of literature's greatest voices",
-      topics: [
-        "Narrative Structure",
-        "Character Development",
-        "Dialogue",
-        "Editing",
-        "Publishing",
-        "World Building",
-      ],
-      price: "$15/month",
-      image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&h=600&fit=crop&q=80",
-      skills: ["Creative Writing", "Storytelling", "Editing", "Literary Analysis"],
-      certificate: true,
-      selfPaced: true,
-      videos: 28,
-      assignments: 15,
-      matchScore: 90,
-      completionRate: "85%",
-      difficulty: "Intermediate",
     },
     {
       id: "data-science",
       title: "Data Science Fundamentals",
       provider: "Udacity",
-      instructor: "Dr. Andrew Ng",
-      rating: 4.8,
-      reviews: 21043,
+      instructor: "Alex Chen",
+      rating: 4.5,
+      reviews: 4321,
       duration: "10 weeks",
       students: "67,000+",
       level: "Intermediate",
@@ -198,30 +166,6 @@ const OnlineCourses: React.FC = () => {
     { name: "Arts", icon: BookOpen, count: courses.filter(c => c.category === "Arts").length },
   ];
 
-  const stats = [
-    {
-      label: "Available Courses",
-      value: courses.length.toString(),
-      icon: BookOpen,
-      color: "from-[#2B3674] to-[#3d4d9e]",
-      bgColor: "bg-[#2B3674]/10",
-    },
-    {
-      label: "Saved Courses",
-      value: savedCourses.length.toString(),
-      icon: Heart,
-      color: "from-[#3EBFB0] to-[#5ed4c7]",
-      bgColor: "bg-[#3EBFB0]/10",
-    },
-    {
-      label: "Total Students",
-      value: "254K+",
-      icon: Users,
-      color: "from-[#C8A860] to-[#d4b870]",
-      bgColor: "bg-[#C8A860]/10",
-    },
-  ];
-
   const toggleSave = (id: string) => {
     setSavedCourses(prev =>
       prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
@@ -230,10 +174,10 @@ const OnlineCourses: React.FC = () => {
 
   const getLevelColor = (level: string) => {
     switch (level) {
-      case "Beginner": return "bg-green-50 text-green-700 border-green-200";
-      case "Intermediate": return "bg-[#C8A860]/10 text-[#C8A860] border-[#C8A860]/30";
-      case "Advanced": return "bg-[#2B3674]/10 text-[#2B3674] border-[#2B3674]/30";
-      default: return "bg-brand-mist text-brand-slate border-brand-slate/10";
+      case "Beginner": return "text-green-600 bg-green-100 border-green-200";
+      case "Intermediate": return "text-yellow-600 bg-yellow-100 border-yellow-200";
+      case "Advanced": return "text-red-600 bg-red-100 border-red-200";
+      default: return "text-brand-slate bg-brand-mist border-brand-slate/10";
     }
   };
 
@@ -251,92 +195,77 @@ const OnlineCourses: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-brand-mist/30 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-xl flex items-center justify-center shadow-lg">
-              <Play className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent">
-                Online Courses
-              </h1>
-              <p className="text-brand-slate">
-                Discover high-quality courses to accelerate your learning journey
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          {stats.map((stat, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl p-5 border border-[#2B3674]/10 hover:shadow-lg transition-all group"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-brand-slate mb-1">{stat.label}</p>
-                  <p className="text-3xl font-bold text-[#2B3674]">{stat.value}</p>
-                </div>
-                <div className={`w-14 h-14 ${stat.bgColor} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <stat.icon className="w-7 h-7 text-[#2B3674]" />
-                </div>
+        <div className="bg-gradient-to-r from-brand-ink to-brand-darkgreen rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-neon opacity-10 rounded-full blur-2xl -ml-10 -mb-10"></div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-lg">
+                <Play className="w-8 h-8 text-brand-neon" />
+              </div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                  Online Courses
+                </h1>
+                <p className="text-brand-mist/90 text-lg">
+                  Discover high-quality courses to accelerate your learning journey
+                </p>
               </div>
             </div>
-          ))}
+          </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-2xl p-6 mb-8 border border-[#2B3674]/10 shadow-sm">
-          <div className="mb-4">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#2B3674]/40 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search by course name, topic, or provider..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-[#3EBFB0]/5 border-2 border-[#2B3674]/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3EBFB0] focus:border-transparent transition-all"
-              />
+        <Card className="p-6 border-brand-slate/10 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+          <div className="flex-1 relative w-full">
+            <Input
+              placeholder="Search by course name, topic, or provider..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              leftIcon={<Search className="h-5 w-5 text-brand-slate" />}
+              className="w-full bg-brand-mist border-brand-slate/10 focus:border-brand-neon text-brand-ink rounded-xl pl-12 h-12"
+            />
+          </div>
+          <div className="w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+            <div className="flex gap-3 min-w-max">
+              {categories.map((category) => (
+                <button
+                  key={category.name}
+                  onClick={() => setSelectedCategory(category.name.toLowerCase())}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                    selectedCategory === category.name.toLowerCase()
+                      ? "bg-brand-ink text-white border-brand-ink shadow-md"
+                      : "bg-white text-brand-ink border-brand-slate/10 hover:border-brand-neon/50 hover:bg-brand-mist"
+                  }`}
+                >
+                  <category.icon className={`w-4 h-4 ${
+                    selectedCategory === category.name.toLowerCase() ? "text-brand-neon" : "text-brand-slate"
+                  }`} />
+                  {category.name}
+                  <span className={`px-2 py-0.5 rounded-md text-xs font-bold ${
+                    selectedCategory === category.name.toLowerCase()
+                      ? "bg-white/20 text-white"
+                      : "bg-brand-mist text-brand-slate"
+                  }`}>
+                    {category.count}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
+        </Card>
 
-          {/* Category Filters */}
-          <div className="flex flex-wrap gap-3">
-            {categories.map((category) => (
-              <button
-                key={category.name}
-                onClick={() => setSelectedCategory(category.name.toLowerCase())}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  selectedCategory === category.name.toLowerCase()
-                    ? "bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] text-white shadow-md"
-                    : "bg-[#2B3674]/5 text-[#2B3674] hover:bg-[#3EBFB0]/10"
-                }`}
-              >
-                <category.icon className="w-4 h-4" />
-                {category.name}
-                <span className={`px-2 py-0.5 rounded-full text-xs ${
-                  selectedCategory === category.name.toLowerCase()
-                    ? "bg-white/20"
-                    : "bg-[#2B3674]/10"
-                }`}>
-                  {category.count}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Results Count */}
-        <div className="flex items-center justify-between mb-6">
-          <p className="text-brand-slate">
-            Found <span className="font-bold text-[#2B3674]">{filteredCourses.length}</span> courses
+        {/* Results Header */}
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-brand-slate font-medium">
+            Found <span className="font-bold text-brand-ink">{filteredCourses.length}</span> courses
           </p>
-          <select className="px-4 py-2 border-2 border-[#2B3674]/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3EBFB0]">
+          <select className="bg-transparent text-brand-ink font-bold text-sm outline-none cursor-pointer hover:text-brand-darkgreen transition-colors">
             <option>Sort by Match Score</option>
             <option>Sort by Rating</option>
             <option>Sort by Students</option>
@@ -344,185 +273,168 @@ const OnlineCourses: React.FC = () => {
           </select>
         </div>
 
-        {/* Course Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Course Cards Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-6">
           {filteredCourses.map((course) => (
-            <div
+            <Card
               key={course.id}
-              className="bg-white rounded-2xl overflow-hidden border border-[#2B3674]/10 hover:shadow-2xl transition-all duration-300 group"
+              className="group overflow-hidden flex flex-col h-full bg-white border-brand-slate/10 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-0"
             >
-              {/* Course Image */}
-              <div className="relative h-48 overflow-hidden">
+              {/* Course Image Header */}
+              <div className="relative h-48 overflow-hidden shrink-0">
                 <img
                   src={course.image}
                   alt={course.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#2B3674]/90 via-[#2B3674]/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/90 via-brand-ink/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
 
-                {/* Match Score & Save */}
                 <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-                  <div className="bg-gradient-to-r from-[#C8A860] to-[#3EBFB0] text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
-                    <Sparkles className="w-4 h-4" />
+                  <div className="bg-brand-neon text-brand-ink px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5 uppercase tracking-wide">
+                    <Sparkles className="w-3.5 h-3.5" />
                     {course.matchScore}% Match
                   </div>
                   <button
-                    onClick={() => toggleSave(course.id)}
-                    className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                    onClick={(e) => { e.preventDefault(); toggleSave(course.id); }}
+                    className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white hover:scale-110 transition-all shadow-lg border border-white/20"
                   >
                     <Heart
-                      className={`w-5 h-5 ${
+                      className={`w-5 h-5 transition-colors ${
                         savedCourses.includes(course.id)
-                          ? "fill-red-500 text-red-500"
-                          : "text-[#2B3674]"
+                          ? "fill-brand-neon text-brand-neon"
+                          : "text-white"
                       }`}
                     />
                   </button>
                 </div>
 
-                {/* Price Badge */}
                 <div className="absolute bottom-4 left-4">
-                  <div className={`px-4 py-2 rounded-lg shadow-lg font-bold text-lg ${
+                  <div className={`px-4 py-1.5 rounded-lg shadow-lg font-bold text-sm tracking-wide ${
                     course.price === "Free" 
-                      ? "bg-green-500 text-white" 
-                      : "bg-white/95 backdrop-blur-sm text-[#2B3674]"
+                      ? "bg-brand-darkgreen text-brand-neon" 
+                      : "bg-white/90 backdrop-blur-md text-brand-ink"
                   }`}>
                     {course.price}
                   </div>
                 </div>
 
-                {/* Certificate Badge */}
                 {course.certificate && (
-                  <div className="absolute bottom-4 right-4 bg-[#C8A860]/90 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-lg">
-                    <Award className="w-3 h-3" />
-                    Certificate
+                  <div className="absolute bottom-4 right-4 bg-brand-neon/90 backdrop-blur-md text-brand-ink px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-lg uppercase">
+                    <Award className="w-3.5 h-3.5" />
+                    Cert
                   </div>
                 )}
               </div>
 
-              {/* Course Info */}
-              <div className="p-6">
-                {/* Header */}
+              {/* Course Info Body */}
+              <div className="p-6 flex-grow flex flex-col">
                 <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${getLevelColor(course.level)}`}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className={`px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider border ${getLevelColor(course.level)}`}>
                       {course.level}
                     </span>
-                    <span className="px-3 py-1 bg-[#3EBFB0]/10 text-[#3EBFB0] rounded-lg text-xs font-bold border border-[#3EBFB0]/30">
+                    <span className="px-2.5 py-0.5 bg-brand-mist text-brand-slate rounded-md text-xs font-bold border border-brand-slate/10 uppercase tracking-wider">
                       {course.category}
                     </span>
                   </div>
-                  <h3 className="text-xl font-bold text-[#2B3674] mb-2 group-hover:text-[#3EBFB0] transition-colors">
+                  <h3 className="text-xl font-bold text-brand-ink mb-1 group-hover:text-brand-darkgreen transition-colors line-clamp-2">
                     {course.title}
                   </h3>
-                  <p className="text-sm text-brand-slate mb-2">
-                    by <span className="font-semibold text-[#2B3674]">{course.instructor}</span> • {course.provider}
+                  <p className="text-sm text-brand-slate font-medium mb-3">
+                    by <span className="font-bold text-brand-ink">{course.instructor}</span> • {course.provider}
                   </p>
-                  <p className="text-sm text-brand-slate leading-relaxed">{course.description}</p>
+                  <p className="text-sm text-brand-slate leading-relaxed line-clamp-2">
+                    {course.description}
+                  </p>
                 </div>
 
                 {/* Stats Row */}
-                <div className="flex flex-wrap items-center gap-4 mb-4 pb-4 border-b border-brand-slate/10">
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                    <span className="text-sm font-bold text-gray-900">{course.rating}</span>
-                    <span className="text-xs text-brand-slate">({course.reviews.toLocaleString()})</span>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-5 pb-5 border-b border-brand-slate/10 mt-auto">
+                  <div className="flex items-center gap-1 bg-brand-mist px-2.5 py-1 rounded-md border border-brand-slate/5">
+                    <Star className="w-3.5 h-3.5 text-yellow-500 fill-current" />
+                    <span className="text-sm font-bold text-brand-ink">{course.rating}</span>
+                    <span className="text-xs font-medium text-brand-slate">({course.reviews.toLocaleString()})</span>
                   </div>
-                  <div className="flex items-center gap-1 text-sm text-brand-slate">
-                    <Clock className="w-4 h-4 text-[#3EBFB0]" />
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-brand-slate uppercase tracking-wide">
+                    <Clock className="w-3.5 h-3.5 text-brand-ink opacity-70" />
                     {course.duration}
                   </div>
-                  <div className="flex items-center gap-1 text-sm text-brand-slate">
-                    <Users className="w-4 h-4 text-[#3EBFB0]" />
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-brand-slate uppercase tracking-wide">
+                    <Users className="w-3.5 h-3.5 text-brand-ink opacity-70" />
                     {course.students}
                   </div>
-                  <div className="flex items-center gap-1 text-sm text-brand-slate">
-                    <Video className="w-4 h-4 text-[#3EBFB0]" />
-                    {course.videos} videos
+                </div>
+
+                {/* Course Content Metrics */}
+                <div className="grid grid-cols-2 gap-3 mb-5">
+                  <div className="p-3 bg-brand-mist rounded-xl border border-brand-slate/5 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-brand-slate" />
+                      <span className="text-xs font-bold text-brand-slate uppercase tracking-wide">Tasks</span>
+                    </div>
+                    <p className="text-sm font-bold text-brand-ink">{course.assignments}</p>
+                  </div>
+                  <div className="p-3 bg-brand-neon/10 rounded-xl border border-brand-neon/20 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4 text-brand-darkgreen" />
+                      <span className="text-xs font-bold text-brand-darkgreen uppercase tracking-wide">Done</span>
+                    </div>
+                    <p className="text-sm font-bold text-brand-darkgreen">{course.completionRate}</p>
                   </div>
                 </div>
 
-                {/* Course Content */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="p-3 bg-[#2B3674]/5 rounded-lg border border-[#2B3674]/10">
-                    <div className="flex items-center gap-2 mb-1">
-                      <FileText className="w-4 h-4 text-[#2B3674]" />
-                      <span className="text-xs text-brand-slate">Assignments</span>
-                    </div>
-                    <p className="text-lg font-bold text-[#2B3674]">{course.assignments}</p>
-                  </div>
-                  <div className="p-3 bg-[#3EBFB0]/5 rounded-lg border border-[#3EBFB0]/20">
-                    <div className="flex items-center gap-2 mb-1">
-                      <BarChart3 className="w-4 h-4 text-[#3EBFB0]" />
-                      <span className="text-xs text-brand-slate">Completion</span>
-                    </div>
-                    <p className="text-lg font-bold text-[#3EBFB0]">{course.completionRate}</p>
-                  </div>
-                </div>
-
-                {/* Skills */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-[#2B3674] mb-2 flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-[#3EBFB0]" />
-                    Skills You'll Gain
-                  </h4>
+                {/* Topics Tags */}
+                <div className="mb-6">
                   <div className="flex flex-wrap gap-2">
-                    {course.skills.map((skill, idx) => (
+                    {course.topics.slice(0, 3).map((topic, idx) => (
                       <span
                         key={idx}
-                        className="px-3 py-1 bg-gradient-to-r from-[#2B3674]/10 to-[#3EBFB0]/10 text-[#2B3674] rounded-full text-xs font-medium border border-[#3EBFB0]/20"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Topics */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-[#2B3674] mb-2 flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-[#3EBFB0]" />
-                    Course Topics
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {course.topics.slice(0, 4).map((topic, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 bg-[#3EBFB0]/10 text-[#3EBFB0] rounded-lg text-xs font-medium border border-[#3EBFB0]/30"
+                        className="px-2.5 py-1 bg-white border border-brand-slate/10 hover:border-brand-neon text-brand-ink rounded-md text-xs font-bold transition-colors shadow-sm"
                       >
                         {topic}
                       </span>
                     ))}
-                    {course.topics.length > 4 && (
-                      <span className="px-3 py-1 bg-[#C8A860]/10 text-[#C8A860] rounded-lg text-xs font-medium">
-                        +{course.topics.length - 4} more
+                    {course.topics.length > 3 && (
+                      <span className="px-2.5 py-1 bg-brand-mist text-brand-slate rounded-md text-xs font-bold border border-brand-slate/10">
+                        +{course.topics.length - 3}
                       </span>
                     )}
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-3">
+                <div className="flex gap-3 mt-auto pt-2">
                   <Button
                     variant="primary"
-                    size="sm"
-                    className="flex-1 bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] hover:from-[#3EBFB0] hover:to-[#2B3674] shadow-md"
+                    className="flex-1 bg-brand-ink hover:bg-brand-darkgreen text-white shadow-md font-bold"
                   >
                     <Play className="w-4 h-4 mr-2" />
                     Start Learning
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="border-2 border-[#2B3674]/20 hover:border-[#3EBFB0] hover:bg-[#3EBFB0]/5"
+                    className="border-brand-slate/20 hover:bg-brand-mist hover:border-brand-slate/30 text-brand-ink"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
+
+        {/* No Results state */}
+        {filteredCourses.length === 0 && (
+          <div className="text-center py-16 bg-white rounded-3xl border border-brand-slate/10 shadow-sm">
+            <Library className="h-16 w-16 text-brand-slate opacity-20 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-brand-ink mb-2">
+              No courses found
+            </h3>
+            <p className="text-brand-slate">
+              Try adjusting your search or filters to find what you're looking for.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

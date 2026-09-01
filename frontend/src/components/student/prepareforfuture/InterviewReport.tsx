@@ -128,14 +128,14 @@ const InterviewReport: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist/30 via-white to-brand-mist/30 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8 text-center">
-          <div className="w-20 h-20 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
+          <div className="w-20 h-20 bg-gradient-to-br from-brand-ink to-brand-darkgreen rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
             <Trophy className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-brand-ink to-brand-darkgreen bg-clip-text text-transparent mb-2">
             Interview Complete!
           </h1>
           <p className="text-brand-slate text-lg">
@@ -144,7 +144,7 @@ const InterviewReport: React.FC = () => {
         </div>
 
         {/* Overall Score */}
-        <Card className="mb-8 border-2 border-[#2B3674]/10 text-center">
+        <Card className="mb-8 border-2 border-brand-slate/10 text-center">
           <div className="flex flex-col md:flex-row items-center justify-around gap-8 py-6">
             <div>
               <p className="text-brand-slate mb-2">Overall Score</p>
@@ -158,37 +158,37 @@ const InterviewReport: React.FC = () => {
             
             <div className="grid grid-cols-2 gap-6">
               <div className="text-center">
-                <div className="w-16 h-16 bg-[#3EBFB0]/10 rounded-xl flex items-center justify-center mx-auto mb-2">
-                  <Clock className="w-8 h-8 text-[#3EBFB0]" />
+                <div className="w-16 h-16 bg-brand-neon/10 rounded-xl flex items-center justify-center mx-auto mb-2">
+                  <Clock className="w-8 h-8 text-brand-darkgreen" />
                 </div>
-                <p className="text-2xl font-bold text-[#2B3674]">{formatTime(totalTime)}</p>
+                <p className="text-2xl font-bold text-brand-ink">{formatTime(totalTime)}</p>
                 <p className="text-sm text-brand-slate">Duration</p>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 bg-[#C8A860]/10 rounded-xl flex items-center justify-center mx-auto mb-2">
+                <div className="w-16 h-16 bg-brand-mist rounded-xl flex items-center justify-center mx-auto mb-2">
                   <Star className="w-8 h-8 text-[#C8A860]" />
                 </div>
-                <p className="text-2xl font-bold text-[#2B3674]">5/5</p>
+                <p className="text-2xl font-bold text-brand-ink">5/5</p>
                 <p className="text-sm text-brand-slate">Questions</p>
               </div>
             </div>
           </div>
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-6 mb-8">
           {/* Strengths */}
           <Card className="border-2 border-green-200 bg-green-50/50">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-xl font-bold text-[#2B3674]">Key Strengths</h2>
+              <h2 className="text-xl font-bold text-brand-ink">Key Strengths</h2>
             </div>
             <div className="space-y-4">
               {strengths.map((strength, idx) => (
                 <div key={idx} className="p-4 bg-white rounded-lg border border-green-200">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-[#2B3674]">{strength.title}</h3>
+                    <h3 className="font-bold text-brand-ink">{strength.title}</h3>
                     <span className="text-green-600 font-bold">{Math.round(strength.score)}%</span>
                   </div>
                   <p className="text-sm text-brand-slate">{strength.description}</p>
@@ -203,13 +203,13 @@ const InterviewReport: React.FC = () => {
               <div className="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
                 <Target className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-xl font-bold text-[#2B3674]">Areas to Improve</h2>
+              <h2 className="text-xl font-bold text-brand-ink">Areas to Improve</h2>
             </div>
             <div className="space-y-4">
               {improvements.map((improvement, idx) => (
                 <div key={idx} className="p-4 bg-white rounded-lg border border-yellow-200">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-bold text-[#2B3674]">{improvement.title}</h3>
+                    <h3 className="font-bold text-brand-ink">{improvement.title}</h3>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-brand-slate">{Math.round(improvement.current)}%</span>
                       <TrendingUp className="w-4 h-4 text-yellow-600" />
@@ -224,23 +224,23 @@ const InterviewReport: React.FC = () => {
         </div>
 
         {/* Detailed Metrics */}
-        <Card className="mb-8 border-2 border-[#2B3674]/10">
-          <h2 className="text-xl font-bold text-[#2B3674] mb-6">Performance Breakdown</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="mb-8 border-2 border-brand-slate/10">
+          <h2 className="text-xl font-bold text-brand-ink mb-6">Performance Breakdown</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-6">
             {/* Eye Contact */}
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Eye className="w-5 h-5 text-[#3EBFB0]" />
-                  <span className="font-medium text-[#2B3674]">Eye Contact</span>
+                  <Eye className="w-5 h-5 text-brand-darkgreen" />
+                  <span className="font-medium text-brand-ink">Eye Contact</span>
                 </div>
-                <span className="text-xl font-bold text-[#2B3674]">
+                <span className="text-xl font-bold text-brand-ink">
                   {Math.round(finalMetrics.eyeContact)}%
                 </span>
               </div>
               <div className="w-full rounded-full h-3 mb-2 bg-brand-slate/10">
                 <div
-                  className="h-3 rounded-full bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]"
+                  className="h-3 rounded-full bg-gradient-to-r from-brand-ink to-brand-darkgreen"
                   style={{ width: `${finalMetrics.eyeContact}%` }}
                 ></div>
               </div>
@@ -253,16 +253,16 @@ const InterviewReport: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Volume2 className="w-5 h-5 text-[#3EBFB0]" />
-                  <span className="font-medium text-[#2B3674]">Voice Clarity</span>
+                  <Volume2 className="w-5 h-5 text-brand-darkgreen" />
+                  <span className="font-medium text-brand-ink">Voice Clarity</span>
                 </div>
-                <span className="text-xl font-bold text-[#2B3674]">
+                <span className="text-xl font-bold text-brand-ink">
                   {Math.round(finalMetrics.voiceClarity)}%
                 </span>
               </div>
               <div className="w-full rounded-full h-3 mb-2 bg-brand-slate/10">
                 <div
-                  className="h-3 rounded-full bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]"
+                  className="h-3 rounded-full bg-gradient-to-r from-brand-ink to-brand-darkgreen"
                   style={{ width: `${finalMetrics.voiceClarity}%` }}
                 ></div>
               </div>
@@ -275,16 +275,16 @@ const InterviewReport: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-[#3EBFB0]" />
-                  <span className="font-medium text-[#2B3674]">Speaking Pace</span>
+                  <TrendingUp className="w-5 h-5 text-brand-darkgreen" />
+                  <span className="font-medium text-brand-ink">Speaking Pace</span>
                 </div>
-                <span className="text-xl font-bold text-[#2B3674]">
+                <span className="text-xl font-bold text-brand-ink">
                   {Math.round(finalMetrics.pace)}%
                 </span>
               </div>
               <div className="w-full rounded-full h-3 mb-2 bg-brand-slate/10">
                 <div
-                  className="h-3 rounded-full bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]"
+                  className="h-3 rounded-full bg-gradient-to-r from-brand-ink to-brand-darkgreen"
                   style={{ width: `${finalMetrics.pace}%` }}
                 ></div>
               </div>
@@ -297,16 +297,16 @@ const InterviewReport: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-[#3EBFB0]" />
-                  <span className="font-medium text-[#2B3674]">Confidence</span>
+                  <Sparkles className="w-5 h-5 text-brand-darkgreen" />
+                  <span className="font-medium text-brand-ink">Confidence</span>
                 </div>
-                <span className="text-xl font-bold text-[#2B3674]">
+                <span className="text-xl font-bold text-brand-ink">
                   {Math.round(finalMetrics.confidence)}%
                 </span>
               </div>
               <div className="w-full rounded-full h-3 mb-2 bg-brand-slate/10">
                 <div
-                  className="h-3 rounded-full bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]"
+                  className="h-3 rounded-full bg-gradient-to-r from-brand-ink to-brand-darkgreen"
                   style={{ width: `${finalMetrics.confidence}%` }}
                 ></div>
               </div>
@@ -318,13 +318,13 @@ const InterviewReport: React.FC = () => {
         </Card>
 
         {/* Detailed Feedback */}
-        <Card className="mb-8 border-2 border-[#3EBFB0]/20">
-          <h2 className="text-xl font-bold text-[#2B3674] mb-6">Detailed Feedback</h2>
+        <Card className="mb-8 border-2 border-brand-neon/20">
+          <h2 className="text-xl font-bold text-brand-ink mb-6">Detailed Feedback</h2>
           <div className="space-y-4">
             {detailedFeedback.map((item, idx) => (
-              <div key={idx} className="p-4 bg-[#3EBFB0]/5 rounded-lg border border-[#3EBFB0]/20">
+              <div key={idx} className="p-4 bg-brand-mist rounded-lg border border-brand-neon/20">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-[#2B3674]">{item.category}</h3>
+                  <h3 className="font-bold text-brand-ink">{item.category}</h3>
                   <div className="flex items-center gap-2">
                     <Award className="w-4 h-4 text-[#C8A860]" />
                     <span className="font-bold text-[#C8A860]">{item.score}/100</span>
@@ -356,7 +356,7 @@ const InterviewReport: React.FC = () => {
           </Button>
           <Button
             onClick={() => navigate(`/interview-practice/${type}/setup`)}
-            className="min-w-[180px] bg-gradient-to-r from-[#2B3674] to-[#3EBFB0]"
+            className="min-w-[180px] bg-gradient-to-r from-brand-ink to-brand-darkgreen"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             Practice Again

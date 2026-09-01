@@ -43,7 +43,7 @@ const Features: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-4 4xl:grid-cols-5 gap-8">
           {features.map((feature, index) => (
             <div key={index} className={`rounded-[3rem] p-10 ${feature.bgColor} border border-gray-200/50 hover:shadow-2xl transition-all duration-500 flex flex-col h-full group hover:-translate-y-2`}>
               <div className="w-20 h-20 bg-brand-neon rounded-full flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform duration-500">

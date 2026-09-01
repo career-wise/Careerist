@@ -97,11 +97,11 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-gray-100 rounded-full;
+    @apply bg-brand-mist rounded-full;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-primary-400 rounded-full hover:bg-primary-500;
+    @apply bg-brand-slate/20 rounded-full hover:bg-brand-slate/40;
   }
 }
 

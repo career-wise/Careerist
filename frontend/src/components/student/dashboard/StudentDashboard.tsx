@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
+import { Menu } from "lucide-react";
 import StudentSidebar from "./StudentSidebar";
 import StudentDashboardHome from "./StudentDashboardHome";
 
@@ -22,12 +23,41 @@ import TestPrepStrategies from "../study&succeed/TestPrepStrategies";
 import AcademicGoalTracker from "../study&succeed/AcademicGoalTracker";
 
 const StudentDashboard: React.FC = () => {
-  return (
-    <div className="flex h-screen bg-brand-mist overflow-hidden">
-      <StudentSidebar />
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
-      <div className="flex-1 overflow-auto bg-brand-mist">
-        <Routes>
+  return (
+    <div className="min-h-screen bg-brand-ink flex justify-center">
+      <div className="flex w-full h-screen bg-brand-mist overflow-hidden relative shadow-2xl">
+        
+        {/* Mobile Overlay */}
+        {isSidebarOpen && (
+          <div 
+            className="lg:hidden fixed inset-0 bg-brand-ink/40 backdrop-blur-sm z-40"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
+        <div className={`fixed lg:relative z-50 h-full transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+          <StudentSidebar onClose={() => setIsSidebarOpen(false)} />
+        </div>
+
+        <div className="flex-1 flex flex-col h-screen overflow-hidden bg-brand-mist">
+          {/* Mobile Header */}
+          <div className="lg:hidden flex items-center justify-between p-4 bg-white border-b border-brand-slate/10 z-30 shadow-sm shrink-0">
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
+                className="p-2 bg-brand-mist rounded-xl text-brand-ink hover:bg-brand-slate/10 transition-colors"
+              >
+                <Menu className="h-6 w-6" />
+              </button>
+              <span className="font-display font-bold text-lg text-brand-ink">Careerist</span>
+            </div>
+            {/* Optional: Add a small user avatar or notification icon here on mobile */}
+          </div>
+
+          <div className="flex-1 overflow-auto relative">
+          <Routes>
           <Route path="/" element={<StudentDashboardHome />} />
 
           {/* Academic Routes */}
@@ -59,7 +89,9 @@ const StudentDashboard: React.FC = () => {
           {/* Resources Routes */}
           <Route path="/resources/document-manager" element={<DocumentManager />} />
         </Routes>
+        </div>
       </div>
+    </div>
     </div>
   );
 };

@@ -36,7 +36,7 @@ const HowItWorks: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+        <div className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-4 4xl:grid-cols-5 gap-8 relative">
           
           {/* Decorative connecting line (desktop only) */}
           <div className="hidden md:block absolute top-12 left-1/6 right-1/6 h-[2px] bg-gray-200 z-0"></div>

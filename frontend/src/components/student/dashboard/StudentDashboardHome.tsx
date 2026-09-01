@@ -9,18 +9,7 @@ import {
 } from "lucide-react";
 import Button from "../../shared/ui/Button";
 
-// Mock Data
-const mockUser = {
-  firstName: "Alex",
-  lastName: "Johnson",
-  initials: "AJ"
-};
-
-const onboardingAnswers = {
-  persona: "high-school",
-  clarityLevel: "torn", // 'no idea', 'torn', 'decided'
-  goal: "choose the right degree/major"
-};
+import { useAppContext } from "../../../contexts/AppContext";
 
 const getStatusMessage = (clarity: string) => {
   switch(clarity) {
@@ -34,13 +23,8 @@ const getStatusMessage = (clarity: string) => {
 const StudentDashboardHome: React.FC = () => {
   const [hoveredNode, setHoveredNode] = useState<number | null>(null);
   
-  const journeyNodes = [
-    { id: 1, status: 'completed', label: 'Onboarding', detail: 'Profile & goals set up' },
-    { id: 2, status: 'completed', label: 'First Field', detail: 'Explored Computer Science' },
-    { id: 3, status: 'completed', label: 'Skills Module', detail: 'Started Intro to Logic' },
-    { id: 4, status: 'current', label: 'Compare Options', detail: 'Compare 3 potential majors' },
-    { id: 5, status: 'upcoming', label: 'Colleges', detail: 'Shortlist top colleges' }
-  ];
+  const { state } = useAppContext();
+  const { user, journey, shortlistedColleges, shortlistedMajors, goals } = state;
 
   return (
     <div className="bg-brand-mist min-h-screen p-4 md:p-6 lg:p-8 font-sans">
@@ -49,16 +33,16 @@ const StudentDashboardHome: React.FC = () => {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold text-brand-ink mb-2">Welcome back, {mockUser.firstName}.</h1>
+            <h1 className="text-3xl font-display font-bold text-brand-ink mb-2">Welcome back, {user.firstName}.</h1>
             <p className="text-brand-slate text-lg font-medium">
-              {getStatusMessage(onboardingAnswers.clarityLevel)}
+              {getStatusMessage(user.clarityLevel)}
             </p>
           </div>
           
           {/* High-level User Profile Snippet */}
           <div className="bg-white rounded-[1.5rem] p-4 flex items-center gap-4 border border-brand-slate/20 shadow-sm">
             <div className="w-12 h-12 rounded-full bg-brand-ink flex items-center justify-center border border-brand-slate/10">
-              <span className="text-white font-bold text-lg tracking-wider">{mockUser.initials}</span>
+              <span className="text-white font-bold text-lg tracking-wider">{user.initials}</span>
             </div>
             <div>
               <p className="text-sm font-bold text-brand-ink">Profile Setup</p>
@@ -76,11 +60,11 @@ const StudentDashboardHome: React.FC = () => {
         </div>
 
         {/* Quick Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 2xl:grid-cols-8 gap-4 mb-8">
           {[
-            { label: "Fields Explored", value: "3", icon: Compass, color: "text-brand-ink", bg: "bg-brand-mist" },
-            { label: "Colleges Saved", value: "5", icon: BookOpen, color: "text-brand-ink", bg: "bg-brand-mist" },
-            { label: "Modules Started", value: "2", icon: Zap, color: "text-brand-neon", bg: "bg-brand-neon/10" },
+            { label: "Fields Explored", value: shortlistedMajors.length.toString(), icon: Compass, color: "text-brand-ink", bg: "bg-brand-mist" },
+            { label: "Colleges Saved", value: shortlistedColleges.length.toString(), icon: BookOpen, color: "text-brand-ink", bg: "bg-brand-mist" },
+            { label: "Goals Tracked", value: goals.length.toString(), icon: Zap, color: "text-brand-neon", bg: "bg-brand-neon/10" },
             { label: "Mock Interviews", value: "0", icon: Users, color: "text-brand-ink", bg: "bg-brand-mist" }
           ].map((stat, i) => (
             <div key={i} className="bg-white p-5 rounded-[1.5rem] border border-brand-slate/20 shadow-sm flex items-center justify-between">
@@ -130,7 +114,7 @@ const StudentDashboardHome: React.FC = () => {
             <div className="absolute left-0 h-1 bg-brand-neon top-1/2 -translate-y-1/2 z-0 transition-all duration-1000" style={{ width: '75%' }}></div>
             
             {/* Nodes */}
-            {journeyNodes.map((node, index) => (
+            {journey.map((node, index) => (
               <div 
                 key={node.id} 
                 className="relative z-10 flex flex-col items-center"
@@ -169,7 +153,7 @@ const StudentDashboardHome: React.FC = () => {
         </div>
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 4xl:grid-cols-5 gap-6">
           
           {/* Left Column (2/3) */}
           <div className="lg:col-span-2 flex flex-col gap-6">
@@ -184,21 +168,22 @@ const StudentDashboardHome: React.FC = () => {
               </div>
               
               <div className="flex flex-col gap-4">
-                {[
-                  { text: 'Started: Intro to Programming Module', active: true, time: 'Today' },
-                  { text: 'Explored: Computer Science Field Guide', active: false, time: 'Yesterday' },
-                  { text: 'Completed: Career Interest Assessment', active: false, time: '3 days ago' },
-                ].map((milestone, idx) => (
-                  <div key={idx} className={`flex items-start gap-4 p-4 rounded-2xl border ${milestone.active ? 'bg-brand-mist border-brand-slate/20' : 'bg-transparent border-brand-slate/10'} transition-all`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${milestone.active ? 'bg-brand-neon/20 text-brand-neon' : 'bg-brand-slate/10 text-brand-slate'}`}>
+                {goals.slice(0, 3).map((goal, idx) => (
+                  <div key={goal.id} className={`flex items-start gap-4 p-4 rounded-2xl border ${goal.status === 'completed' ? 'bg-brand-mist border-brand-slate/20' : 'bg-transparent border-brand-slate/10'} transition-all`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${goal.status === 'completed' ? 'bg-brand-neon/20 text-brand-neon' : 'bg-brand-slate/10 text-brand-slate'}`}>
                        <CheckCircle className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className={`font-semibold ${milestone.active ? 'text-brand-ink' : 'text-brand-slate'}`}>{milestone.text}</p>
-                      <p className="text-xs font-medium text-brand-slate mt-1">{milestone.time}</p>
+                      <p className={`font-semibold ${goal.status === 'completed' ? 'text-brand-ink' : 'text-brand-slate'}`}>{goal.title}</p>
+                      <p className="text-xs font-medium text-brand-slate mt-1">{goal.status === 'completed' ? 'Completed' : goal.dueDate ? `Due: ${goal.dueDate}` : 'Pending'}</p>
                     </div>
                   </div>
                 ))}
+                {goals.length === 0 && (
+                  <div className="p-4 text-center text-brand-slate font-medium">
+                    No goals tracked yet. Start planning!
+                  </div>
+                )}
               </div>
             </div>
 
@@ -213,7 +198,7 @@ const StudentDashboardHome: React.FC = () => {
                 </div>
                 
                 <h2 className="text-3xl font-display font-bold text-white mb-4">Exploring Computer Science</h2>
-                <p className="text-gray-300 mb-6 max-w-lg font-medium leading-relaxed">
+                <p className="text-brand-mist/80 mb-6 max-w-lg font-medium leading-relaxed">
                   You're halfway through exploring CS. Complete your field comparison to unlock personalized college recommendations and degree requirements.
                 </p>
                 

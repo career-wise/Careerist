@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
-import Input from "../../shared/ui/Input";
 
 const getFutureDateString = (monthsAhead: number) => {
   const d = new Date();
@@ -28,10 +27,14 @@ const getFutureDateString = (monthsAhead: number) => {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
+import { useAppContext } from "../../../contexts/AppContext";
+
 const CollegeExplorer: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
-  const [savedColleges, setSavedColleges] = useState<number[]>([]);
+  
+  const { state, toggleShortlistedCollege } = useAppContext();
+  const savedColleges = state.shortlistedColleges.map(c => c.id);
 
   const colleges = [
     {
@@ -137,29 +140,30 @@ const CollegeExplorer: React.FC = () => {
       label: "Colleges Tracked",
       value: colleges.length.toString(),
       icon: Building2,
-      color: "from-[#2B3674] to-[#3d4d9e]",
-      bgColor: "bg-[#2B3674]/10",
+      bgColor: "bg-brand-mist/50 border border-brand-slate/10",
+      textColor: "text-brand-ink",
+      iconColor: "text-brand-ink",
     },
     {
       label: "Saved Colleges",
       value: savedColleges.length.toString(),
       icon: Heart,
-      color: "from-[#3EBFB0] to-[#5ed4c7]",
-      bgColor: "bg-[#3EBFB0]/10",
+      bgColor: "bg-brand-neon/10 border border-brand-neon/20",
+      textColor: "text-brand-ink",
+      iconColor: "text-brand-neon",
     },
     {
       label: "Avg Match Score",
       value: "89%",
       icon: Target,
-      color: "from-[#C8A860] to-[#d4b870]",
-      bgColor: "bg-[#C8A860]/10",
+      bgColor: "bg-brand-darkgreen/10 border border-brand-darkgreen/20",
+      textColor: "text-brand-ink",
+      iconColor: "text-brand-darkgreen",
     },
   ];
 
-  const toggleSave = (id: number) => {
-    setSavedColleges(prev => 
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
+  const toggleSave = (college: any) => {
+    toggleShortlistedCollege(college);
   };
 
   const filteredColleges = colleges.filter(college =>
@@ -169,39 +173,51 @@ const CollegeExplorer: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-[#3EBFB0]/5 to-[#2B3674]/5 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-white to-brand-mist/50 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#2B3674] to-[#3EBFB0] rounded-xl flex items-center justify-center shadow-lg">
-              <GraduationCap className="w-7 h-7 text-white" />
+        <div className="bg-gradient-to-r from-brand-ink to-brand-darkgreen rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-neon opacity-10 rounded-full blur-2xl -ml-10 -mb-10"></div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-lg">
+                <GraduationCap className="w-8 h-8 text-brand-neon" />
+              </div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                  College Explorer
+                </h1>
+                <p className="text-brand-mist/90 text-lg">
+                  Discover colleges that match your academic goals and preferences
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] bg-clip-text text-transparent">
-                College Explorer
-              </h1>
-              <p className="text-brand-slate">
-                Discover colleges that match your academic goals and preferences
-              </p>
+            <div className="flex items-center gap-3">
+              <Button className="bg-brand-neon text-brand-ink hover:bg-white hover:text-brand-ink border-none shadow-lg font-bold">
+                <Target className="w-5 h-5 mr-2" />
+                Find My Match
+              </Button>
             </div>
           </div>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-4 4xl:grid-cols-5 gap-6">
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl p-5 border border-[#2B3674]/10 hover:shadow-lg transition-all group"
+              className={`rounded-2xl p-6 ${stat.bgColor} hover:shadow-xl transition-all duration-300 group`}
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-brand-slate mb-1">{stat.label}</p>
-                  <p className="text-3xl font-bold text-[#2B3674]">{stat.value}</p>
+                  <p className="text-sm font-medium text-brand-slate mb-1">{stat.label}</p>
+                  <p className={`text-4xl font-bold ${stat.textColor}`}>{stat.value}</p>
                 </div>
-                <div className={`w-14 h-14 ${stat.bgColor} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <stat.icon className="w-7 h-7 text-[#2B3674]" />
+                <div className={`w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                  <stat.icon className={`w-8 h-8 ${stat.iconColor}`} />
                 </div>
               </div>
             </div>
@@ -209,136 +225,143 @@ const CollegeExplorer: React.FC = () => {
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-2xl p-6 mb-8 border border-[#2B3674]/10 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="md:col-span-3">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#2B3674]/40 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search by college name, location, or program..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-[#3EBFB0]/5 border-2 border-[#2B3674]/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3EBFB0] focus:border-transparent transition-all"
-                />
-              </div>
-            </div>
-            <Button
-              variant="outline"
-              className="border-2 border-[#2B3674]/20 hover:border-[#3EBFB0] hover:bg-[#3EBFB0]/5"
-            >
-              <Filter className="w-4 h-4 mr-2 text-[#2B3674]" />
-              Filters
-            </Button>
+        <div className="bg-white rounded-2xl p-6 border border-brand-slate/10 shadow-sm flex flex-col md:flex-row items-center gap-4">
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-brand-slate/40 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search by college name, location, or program..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 bg-brand-mist border border-brand-slate/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-neon transition-all"
+            />
           </div>
+          <div className="flex items-center space-x-2 overflow-x-auto w-full md:w-auto scrollbar-hide pb-2 md:pb-0">
+             <Button
+                variant="outline"
+                className="border-brand-slate/20 text-brand-ink hover:bg-brand-mist flex-shrink-0"
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                Filters
+              </Button>
+          </div>
+        </div>
 
-          {/* Quick Filters */}
-          <div className="flex flex-wrap gap-2 mt-4">
+        {/* Quick Filters & Results Count */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-wrap gap-2">
             {["All", "Private", "Public", "Top 50", "High Match"].map((filter) => (
               <button
                 key={filter}
                 onClick={() => setSelectedFilter(filter.toLowerCase())}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                   selectedFilter === filter.toLowerCase()
-                    ? "bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] text-white shadow-md"
-                    : "bg-[#2B3674]/5 text-[#2B3674] hover:bg-[#3EBFB0]/10"
+                    ? "bg-brand-ink text-white shadow-md"
+                    : "bg-white border border-brand-slate/10 text-brand-slate hover:bg-brand-mist hover:text-brand-ink"
                 }`}
               >
                 {filter}
               </button>
             ))}
           </div>
-        </div>
-
-        {/* Results Count */}
-        <div className="flex items-center justify-between mb-6">
-          <p className="text-brand-slate">
-            Found <span className="font-bold text-[#2B3674]">{filteredColleges.length}</span> colleges
-          </p>
-          <select className="px-4 py-2 border-2 border-[#2B3674]/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3EBFB0]">
-            <option>Sort by Match Score</option>
-            <option>Sort by Ranking</option>
-            <option>Sort by Acceptance Rate</option>
-            <option>Sort by Tuition</option>
-          </select>
+          
+          <div className="flex items-center gap-4 text-sm">
+             <span className="text-brand-slate">
+              Found <span className="font-bold text-brand-ink">{filteredColleges.length}</span> colleges
+            </span>
+            <select className="px-4 py-2 bg-white border border-brand-slate/10 rounded-lg text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-neon font-medium cursor-pointer">
+              <option>Sort by Match Score</option>
+              <option>Sort by Ranking</option>
+              <option>Sort by Acceptance Rate</option>
+              <option>Sort by Tuition</option>
+            </select>
+          </div>
         </div>
 
         {/* College Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-8">
           {filteredColleges.map((college) => (
-            <div
+            <Card
               key={college.id}
-              className="bg-white rounded-2xl overflow-hidden border border-[#2B3674]/10 hover:shadow-2xl transition-all duration-300 group"
+              className="overflow-hidden border border-brand-slate/10 hover:shadow-2xl transition-all duration-300 bg-white group flex flex-col h-full"
             >
               {/* College Image */}
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-56 overflow-hidden">
                 <img
                   src={college.image}
                   alt={college.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#2B3674]/80 via-[#2B3674]/40 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/90 via-brand-ink/40 to-transparent"></div>
                 
                 {/* Match Score Badge */}
-                <div className="absolute top-4 right-4 bg-gradient-to-r from-[#C8A860] to-[#3EBFB0] text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
+                <div className="absolute top-4 right-4 bg-brand-neon text-brand-ink px-3 py-1.5 rounded-lg text-sm font-bold shadow-lg flex items-center gap-2">
                   <Sparkles className="w-4 h-4" />
                   {college.matchScore}% Match
                 </div>
 
                 {/* Save Button */}
                 <button
-                  onClick={() => toggleSave(college.id)}
-                  className="absolute top-4 left-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                  onClick={() => toggleSave(college)}
+                  className="absolute top-4 left-4 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white/40 transition-colors shadow-lg"
                 >
                   <Heart
                     className={`w-5 h-5 ${
                       savedColleges.includes(college.id)
-                        ? "fill-red-500 text-red-500"
-                        : "text-[#2B3674]"
+                        ? "fill-white text-white"
+                        : "text-white"
                     }`}
                   />
                 </button>
 
-                {/* Ranking Badge */}
-                <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-lg">
-                  <Award className="w-4 h-4 text-[#C8A860]" />
-                  <span className="text-sm font-bold text-[#2B3674]">#{college.ranking} National</span>
+                {/* Ranking & Info Overlay */}
+                <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-brand-neon transition-colors">
+                      {college.name}
+                    </h3>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1.5 text-sm text-brand-mist/90 bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20">
+                        <MapPin className="w-4 h-4" />
+                        <span>{college.location}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-sm text-brand-mist/90 bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20">
+                        <Award className="w-4 h-4" />
+                        <span>#{college.ranking} National</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* College Info */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-[#2B3674] mb-3 group-hover:text-[#3EBFB0] transition-colors">
-                  {college.name}
-                </h3>
-
-                {/* Quick Stats */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <MapPin className="w-4 h-4 text-[#3EBFB0]" />
-                    <span className="text-brand-slate">{college.location}</span>
+              <div className="p-6 flex flex-col flex-grow">
+                {/* Quick Stats Grid */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  <div className="bg-brand-mist p-3 rounded-xl border border-brand-slate/5 text-center">
+                    <Building2 className="w-5 h-5 text-brand-darkgreen mx-auto mb-1" />
+                    <p className="text-xs text-brand-slate mb-1">Type</p>
+                    <p className="text-sm font-bold text-brand-ink">{college.type}</p>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Building2 className="w-4 h-4 text-[#3EBFB0]" />
-                    <span className="text-brand-slate">{college.type}</span>
+                  <div className="bg-brand-mist p-3 rounded-xl border border-brand-slate/5 text-center">
+                    <Users className="w-5 h-5 text-brand-darkgreen mx-auto mb-1" />
+                    <p className="text-xs text-brand-slate mb-1">Enrollment</p>
+                    <p className="text-sm font-bold text-brand-ink">{college.enrollment}</p>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Users className="w-4 h-4 text-[#3EBFB0]" />
-                    <span className="text-brand-slate">{college.enrollment}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <DollarSign className="w-4 h-4 text-[#3EBFB0]" />
-                    <span className="text-brand-slate truncate">{college.tuition}</span>
+                  <div className="bg-brand-mist p-3 rounded-xl border border-brand-slate/5 text-center">
+                    <DollarSign className="w-5 h-5 text-brand-darkgreen mx-auto mb-1" />
+                    <p className="text-xs text-brand-slate mb-1">Tuition</p>
+                    <p className="text-sm font-bold text-brand-ink truncate" title={college.tuition}>{college.tuition}</p>
                   </div>
                 </div>
 
                 {/* Highlights */}
-                <div className="mb-4">
+                <div className="mb-6">
                   <div className="flex flex-wrap gap-2">
                     {college.highlights.map((highlight, index) => (
                       <span
                         key={index}
-                        className="px-3 py-1 bg-gradient-to-r from-[#2B3674]/10 to-[#3EBFB0]/10 text-[#2B3674] rounded-full text-xs font-medium border border-[#3EBFB0]/20"
+                        className="px-3 py-1.5 bg-brand-neon/10 text-brand-darkgreen rounded-lg text-xs font-semibold border border-brand-neon/20"
                       >
                         {highlight}
                       </span>
@@ -347,34 +370,44 @@ const CollegeExplorer: React.FC = () => {
                 </div>
 
                 {/* Admissions Info */}
-                <div className="grid grid-cols-2 gap-4 mb-4 p-4 bg-gradient-to-br from-[#2B3674]/5 to-[#3EBFB0]/5 rounded-xl border border-[#2B3674]/10">
-                  <div>
-                    <p className="text-xs text-brand-slate mb-1">Acceptance Rate</p>
-                    <p className="text-lg font-bold text-[#2B3674]">{college.acceptance}</p>
+                <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-brand-mist/50 rounded-xl border border-brand-slate/10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white rounded-lg border border-brand-slate/10 flex items-center justify-center">
+                      <Target className="w-5 h-5 text-brand-ink" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-brand-slate mb-0.5">Acceptance</p>
+                      <p className="text-lg font-bold text-brand-ink">{college.acceptance}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-brand-slate mb-1">SAT Range</p>
-                    <p className="text-lg font-bold text-[#2B3674]">{college.satRange}</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white rounded-lg border border-brand-slate/10 flex items-center justify-center">
+                      <BookOpen className="w-5 h-5 text-brand-ink" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-brand-slate mb-0.5">SAT Range</p>
+                      <p className="text-lg font-bold text-brand-ink">{college.satRange}</p>
+                    </div>
                   </div>
                 </div>
 
                 {/* Programs */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-[#2B3674] mb-2 flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-[#3EBFB0]" />
+                <div className="mb-6 flex-grow">
+                  <h4 className="text-sm font-bold text-brand-ink mb-3 flex items-center gap-2">
+                    <BookOpen className="w-4 h-4 text-brand-slate" />
                     Popular Programs
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {college.programs.slice(0, 4).map((program, index) => (
                       <span
                         key={index}
-                        className="px-3 py-1 bg-[#3EBFB0]/10 text-[#3EBFB0] rounded-lg text-xs font-medium border border-[#3EBFB0]/30"
+                        className="px-3 py-1.5 bg-white border border-brand-slate/10 text-brand-slate rounded-lg text-xs font-medium"
                       >
                         {program}
                       </span>
                     ))}
                     {college.programs.length > 4 && (
-                      <span className="px-3 py-1 bg-[#C8A860]/10 text-[#C8A860] rounded-lg text-xs font-medium">
+                      <span className="px-3 py-1.5 bg-brand-mist text-brand-ink rounded-lg text-xs font-bold">
                         +{college.programs.length - 4} more
                       </span>
                     )}
@@ -382,46 +415,46 @@ const CollegeExplorer: React.FC = () => {
                 </div>
 
                 {/* Deadline */}
-                <div className="flex items-center gap-2 mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                  <Calendar className="w-4 h-4 text-orange-600" />
-                  <span className="text-sm text-orange-800">
-                    <span className="font-semibold">Application Deadline:</span> {college.applicationDeadline}
+                <div className="flex items-center gap-3 mb-6 p-3 bg-white border border-brand-neon/30 rounded-xl">
+                  <div className="p-2 bg-brand-neon/10 rounded-lg">
+                    <Calendar className="w-4 h-4 text-brand-darkgreen" />
+                  </div>
+                  <span className="text-sm font-medium text-brand-ink">
+                    Application Deadline: <span className="font-bold text-brand-darkgreen">{college.applicationDeadline}</span>
                   </span>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-3">
+                <div className="mt-auto grid grid-cols-2 gap-3 pt-4 border-t border-brand-slate/10">
                   <Button
-                    variant="primary"
-                    size="sm"
-                    className="flex-1 bg-gradient-to-r from-[#2B3674] to-[#3EBFB0] hover:from-[#3EBFB0] hover:to-[#2B3674] shadow-md"
+                    className="w-full bg-gradient-to-r from-brand-ink to-brand-darkgreen hover:from-brand-darkgreen hover:to-brand-ink text-white shadow-md font-medium"
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
                     View Details
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="border-2 border-[#2B3674]/20 hover:border-[#3EBFB0] hover:bg-[#3EBFB0]/5"
+                    className="w-full border-brand-slate/20 text-brand-ink hover:bg-brand-mist font-medium"
                   >
-                    <TrendingUp className="w-4 h-4" />
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    See Chances
                   </Button>
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
 
         {/* Load More */}
         {filteredColleges.length > 6 && (
-          <div className="text-center mt-8">
-            <Button
-              variant="outline"
-              className="border-2 border-[#2B3674]/20 hover:border-[#3EBFB0] hover:bg-[#3EBFB0]/5"
-            >
-              Load More Colleges
-              <ChevronDown className="w-4 h-4 ml-2" />
-            </Button>
+          <div className="text-center pt-8">
+             <Button
+                variant="outline"
+                className="border-brand-slate/20 text-brand-ink hover:bg-brand-mist bg-white font-semibold px-8 py-3 rounded-xl shadow-sm"
+              >
+                Load More Colleges
+                <ChevronDown className="w-5 h-5 ml-2" />
+              </Button>
           </div>
         )}
       </div>
