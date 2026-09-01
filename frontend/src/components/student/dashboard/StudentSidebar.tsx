@@ -4,7 +4,6 @@ import {
   Home,
   Compass,
   BookOpen,
-  GraduationCap,
   Zap,
   Target,
   Library,
@@ -163,99 +162,85 @@ const StudentSidebar: React.FC = () => {
   ];
 
   return (
-    <div className="w-64 bg-white shadow-xl h-full flex flex-col border-r border-gray-100">
+    <div className="w-64 bg-white h-full flex flex-col border-r border-gray-200">
       {/* Header */}
-      <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-primary-50 to-secondary-50">
+      <div className="p-6 border-b border-gray-200 bg-white">
         <Link to="/" className="flex items-center space-x-3 group">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-            <Briefcase className="h-6 w-6 text-white" />
+          <div className="w-10 h-10 bg-brand-ink rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+            <Briefcase className="h-5 w-5 text-white" />
           </div>
           <div>
-            <span className="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors duration-300">
+            <span className="text-xl font-display font-bold text-brand-ink">
               Careerist
             </span>
-            <p className="text-sm text-gray-600 -mt-1">Student Dashboard</p>
+            <p className="text-xs text-brand-slate font-medium">Student Dashboard</p>
           </div>
         </Link>
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto py-4 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto py-6 custom-scrollbar px-3 space-y-1">
         {/* Dashboard Home */}
         <Link
           to="/student-dashboard"
-          className={`flex items-center px-6 py-3 text-sm font-medium transition-all duration-300 group relative ${
+          className={`flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ${
             isActive("/student-dashboard")
-              ? "text-primary-600 bg-gradient-to-r from-primary-50 to-transparent border-r-2 border-primary-600"
-              : "text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+              ? "text-brand-ink bg-gray-100"
+              : "text-brand-slate hover:text-brand-ink hover:bg-gray-50"
           }`}
         >
-          <Home className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
-          Dashboard Home
-          {isActive("/student-dashboard") && (
-            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-primary-600 rounded-l-full"></div>
-          )}
+          <Home className="h-5 w-5 mr-3" />
+          Dashboard
         </Link>
 
         {/* AI Chat */}
         <Link
           to="/chat"
-          className="flex items-center px-6 py-3 text-sm font-medium transition-all duration-300 group relative text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+          className="flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 text-brand-slate hover:text-brand-ink hover:bg-gray-50"
         >
-          <div className="w-5 h-5 mr-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <span className="text-white text-xs">AI</span>
+          <div className="w-5 h-5 mr-3 bg-brand-neon rounded-full flex items-center justify-center border border-gray-200">
+            <span className="text-brand-ink text-[10px] font-bold">AI</span>
           </div>
-          AI Career Chat
-          <div className="w-2 h-2 bg-green-500 rounded-full ml-auto animate-pulse"></div>
+          Careerist AI
+          <div className="w-2 h-2 bg-brand-teal rounded-full ml-auto animate-pulse"></div>
         </Link>
+
+        <div className="h-4"></div> {/* Spacer */}
 
         {/* Menu Sections */}
         {menuSections.map((section) => (
-          <div key={section.id} className="mb-2">
+          <div key={section.id} className="mb-1">
             {/* Handle Resources as a direct button */}
             {section.id === "resources" ? (
               <Link
                 to="/student-dashboard/resources/document-manager"
-                className={`w-full flex items-center px-6 py-4 text-sm font-medium transition-all duration-300 group hover:bg-gray-50 ${
+                className={`w-full flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ${
                   location.pathname.startsWith("/student-dashboard/resources")
-                    ? "text-primary-600 bg-gradient-to-r from-primary-50 to-transparent border-r-2 border-primary-600"
-                    : "text-gray-700 hover:text-primary-600"
+                    ? "text-brand-ink bg-gray-100"
+                    : "text-brand-slate hover:text-brand-ink hover:bg-gray-50"
                 }`}
               >
-                <div className="mr-3 group-hover:scale-110 transition-transform duration-300">
+                <div className="mr-3">
                   {section.icon}
                 </div>
-                <div className="text-left">
-                  <div className="font-semibold">{section.title}</div>
-                  <div className="text-xs text-gray-500 font-normal">
-                    {section.description}
-                  </div>
-                </div>
-                {location.pathname.startsWith("/student-dashboard/resources") && (
-                  <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-primary-600 rounded-l-full"></div>
-                )}
+                <span>{section.title}</span>
               </Link>
             ) : (
             <button
               onClick={() => toggleSection(section.id)}
-              className={`w-full flex items-center justify-between px-6 py-4 text-sm font-medium transition-all duration-300 group hover:bg-gray-50 ${
+              className={`w-full flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ${
                 isSectionActive(section.basePath)
-                  ? "text-primary-600 bg-gradient-to-r from-primary-50 to-transparent"
-                  : "text-gray-700 hover:text-primary-600"
+                  ? "text-brand-ink bg-gray-50"
+                  : "text-brand-slate hover:text-brand-ink hover:bg-gray-50"
               }`}
             >
               <div className="flex items-center">
-                <div className="mr-3 group-hover:scale-110 transition-transform duration-300">
+                <div className="mr-3">
                   {section.icon}
                 </div>
-                <div className="text-left">
-                  <div className="font-semibold">{section.title}</div>
-                  <div className="text-xs text-gray-500 font-normal">
-                    {section.description}
-                  </div>
-                </div>
+                <span>{section.title}</span>
               </div>
-              <div className="transition-transform duration-300 ml-2">
+              <div className="transition-transform duration-300">
                 {expandedSections.includes(section.id) ? (
                   <ChevronDown className="h-4 w-4" />
                 ) : (
@@ -265,40 +250,28 @@ const StudentSidebar: React.FC = () => {
             </button>
             )}
 
-            {expandedSections.includes(section.id) && (
-              <div className="bg-gradient-to-r from-gray-50 to-transparent">
+            {expandedSections.includes(section.id) && section.items.length > 0 && (
+              <div className="mt-1 space-y-1 ml-4 border-l-2 border-gray-100 pl-3">
                 {section.items.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-start px-12 py-3 text-sm transition-all duration-300 group relative hover:bg-gray-100 ${
+                    className={`flex items-center px-3 py-2 text-sm rounded-lg transition-all duration-300 ${
                       isActive(item.path)
-                        ? "text-primary-600 bg-gradient-to-r from-primary-100 to-transparent border-r-2 border-primary-600 font-medium"
-                        : "text-gray-600 hover:text-primary-600"
+                        ? "text-brand-ink font-semibold bg-gray-100"
+                        : "text-brand-slate font-medium hover:text-brand-ink hover:bg-gray-50"
                     }`}
                   >
-                    <span className="mr-3 text-base group-hover:scale-110 transition-transform duration-300 flex-shrink-0 mt-0.5">
+                    <span className="mr-2 text-sm flex-shrink-0">
                       {item.icon}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center">
-                        <span className="font-medium">{item.label}</span>
-                        {item.badge && (
-                          <span className={`ml-2 px-2 py-0.5 text-xs rounded-full font-medium ${
-                            item.badge === "New" 
-                              ? "bg-green-100 text-green-700" 
-                              : "bg-blue-100 text-blue-700"
-                          }`}>
-                            {item.badge}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-gray-500 mt-0.5 leading-tight">
-                        {item.description}
-                      </div>
+                      <span className="truncate">{item.label}</span>
                     </div>
-                    {isActive(item.path) && (
-                      <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-primary-600 rounded-l-full"></div>
+                    {item.badge && (
+                      <span className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded-md bg-brand-neon text-brand-ink">
+                        {item.badge}
+                      </span>
                     )}
                   </Link>
                 ))}
@@ -309,34 +282,30 @@ const StudentSidebar: React.FC = () => {
       </div>
 
       {/* User Profile Section */}
-      <div className="border-t border-gray-100 p-4 bg-gradient-to-r from-gray-50 to-white">
-        <div className="flex items-center space-x-3 mb-4 p-3 bg-white rounded-xl shadow-sm border border-gray-100">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-100 to-secondary-100 rounded-xl flex items-center justify-center">
-            <User className="h-5 w-5 text-primary-600" />
+      <div className="border-t border-gray-200 p-4 bg-white">
+        <div className="flex items-center space-x-3 mb-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
+          <div className="w-10 h-10 bg-brand-ink rounded-full flex items-center justify-center">
+            <User className="h-5 w-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-gray-900 truncate">
+            <p className="text-sm font-semibold text-brand-ink truncate">
               Demo Student
             </p>
-            <p className="text-xs text-gray-500 truncate">High School Senior</p>
-            <div className="flex items-center mt-1">
-              <Star className="h-3 w-3 text-yellow-500 mr-1" />
-              <span className="text-xs text-gray-500">Level 3</span>
-            </div>
+            <p className="text-xs text-brand-slate truncate font-medium">High School Senior</p>
           </div>
-          <Bell className="h-4 w-4 text-gray-400 hover:text-primary-600 cursor-pointer transition-colors duration-300" />
+          <Bell className="h-5 w-5 text-brand-slate hover:text-brand-ink cursor-pointer transition-colors duration-300" />
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <button className="flex items-center justify-center px-3 py-2 text-xs text-gray-600 hover:text-primary-600 hover:bg-white rounded-lg transition-all duration-300 group">
-            <Settings className="h-4 w-4 mr-1 group-hover:rotate-90 transition-transform duration-300" />
+          <button className="flex items-center justify-center px-3 py-2 text-xs font-semibold text-brand-slate hover:text-brand-ink hover:bg-gray-100 rounded-xl transition-all duration-300">
+            <Settings className="h-4 w-4 mr-1" />
             Settings
           </button>
           <Link
             to="/"
-            className="flex items-center justify-center px-3 py-2 text-xs text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-300 group"
+            className="flex items-center justify-center px-3 py-2 text-xs font-semibold text-brand-slate hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-300"
           >
-            <LogOut className="h-4 w-4 mr-1 group-hover:translate-x-1 transition-transform duration-300" />
+            <LogOut className="h-4 w-4 mr-1" />
             Sign Out
           </Link>
         </div>

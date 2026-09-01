@@ -10,8 +10,8 @@ const UserTypes: React.FC = () => {
       image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&h=600&fit=crop&q=80",
     },
     {
-      title: "College Students",
-      description: "Bridge the gap between campus and career. Master interviews and land the job before you even graduate.",
+      title: "Graduates",
+      description: "Master your job search, practice interviews with AI, and land your first professional role after graduation.",
       image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=600&fit=crop&q=80",
     }
   ];

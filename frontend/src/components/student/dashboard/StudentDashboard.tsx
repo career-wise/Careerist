@@ -21,14 +21,11 @@ import StudySkillsTrainer from "../study&succeed/StudySkillsTrainer";
 import TestPrepStrategies from "../study&succeed/TestPrepStrategies";
 
 const StudentDashboard: React.FC = () => {
-  const location = useLocation();
-  const isHome = location.pathname === "/student-dashboard" || location.pathname === "/student-dashboard/";
-
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
-      {!isHome && <StudentSidebar />}
+    <div className="flex h-screen bg-brand-mist overflow-hidden">
+      <StudentSidebar />
 
-      <div className="flex-1 overflow-auto bg-gray-50">
+      <div className="flex-1 overflow-auto bg-brand-mist">
         <Routes>
           <Route path="/" element={<StudentDashboardHome />} />
 

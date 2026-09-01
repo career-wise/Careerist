@@ -33,6 +33,8 @@ import InterviewReport from "./components/student/prepareforfuture/InterviewRepo
 // Import MediaStream Context
 import { MediaStreamProvider } from "./contexts/MediaStreamContext";
 
+import GraduateDashboard from "./components/graduate/dashboard/GraduateDashboard";
+
 // Landing Page Component
 const LandingPage: React.FC = () => {
   return (
@@ -69,13 +71,21 @@ const OnboardingPage: React.FC = () => {
         "Welcome to CareerWise!",
         "Your profile has been set up successfully."
       );
-      navigate("/student-dashboard");
+      if (data.persona === 'graduate') {
+        navigate("/graduate-dashboard");
+      } else {
+        navigate("/student-dashboard");
+      }
     } catch (error) {
       console.error("Error saving onboarding data:", error);
       localStorage.setItem("careerwise_onboarding_completed", "true");
       localStorage.removeItem("careerwise_needs_onboarding");
       success("Welcome to CareerWise!", "Your profile has been set up.");
-      navigate("/student-dashboard");
+      if (data?.persona === 'graduate') {
+        navigate("/graduate-dashboard");
+      } else {
+        navigate("/student-dashboard");
+      }
     }
   };
 
@@ -118,6 +128,7 @@ function App() {
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/student-dashboard/*" element={<StudentDashboard />} />
+            <Route path="/graduate-dashboard/*" element={<GraduateDashboard />} />
             <Route path="/dashboard/*" element={<DashboardLayout />} />
             
             {/* Interview Practice Routes */}

@@ -81,10 +81,13 @@ const AuthPage: React.FC = () => {
       localStorage.setItem("careerwise_token", "demo-token-" + Date.now());
       localStorage.setItem("careerwise_user", JSON.stringify(mockUser));
       localStorage.setItem("careerwise_needs_onboarding", "true");
+      localStorage.removeItem("careerwise_onboarding_completed");
+      localStorage.removeItem("careerist_onboarding_answers");
+      localStorage.removeItem("careerwise_user_profile");
 
       success("Demo Access Granted!", "You are now signed in with demo mode");
       setLoading(false);
-      navigate("/student-dashboard");
+      navigate("/onboarding");
     }, 1000);
   };
 
@@ -111,7 +114,7 @@ const AuthPage: React.FC = () => {
 
         if (needsOnboarding) {
           localStorage.setItem("careerwise_needs_onboarding", "true");
-          navigate("/student-dashboard");
+          navigate("/onboarding");
         } else {
           navigate("/student-dashboard");
         }
@@ -126,7 +129,7 @@ const AuthPage: React.FC = () => {
 
         if (needsOnboarding) {
           localStorage.setItem("careerwise_needs_onboarding", "true");
-          navigate("/student-dashboard");
+          navigate("/onboarding");
         } else {
           navigate("/student-dashboard");
         }
