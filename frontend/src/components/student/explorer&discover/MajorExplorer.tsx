@@ -26,12 +26,16 @@ import {
 } from "lucide-react";
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
+import RecommendationsBanner from "../../shared/RecommendationsBanner";
+import { FEATURES } from "../../../lib/constants";
+import { Recommendation } from "../../../services/recommendationService";
 
 import { useAppContext } from "../../../contexts/AppContext";
 
 const MajorExplorer: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [activeRecs, setActiveRecs] = useState<Recommendation[]>([]);
   const { state, toggleShortlistedMajor } = useAppContext();
   const savedMajors = state.shortlistedMajors.map(m => m.name);
 
@@ -203,6 +207,21 @@ const MajorExplorer: React.FC = () => {
         major.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
+  const recKeywords = activeRecs
+    .map(r => (r.payload?.keyword || r.payload?.title || r.payload?.major || r.payload?.subject || '').toLowerCase())
+    .filter(Boolean);
+
+  const getBoost = (major: any) => {
+    return recKeywords.some(kw => major.name.toLowerCase().includes(kw) || major.category.toLowerCase().includes(kw)) ? 100 : 0;
+  };
+
+  const sortedMajors = [...filteredMajors].sort((a, b) => {
+    const boostA = getBoost(a);
+    const boostB = getBoost(b);
+    if (boostA !== boostB) return boostB - boostA;
+    return b.matchScore - a.matchScore;
+  });
+
   const toggleSaveMajor = (major: any) => {
     toggleShortlistedMajor(major);
   };
@@ -244,6 +263,8 @@ const MajorExplorer: React.FC = () => {
           </div>
         </div>
 
+        <RecommendationsBanner targetFeature={FEATURES.EXPLORER} onRecommendationsLoaded={setActiveRecs} />
+
         {/* Search and Filters */}
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="relative flex-1 w-full md:max-w-md">
@@ -275,7 +296,7 @@ const MajorExplorer: React.FC = () => {
 
         {/* Results Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-8">
-          {filteredMajors.map((major) => (
+          {sortedMajors.map((major) => (
             <Card key={major.name} className="overflow-hidden border border-brand-slate/10 hover:shadow-xl transition-all duration-300 bg-white group flex flex-col h-full">
               <div className="h-48 relative overflow-hidden">
                 <img
@@ -374,7 +395,7 @@ const MajorExplorer: React.FC = () => {
           ))}
         </div>
 
-        {filteredMajors.length === 0 && (
+        {sortedMajors.length === 0 && (
           <div className="text-center py-16 bg-white rounded-3xl border border-brand-slate/10 shadow-sm">
             <GraduationCap className="h-16 w-16 text-brand-slate/30 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-brand-ink mb-2">No majors found</h3>

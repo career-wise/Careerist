@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Map,
   Target,
@@ -27,6 +27,138 @@ import {
 import Button from "../../shared/ui/Button";
 
 import { useAppContext } from "../../../contexts/AppContext";
+import { profileService } from "../../../services/profileService";
+import { authService } from "../../../lib/auth";
+
+const studentRoadmap = {
+  title: "Your High School to College Career Journey",
+  progress: "0 of 52 Done",
+  
+  mainPath: [
+    { id: "start", label: "Start Your Journey", type: "start", status: "completed", y: 50 },
+    { id: "assessment", label: "Career Assessment", type: "primary", status: "completed", description: "Discover your interests and strengths", y: 150 },
+    { id: "academic-foundation", label: "Academic Foundation", type: "primary", status: "in-progress", description: "Build strong fundamentals in core subjects", y: 250 },
+    { id: "skill-exploration", label: "Explore Career Paths", type: "primary", status: "available", description: "Research different career options", y: 400 },
+    { id: "specialization", label: "Choose Specialization", type: "primary", status: "locked", description: "Select your focus area", y: 650 },
+    { id: "build-portfolio", label: "Build Portfolio", type: "primary", status: "locked", description: "Create projects and experiences", y: 850 },
+    { id: "advanced-prep", label: "Advanced Preparation", type: "primary", status: "locked", description: "AP courses and standardized tests", y: 1050 },
+    { id: "college-apps", label: "College Applications", type: "primary", status: "locked", description: "Apply to your dream schools", y: 1250 },
+    { id: "success", label: "College & Career Success", type: "end", status: "locked", y: 1400 },
+  ],
+
+  branches: {
+    level1Branches: [
+      { id: "mathematics", label: "Mathematics", status: "in-progress", x: -250, y: 250 },
+      { id: "sciences", label: "Sciences", status: "in-progress", x: -250, y: 310 },
+      { id: "english", label: "English & Writing", status: "available", x: -250, y: 370 },
+    ],
+    level2Branches: [
+      { id: "tech-path", label: "Technology", status: "available", x: -300, y: 450, color: "brand-mist" },
+      { id: "business-path", label: "Business", status: "available", x: -300, y: 520, color: "brand-mist" },
+      { id: "creative-path", label: "Creative Arts", status: "available", x: -300, y: 590, color: "brand-mist" },
+      { id: "stem-path", label: "STEM Research", status: "available", x: 300, y: 450, color: "brand-mist" },
+      { id: "healthcare-path", label: "Healthcare", status: "available", x: 300, y: 520, color: "brand-mist" },
+      { id: "social-path", label: "Social Sciences", status: "available", x: 300, y: 590, color: "brand-mist" },
+    ],
+    level3Branches: [
+      { id: "web-dev", label: "Web Development", status: "locked", x: -280, y: 700 },
+      { id: "app-dev", label: "Mobile Apps", status: "locked", x: -280, y: 760 },
+      { id: "data-science", label: "Data Science", status: "locked", x: -280, y: 820 },
+      { id: "ai-ml", label: "AI & Machine Learning", status: "locked", x: 280, y: 700 },
+      { id: "cybersecurity", label: "Cybersecurity", status: "locked", x: 280, y: 760 },
+      { id: "game-dev", label: "Game Development", status: "locked", x: 280, y: 820 },
+    ],
+    level4Branches: [
+      { id: "projects", label: "Personal Projects", status: "locked", x: -250, y: 850, color: "brand-mist" },
+      { id: "internship", label: "Internships", status: "locked", x: -250, y: 910, color: "brand-mist" },
+      { id: "competitions", label: "Competitions", status: "locked", x: 250, y: 850, color: "brand-mist" },
+      { id: "leadership", label: "Leadership Roles", status: "locked", x: 250, y: 910, color: "brand-mist" },
+    ],
+    level5Branches: [
+      { id: "ap-courses", label: "AP/IB Courses", status: "locked", x: -230, y: 1050, color: "brand-mist" },
+      { id: "sat-act", label: "SAT/ACT Prep", status: "locked", x: -230, y: 1110, color: "brand-mist" },
+      { id: "subject-tests", label: "Subject Tests", status: "locked", x: 230, y: 1050, color: "brand-mist" },
+      { id: "research", label: "Research Papers", status: "locked", x: 230, y: 1110, color: "brand-mist" },
+    ],
+    questions: [
+      { id: "q1", label: "What are my strengths?", x: 400, y: 150, type: "question" },
+      { id: "q2", label: "Which subjects interest me?", x: 400, y: 250, type: "question" },
+      { id: "q3", label: "What career fits me?", x: 400, y: 400, type: "question" },
+      { id: "q4", label: "What skills do I need?", x: 400, y: 650, type: "question" },
+      { id: "q5", label: "How do I stand out?", x: 400, y: 850, type: "question" },
+    ],
+  },
+  infoBoxes: [
+    { id: "info1", title: "Foundation Years", description: "Focus on building strong academic fundamentals and exploring different interests", x: -450, y: 150 },
+    { id: "info2", title: "Exploration Phase", description: "Try different activities, join clubs, and discover what you're passionate about", x: -480, y: 400 },
+    { id: "info3", title: "Build Your Brand", description: "Create a portfolio of projects and experiences that showcase your unique abilities", x: -450, y: 750 },
+  ],
+};
+
+const graduateRoadmap = {
+  title: "Your Professional Career Journey",
+  progress: "1 of 7 Steps",
+  
+  mainPath: [
+    { id: "start", label: "Assess Current Position", type: "start", status: "completed", y: 50 },
+    { id: "assessment", label: "Define Target Role", type: "primary", status: "completed", description: "Decide whether to advance or switch fields", y: 150 },
+    { id: "academic-foundation", label: "Identify Skill Gaps", type: "primary", status: "in-progress", description: "Compare current skills to target requirements", y: 250 },
+    { id: "skill-exploration", label: "Upskill & Certify", type: "primary", status: "available", description: "Take courses and gain required skills", y: 400 },
+    { id: "specialization", label: "Update Portfolio & Resume", type: "primary", status: "locked", description: "Showcase new skills and projects", y: 650 },
+    { id: "build-portfolio", label: "Expand Network", type: "primary", status: "locked", description: "Connect with professionals in your target field", y: 850 },
+    { id: "advanced-prep", label: "Targeted Applications", type: "primary", status: "locked", description: "Apply and interview for target roles", y: 1050 },
+    { id: "success", label: "Land Target Role", type: "end", status: "locked", y: 1250 },
+  ],
+
+  branches: {
+    level1Branches: [
+      { id: "tech-skills", label: "Technical Skills", status: "in-progress", x: -250, y: 250 },
+      { id: "soft-skills", label: "Soft Skills", status: "in-progress", x: -250, y: 310 },
+      { id: "domain-knowledge", label: "Domain Knowledge", status: "available", x: -250, y: 370 },
+    ],
+    level2Branches: [
+      { id: "online-courses", label: "Online Courses", status: "available", x: -300, y: 450, color: "brand-mist" },
+      { id: "bootcamps", label: "Bootcamps", status: "available", x: -300, y: 520, color: "brand-mist" },
+      { id: "certifications", label: "Certifications", status: "available", x: -300, y: 590, color: "brand-mist" },
+      { id: "mentorship", label: "Mentorship", status: "available", x: 300, y: 450, color: "brand-mist" },
+      { id: "self-study", label: "Self-Study", status: "available", x: 300, y: 520, color: "brand-mist" },
+      { id: "workshops", label: "Workshops", status: "available", x: 300, y: 590, color: "brand-mist" },
+    ],
+    level3Branches: [
+      { id: "github", label: "GitHub Repos", status: "locked", x: -280, y: 700 },
+      { id: "case-studies", label: "Case Studies", status: "locked", x: -280, y: 760 },
+      { id: "personal-site", label: "Personal Site", status: "locked", x: -280, y: 820 },
+      { id: "articles", label: "Published Articles", status: "locked", x: 280, y: 700 },
+      { id: "presentations", label: "Presentations", status: "locked", x: 280, y: 760 },
+      { id: "resume-tailor", label: "Tailored Resumes", status: "locked", x: 280, y: 820 },
+    ],
+    level4Branches: [
+      { id: "linkedin", label: "LinkedIn Optimization", status: "locked", x: -250, y: 850, color: "brand-mist" },
+      { id: "meetups", label: "Industry Meetups", status: "locked", x: -250, y: 910, color: "brand-mist" },
+      { id: "conferences", label: "Conferences", status: "locked", x: 250, y: 850, color: "brand-mist" },
+      { id: "cold-outreach", label: "Cold Outreach", status: "locked", x: 250, y: 910, color: "brand-mist" },
+    ],
+    level5Branches: [
+      { id: "mock-interviews", label: "Mock Interviews", status: "locked", x: -230, y: 1050, color: "brand-mist" },
+      { id: "cover-letters", label: "Cover Letters", status: "locked", x: -230, y: 1110, color: "brand-mist" },
+      { id: "salary-negotiation", label: "Salary Negotiation", status: "locked", x: 230, y: 1050, color: "brand-mist" },
+      { id: "take-home", label: "Take-Home Assignments", status: "locked", x: 230, y: 1110, color: "brand-mist" },
+    ],
+    questions: [
+      { id: "q1", label: "What is my target field?", x: 400, y: 150, type: "question" },
+      { id: "q2", label: "What skills am I missing?", x: 400, y: 250, type: "question" },
+      { id: "q3", label: "How should I upskill?", x: 400, y: 400, type: "question" },
+      { id: "q4", label: "How do I show my value?", x: 400, y: 650, type: "question" },
+      { id: "q5", label: "Who should I connect with?", x: 400, y: 850, type: "question" },
+    ],
+  },
+  infoBoxes: [
+    { id: "info1", title: "Target Selection", description: "Identify whether you are advancing in your current field or pivoting to a new one.", x: -450, y: 150 },
+    { id: "info2", title: "Bridging the Gap", description: "Find out what you're missing and actively work to gain those exact skills.", x: -480, y: 400 },
+    { id: "info3", title: "Market Yourself", description: "Update your portfolio, refine your resume, and start connecting with industry leaders.", x: -450, y: 750 },
+  ],
+};
+
 
 const CareerPathPlanner: React.FC = () => {
   const { state } = useAppContext();
@@ -36,166 +168,32 @@ const CareerPathPlanner: React.FC = () => {
   ]);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [persona, setPersona] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Roadmap structure - mimicking roadmap.sh layout
-  const roadmapStructure = {
-    title: "Your High School to College Career Journey",
-    progress: "0 of 52 Done",
-    
-    // Main vertical flow
-    mainPath: [
-      {
-        id: "start",
-        label: "Start Your Journey",
-        type: "start",
-        status: "completed",
-        y: 50,
-      },
-      {
-        id: "assessment",
-        label: "Career Assessment",
-        type: "primary",
-        status: "completed",
-        description: "Discover your interests and strengths",
-        y: 150,
-      },
-      {
-        id: "academic-foundation",
-        label: "Academic Foundation",
-        type: "primary",
-        status: "in-progress",
-        description: "Build strong fundamentals in core subjects",
-        y: 250,
-      },
-      {
-        id: "skill-exploration",
-        label: "Explore Career Paths",
-        type: "primary",
-        status: "available",
-        description: "Research different career options",
-        y: 400,
-      },
-      {
-        id: "specialization",
-        label: "Choose Specialization",
-        type: "primary",
-        status: "locked",
-        description: "Select your focus area",
-        y: 650,
-      },
-      {
-        id: "build-portfolio",
-        label: "Build Portfolio",
-        type: "primary",
-        status: "locked",
-        description: "Create projects and experiences",
-        y: 850,
-      },
-      {
-        id: "advanced-prep",
-        label: "Advanced Preparation",
-        type: "primary",
-        status: "locked",
-        description: "AP courses and standardized tests",
-        y: 1050,
-      },
-      {
-        id: "college-apps",
-        label: "College Applications",
-        type: "primary",
-        status: "locked",
-        description: "Apply to your dream schools",
-        y: 1250,
-      },
-      {
-        id: "success",
-        label: "College & Career Success",
-        type: "end",
-        status: "locked",
-        y: 1400,
-      },
-    ],
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const session = await authService.getSession();
+        if (session?.user) {
+          const profile = await profileService.getProfile(session.user.id);
+          setPersona(profile?.persona || "student");
+        }
+      } catch (err) {
+        console.error("Failed to load profile", err);
+        setPersona("student");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProfile();
+  }, []);
 
-    // Side branches and details
-    branches: {
-      // Academic Foundation branches
-      academicSubjects: [
-        { id: "mathematics", label: "Mathematics", status: "in-progress", x: -250, y: 250, parent: "academic-foundation" },
-        { id: "sciences", label: "Sciences", status: "in-progress", x: -250, y: 310, parent: "academic-foundation" },
-        { id: "english", label: "English & Writing", status: "available", x: -250, y: 370, parent: "academic-foundation" },
-      ],
+  if (loading) {
+    return <div className="p-8 min-h-screen">Loading planner...</div>;
+  }
 
-      // Career Path Options
-      careerPaths: [
-        { id: "tech-path", label: "Technology", status: "available", x: -300, y: 450, parent: "skill-exploration", color: "brand-mist" },
-        { id: "business-path", label: "Business", status: "available", x: -300, y: 520, parent: "skill-exploration", color: "brand-mist" },
-        { id: "creative-path", label: "Creative Arts", status: "available", x: -300, y: 590, parent: "skill-exploration", color: "brand-mist" },
-        { id: "stem-path", label: "STEM Research", status: "available", x: 300, y: 450, parent: "skill-exploration", color: "brand-mist" },
-        { id: "healthcare-path", label: "Healthcare", status: "available", x: 300, y: 520, parent: "skill-exploration", color: "brand-mist" },
-        { id: "social-path", label: "Social Sciences", status: "available", x: 300, y: 590, parent: "skill-exploration", color: "brand-mist" },
-      ],
-
-      // Technology specialization details (when tech path selected)
-      techDetails: [
-        { id: "web-dev", label: "Web Development", status: "locked", x: -280, y: 700, parent: "specialization", subparent: "tech-path" },
-        { id: "app-dev", label: "Mobile Apps", status: "locked", x: -280, y: 760, parent: "specialization", subparent: "tech-path" },
-        { id: "data-science", label: "Data Science", status: "locked", x: -280, y: 820, parent: "specialization", subparent: "tech-path" },
-        { id: "ai-ml", label: "AI & Machine Learning", status: "locked", x: 280, y: 700, parent: "specialization", subparent: "tech-path" },
-        { id: "cybersecurity", label: "Cybersecurity", status: "locked", x: 280, y: 760, parent: "specialization", subparent: "tech-path" },
-        { id: "game-dev", label: "Game Development", status: "locked", x: 280, y: 820, parent: "specialization", subparent: "tech-path" },
-      ],
-
-      // Portfolio building activities
-      portfolioItems: [
-        { id: "projects", label: "Personal Projects", status: "locked", x: -250, y: 850, parent: "build-portfolio", color: "brand-mist" },
-        { id: "internship", label: "Internships", status: "locked", x: -250, y: 910, parent: "build-portfolio", color: "brand-mist" },
-        { id: "competitions", label: "Competitions", status: "locked", x: 250, y: 850, parent: "build-portfolio", color: "brand-mist" },
-        { id: "leadership", label: "Leadership Roles", status: "locked", x: 250, y: 910, parent: "build-portfolio", color: "brand-mist" },
-      ],
-
-      // Advanced preparation items
-      advancedItems: [
-        { id: "ap-courses", label: "AP/IB Courses", status: "locked", x: -230, y: 1050, parent: "advanced-prep", color: "brand-mist" },
-        { id: "sat-act", label: "SAT/ACT Prep", status: "locked", x: -230, y: 1110, parent: "advanced-prep", color: "brand-mist" },
-        { id: "subject-tests", label: "Subject Tests", status: "locked", x: 230, y: 1050, parent: "advanced-prep", color: "brand-mist" },
-        { id: "research", label: "Research Papers", status: "locked", x: 230, y: 1110, parent: "advanced-prep", color: "brand-mist" },
-      ],
-
-      // Question nodes (side info)
-      questions: [
-        { id: "q1", label: "What are my strengths?", x: 400, y: 150, type: "question" },
-        { id: "q2", label: "Which subjects interest me?", x: 400, y: 250, type: "question" },
-        { id: "q3", label: "What career fits me?", x: 400, y: 400, type: "question" },
-        { id: "q4", label: "What skills do I need?", x: 400, y: 650, type: "question" },
-        { id: "q5", label: "How do I stand out?", x: 400, y: 850, type: "question" },
-      ],
-    },
-
-    // Information boxes
-    infoBoxes: [
-      {
-        id: "info1",
-        title: "Foundation Years",
-        description: "Focus on building strong academic fundamentals and exploring different interests",
-        x: -450,
-        y: 150,
-      },
-      {
-        id: "info2",
-        title: "Exploration Phase",
-        description: "Try different activities, join clubs, and discover what you're passionate about",
-        x: -480,
-        y: 400,
-      },
-      {
-        id: "info3",
-        title: "Build Your Brand",
-        description: "Create a portfolio of projects and experiences that showcase your unique abilities",
-        x: -450,
-        y: 750,
-      },
-    ],
-  };
+  const currentRoadmap = persona === "graduate" ? graduateRoadmap : studentRoadmap;
 
   const getNodeColor = (status: string, customColor?: string) => {
     switch (status) {
@@ -251,12 +249,12 @@ const CareerPathPlanner: React.FC = () => {
                   <Map className="w-7 h-7 text-white" />
                 </div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-brand-ink to-brand-darkgreen bg-clip-text text-transparent">
-                  {roadmapStructure.title}
+                  {currentRoadmap.title}
                 </h1>
               </div>
               <div className="flex items-center gap-4 ml-16">
                 <span className="px-3 py-1 bg-brand-neon/20 text-brand-ink border border-brand-neon/30 rounded-full text-sm font-semibold">
-                  {roadmapStructure.progress}
+                  {currentRoadmap.progress}
                 </span>
                 <button className="text-sm text-brand-darkgreen font-medium hover:text-brand-neon transition-colors flex items-center gap-1">
                   <MessageCircle className="w-4 h-4" />
@@ -315,7 +313,7 @@ const CareerPathPlanner: React.FC = () => {
                 refY="3"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3, 0 6" fill="#15C196" /> {/* brand-neon */}
+                <polygon points="0 0, 10 3, 0 6" fill="#15C196" />
               </marker>
               <marker
                 id="arrowhead-inactive"
@@ -325,13 +323,13 @@ const CareerPathPlanner: React.FC = () => {
                 refY="3"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3, 0 6" fill="#5C6B67" opacity="0.3" /> {/* brand-slate */}
+                <polygon points="0 0, 10 3, 0 6" fill="#5C6B67" opacity="0.3" />
               </marker>
             </defs>
 
             {/* Main path connections */}
-            {roadmapStructure.mainPath.slice(0, -1).map((node, index) => {
-              const nextNode = roadmapStructure.mainPath[index + 1];
+            {currentRoadmap.mainPath.slice(0, -1).map((node, index) => {
+              const nextNode = currentRoadmap.mainPath[index + 1];
               const isCompleted = completedNodes.includes(node.id) && completedNodes.includes(nextNode.id);
               
               return (
@@ -348,8 +346,8 @@ const CareerPathPlanner: React.FC = () => {
               );
             })}
 
-            {/* Branch connections - Academic */}
-            {roadmapStructure.branches.academicSubjects.map((branch) => (
+            {/* Branch connections - Level 1 */}
+            {currentRoadmap.branches.level1Branches.map((branch) => (
               <line
                 key={`branch-${branch.id}`}
                 x1="50%"
@@ -362,8 +360,8 @@ const CareerPathPlanner: React.FC = () => {
               />
             ))}
 
-            {/* Branch connections - Career Paths */}
-            {roadmapStructure.branches.careerPaths.map((branch) => (
+            {/* Branch connections - Level 2 */}
+            {currentRoadmap.branches.level2Branches.map((branch) => (
               <line
                 key={`career-${branch.id}`}
                 x1="50%"
@@ -376,8 +374,8 @@ const CareerPathPlanner: React.FC = () => {
               />
             ))}
 
-            {/* Branch connections - Tech Details */}
-            {roadmapStructure.branches.techDetails.map((branch) => (
+            {/* Branch connections - Level 3 */}
+            {currentRoadmap.branches.level3Branches.map((branch) => (
               <line
                 key={`tech-${branch.id}`}
                 x1="50%"
@@ -390,8 +388,8 @@ const CareerPathPlanner: React.FC = () => {
               />
             ))}
 
-            {/* Branch connections - Portfolio */}
-            {roadmapStructure.branches.portfolioItems.map((branch) => (
+            {/* Branch connections - Level 4 */}
+            {currentRoadmap.branches.level4Branches.map((branch) => (
               <line
                 key={`portfolio-${branch.id}`}
                 x1="50%"
@@ -403,8 +401,8 @@ const CareerPathPlanner: React.FC = () => {
               />
             ))}
 
-            {/* Branch connections - Advanced */}
-            {roadmapStructure.branches.advancedItems.map((branch) => (
+            {/* Branch connections - Level 5 */}
+            {currentRoadmap.branches.level5Branches.map((branch) => (
               <line
                 key={`advanced-${branch.id}`}
                 x1="50%"
@@ -417,8 +415,8 @@ const CareerPathPlanner: React.FC = () => {
             ))}
 
             {/* Question node connections */}
-            {roadmapStructure.branches.questions.map((q, index) => {
-              const mainNode = roadmapStructure.mainPath.find(n => n.y === q.y);
+            {currentRoadmap.branches.questions.map((q) => {
+              const mainNode = currentRoadmap.mainPath.find(n => n.y === q.y);
               if (mainNode) {
                 return (
                   <line
@@ -440,7 +438,7 @@ const CareerPathPlanner: React.FC = () => {
           {/* Render all nodes */}
           <div className="relative z-20" style={{ minHeight: "1500px" }}>
             {/* Main path nodes */}
-            {roadmapStructure.mainPath.map((node) => {
+            {currentRoadmap.mainPath.map((node) => {
               const colors = getNodeColor(node.status);
               const isHovered = hoveredNode === node.id;
 
@@ -482,8 +480,8 @@ const CareerPathPlanner: React.FC = () => {
               );
             })}
 
-            {/* Academic subject branches */}
-            {roadmapStructure.branches.academicSubjects.map((node) => {
+            {/* Level 1 branches */}
+            {currentRoadmap.branches.level1Branches.map((node) => {
               const colors = getNodeColor(node.status);
               return (
                 <div
@@ -507,8 +505,8 @@ const CareerPathPlanner: React.FC = () => {
               );
             })}
 
-            {/* Career path branches */}
-            {roadmapStructure.branches.careerPaths.map((node) => {
+            {/* Level 2 branches */}
+            {currentRoadmap.branches.level2Branches.map((node) => {
               const colors = getNodeColor(node.status, node.color);
               return (
                 <div
@@ -532,8 +530,8 @@ const CareerPathPlanner: React.FC = () => {
               );
             })}
 
-            {/* Tech specialization branches */}
-            {roadmapStructure.branches.techDetails.map((node) => {
+            {/* Level 3 branches */}
+            {currentRoadmap.branches.level3Branches.map((node) => {
               const colors = getNodeColor(node.status);
               return (
                 <div
@@ -557,8 +555,8 @@ const CareerPathPlanner: React.FC = () => {
               );
             })}
 
-            {/* Portfolio branches */}
-            {roadmapStructure.branches.portfolioItems.map((node) => {
+            {/* Level 4 branches */}
+            {currentRoadmap.branches.level4Branches.map((node) => {
               const colors = getNodeColor(node.status, node.color);
               return (
                 <div
@@ -582,8 +580,8 @@ const CareerPathPlanner: React.FC = () => {
               );
             })}
 
-            {/* Advanced prep branches */}
-            {roadmapStructure.branches.advancedItems.map((node) => {
+            {/* Level 5 branches */}
+            {currentRoadmap.branches.level5Branches.map((node) => {
               const colors = getNodeColor(node.status, node.color);
               return (
                 <div
@@ -608,7 +606,7 @@ const CareerPathPlanner: React.FC = () => {
             })}
 
             {/* Question nodes */}
-            {roadmapStructure.branches.questions.map((node) => (
+            {currentRoadmap.branches.questions.map((node) => (
               <div
                 key={node.id}
                 className="absolute"
@@ -624,7 +622,7 @@ const CareerPathPlanner: React.FC = () => {
             ))}
 
             {/* Info boxes */}
-            {roadmapStructure.infoBoxes.map((box) => (
+            {currentRoadmap.infoBoxes.map((box) => (
               <div
                 key={box.id}
                 className="absolute"

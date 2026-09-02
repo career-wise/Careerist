@@ -53,18 +53,24 @@ const LandingPage: React.FC = () => {
   );
 };
 
+import { authService } from "./lib/auth";
+import { profileService } from "./services/profileService";
+
 // Onboarding Page Component
 const OnboardingPage: React.FC = () => {
   const navigate = useNavigate();
-  const { success } = useToast();
+  const { success, error: showError } = useToast();
 
   const handleOnboardingComplete = async (data: any) => {
     try {
-      console.log("🎉 Onboarding completed with data:", data);
+      const session = await authService.getSession();
+      if (!session?.user?.id) {
+        showError("Authentication Required", "Please sign in again to save your profile.");
+        navigate("/auth");
+        return;
+      }
 
-      localStorage.setItem("careerwise_onboarding_completed", "true");
-      localStorage.removeItem("careerwise_needs_onboarding");
-      localStorage.setItem("careerwise_user_profile", JSON.stringify(data));
+      await profileService.saveOnboardingData(session.user.id, data);
 
       success(
         "Welcome to CareerWise!",
@@ -77,22 +83,27 @@ const OnboardingPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Error saving onboarding data:", error);
-      localStorage.setItem("careerwise_onboarding_completed", "true");
-      localStorage.removeItem("careerwise_needs_onboarding");
-      success("Welcome to CareerWise!", "Your profile has been set up.");
-      if (data?.persona === 'graduate') {
-        navigate("/graduate-dashboard");
-      } else {
-        navigate("/student-dashboard");
-      }
+      showError("Profile Error", "Failed to save your profile. Please try again.");
     }
   };
 
-  const handleOnboardingSkip = () => {
-    console.log("⏭️ Onboarding skipped");
-    localStorage.setItem("careerwise_onboarding_completed", "true");
-    localStorage.removeItem("careerwise_needs_onboarding");
-    navigate("/student-dashboard");
+  const handleOnboardingSkip = async () => {
+    try {
+      const session = await authService.getSession();
+      if (!session?.user?.id) {
+        navigate("/auth");
+        return;
+      }
+      
+      // Default to high-school on skip
+      await profileService.saveOnboardingData(session.user.id, {
+        persona: 'high-school',
+      });
+      navigate("/student-dashboard");
+    } catch (error) {
+      console.error("Error skipping onboarding:", error);
+      showError("Profile Error", "Failed to save default profile.");
+    }
   };
 
   return (

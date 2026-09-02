@@ -21,6 +21,7 @@ import SubjectExplorer from "../study&succeed/SubjectExplorer";
 import StudySkillsTrainer from "../study&succeed/StudySkillsTrainer";
 import TestPrepStrategies from "../study&succeed/TestPrepStrategies";
 import AcademicGoalTracker from "../study&succeed/AcademicGoalTracker";
+import ResumeBuilder from "../../graduate/resources/ResumeBuilder";
 
 const StudentDashboard: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
@@ -85,6 +86,7 @@ const StudentDashboard: React.FC = () => {
           {/* Planning Routes */}
           <Route path="/planning/career-path" element={<CareerPathPlanner />} />
           <Route path="/planning/goals" element={<GoalSetting />} />
+          <Route path="/planning/resume-builder" element={<ResumeBuilder />} />
           
           {/* Resources Routes */}
           <Route path="/resources/document-manager" element={<DocumentManager />} />

@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
+import Input from "../../shared/ui/Input";
+import RecommendationsBanner from "../../shared/RecommendationsBanner";
 
 const getRelativeTimeLabel = (daysAhead: number) => {
   if (daysAhead < 0) return "Completed";
@@ -171,7 +173,9 @@ export const GoalSetting: React.FC = () => {
           ))}
         </div>
 
-        {/* Goals List */}
+        <RecommendationsBanner targetFeature="study_succeed" />
+
+        {/* Progress Overview Grid */}
         <div className="space-y-6">
           {filteredGoals.map((goal) => (
             <Card

@@ -50,6 +50,7 @@ const GraduateSidebar: React.FC = () => {
       icon: <GraduationCap className="h-5 w-5" />,
       basePath: "/graduate-dashboard/skills",
       items: [
+        { path: "/graduate-dashboard/skills/gap-analyzer", label: "Skill Gap Analyzer", icon: <Target className="w-4 h-4" /> },
         { path: "/graduate-dashboard/skills/tech", label: "Tech Skills", icon: <Laptop className="w-4 h-4" /> },
         { path: "/graduate-dashboard/skills/soft", label: "Soft Skills", icon: <Users className="w-4 h-4" /> },
         { path: "/graduate-dashboard/learning/courses", label: "Online Courses", icon: <Video className="w-4 h-4" /> },
@@ -72,7 +73,8 @@ const GraduateSidebar: React.FC = () => {
       icon: <Library className="h-5 w-5" />,
       basePath: "/graduate-dashboard/resources",
       items: [
-        { path: "/graduate-dashboard/resources/document-manager", label: "Resume & Documents", icon: <FileText className="w-4 h-4" /> },
+        { path: "/graduate-dashboard/resources/document-manager", label: "Document Manager", icon: <FileText className="w-4 h-4" /> },
+        { path: "/graduate-dashboard/resources/resume-builder", label: "Resume Builder", icon: <PenTool className="w-4 h-4" /> },
       ],
     },
   ];
@@ -130,19 +132,6 @@ const GraduateSidebar: React.FC = () => {
 
         {menuSections.map((section) => (
           <div key={section.id} className="mb-1">
-            {section.id === "resources" ? (
-              <Link
-                to={section.basePath}
-                className={`w-full flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ${
-                  isActive(section.basePath)
-                    ? "text-brand-ink bg-brand-mist"
-                    : "text-brand-slate hover:text-brand-ink hover:bg-brand-mist"
-                }`}
-              >
-                <div className="mr-3">{section.icon}</div>
-                <div className="flex-1 text-left">{section.title}</div>
-              </Link>
-            ) : (
               <button
                 onClick={() => toggleSection(section.id)}
                 className={`w-full flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ${
@@ -161,7 +150,6 @@ const GraduateSidebar: React.FC = () => {
                   )}
                 </div>
               </button>
-            )}
 
             {expandedSections.includes(section.id) && section.items.length > 0 && (
               <div className="mt-1 space-y-1 ml-4 border-l-2 border-brand-slate/10 pl-3">

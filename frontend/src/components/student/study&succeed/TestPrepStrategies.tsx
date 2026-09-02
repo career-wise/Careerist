@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
+import RecommendationsBanner from "../../shared/RecommendationsBanner";
 
 const TestPrepStrategies: React.FC = () => {
   const [selectedTest, setSelectedTest] = useState("SAT");
@@ -202,6 +203,8 @@ const TestPrepStrategies: React.FC = () => {
             </div>
           </div>
         </div>
+
+        <RecommendationsBanner targetFeature="study_succeed" />
 
         {/* Test Selection */}
         <div className="flex flex-wrap gap-3">

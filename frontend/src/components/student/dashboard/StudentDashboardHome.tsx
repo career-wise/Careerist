@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { 
   BookOpen, Target, Zap, FileText, Users,
@@ -10,6 +10,8 @@ import {
 import Button from "../../shared/ui/Button";
 
 import { useAppContext } from "../../../contexts/AppContext";
+import { authService } from "../../../lib/auth";
+import { profileService } from "../../../services/profileService";
 
 const getStatusMessage = (clarity: string) => {
   switch(clarity) {
@@ -24,7 +26,30 @@ const StudentDashboardHome: React.FC = () => {
   const [hoveredNode, setHoveredNode] = useState<number | null>(null);
   
   const { state } = useAppContext();
-  const { user, journey, shortlistedColleges, shortlistedMajors, goals } = state;
+  const { journey, shortlistedColleges, shortlistedMajors, goals } = state;
+
+  const [profile, setProfile] = useState<any>(null);
+  const [authUser, setAuthUser] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const session = await authService.getSession();
+        if (session?.user) {
+          setAuthUser(session.user);
+          const data = await profileService.getProfile(session.user.id);
+          setProfile(data);
+        }
+      } catch (err) {
+        console.error("Failed to load profile", err);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const onboardingAnswers = profile?.onboarding_answers || {};
+  const firstName = authUser?.user_metadata?.full_name?.split(' ')[0] || "Student";
+  const initials = firstName.charAt(0).toUpperCase();
 
   return (
     <div className="bg-brand-mist min-h-screen p-4 md:p-6 lg:p-8 font-sans">
@@ -33,16 +58,16 @@ const StudentDashboardHome: React.FC = () => {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold text-brand-ink mb-2">Welcome back, {user.firstName}.</h1>
+            <h1 className="text-3xl font-display font-bold text-brand-ink mb-2">Welcome back, {firstName}.</h1>
             <p className="text-brand-slate text-lg font-medium">
-              {getStatusMessage(user.clarityLevel)}
+              {getStatusMessage(onboardingAnswers.clarityLevel || '')}
             </p>
           </div>
           
           {/* High-level User Profile Snippet */}
           <div className="bg-white rounded-[1.5rem] p-4 flex items-center gap-4 border border-brand-slate/20 shadow-sm">
             <div className="w-12 h-12 rounded-full bg-brand-ink flex items-center justify-center border border-brand-slate/10">
-              <span className="text-white font-bold text-lg tracking-wider">{user.initials}</span>
+              <span className="text-white font-bold text-lg tracking-wider">{initials}</span>
             </div>
             <div>
               <p className="text-sm font-bold text-brand-ink">Profile Setup</p>
@@ -87,7 +112,16 @@ const StudentDashboardHome: React.FC = () => {
               AI Insight
             </div>
             <p className="text-brand-ink text-lg font-medium leading-relaxed max-w-3xl">
-              Because you're exploring <strong className="text-brand-ink">Computer Science</strong> and your strongest subjects are <strong className="text-brand-ink">Math and Physics</strong>, students with a similar profile also explore Data Science and Electronics Engineering 78% of the time.
+              {onboardingAnswers.fieldsOfInterest && onboardingAnswers.fieldsOfInterest.length > 0 ? (
+                <>
+                  Because you're exploring <strong className="text-brand-ink">{onboardingAnswers.fieldsOfInterest[0]}</strong> 
+                  {onboardingAnswers.subjects && onboardingAnswers.subjects.length > 0 && (
+                    <> and your strongest subjects include <strong className="text-brand-ink">{onboardingAnswers.subjects.join(', ')}</strong></>
+                  )}, students with a similar profile also explore related fields 78% of the time.
+                </>
+              ) : (
+                "Explore fields and add your strongest subjects to get personalized insights on what paths might be a great fit for you."
+              )}
             </p>
           </div>
           <div className="flex-shrink-0 md:ml-4">
@@ -368,7 +402,11 @@ const StudentDashboardHome: React.FC = () => {
                    <div className="w-1 bg-brand-neon absolute left-0 top-3 bottom-3 rounded-r-full"></div>
                    <h4 className="font-bold text-brand-ink mb-2">Major Explorer</h4>
                    <p className="text-sm font-medium text-brand-slate leading-relaxed">
-                     Since your goal is to <strong>{onboardingAnswers.goal}</strong>, start by comparing majors and their career outcomes.
+                     {onboardingAnswers.goal ? (
+                       <>Since your goal is to <strong>{onboardingAnswers.goal}</strong>, start by comparing majors and their career outcomes.</>
+                     ) : (
+                       "Start exploring majors to find the path that matches your interests."
+                     )}
                    </p>
                  </div>
                  

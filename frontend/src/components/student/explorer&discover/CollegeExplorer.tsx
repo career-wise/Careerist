@@ -20,6 +20,9 @@ import {
 } from "lucide-react";
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
+import RecommendationsBanner from "../../shared/RecommendationsBanner";
+import { FEATURES } from "../../../lib/constants";
+import { Recommendation } from "../../../services/recommendationService";
 
 const getFutureDateString = (monthsAhead: number) => {
   const d = new Date();
@@ -32,6 +35,7 @@ import { useAppContext } from "../../../contexts/AppContext";
 const CollegeExplorer: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [activeRecs, setActiveRecs] = useState<Recommendation[]>([]);
   
   const { state, toggleShortlistedCollege } = useAppContext();
   const savedColleges = state.shortlistedColleges.map(c => c.id);
@@ -172,6 +176,24 @@ const CollegeExplorer: React.FC = () => {
     college.programs.some(p => p.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
+  const recKeywords = activeRecs
+    .map(r => (r.payload?.keyword || r.payload?.title || r.payload?.major || r.payload?.college || '').toLowerCase())
+    .filter(Boolean);
+
+  const getBoost = (college: any) => {
+    return recKeywords.some(kw => 
+      college.name.toLowerCase().includes(kw) || 
+      college.programs.some((p: string) => p.toLowerCase().includes(kw))
+    ) ? 100 : 0;
+  };
+
+  const sortedColleges = [...filteredColleges].sort((a, b) => {
+    const boostA = getBoost(a);
+    const boostB = getBoost(b);
+    if (boostA !== boostB) return boostB - boostA;
+    return b.matchScore - a.matchScore;
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-mist via-white to-brand-mist/50 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -224,6 +246,8 @@ const CollegeExplorer: React.FC = () => {
           ))}
         </div>
 
+        <RecommendationsBanner targetFeature={FEATURES.EXPLORER} onRecommendationsLoaded={setActiveRecs} />
+
         {/* Search and Filters */}
         <div className="bg-white rounded-2xl p-6 border border-brand-slate/10 shadow-sm flex flex-col md:flex-row items-center gap-4">
           <div className="relative flex-1 w-full">
@@ -267,7 +291,7 @@ const CollegeExplorer: React.FC = () => {
           
           <div className="flex items-center gap-4 text-sm">
              <span className="text-brand-slate">
-              Found <span className="font-bold text-brand-ink">{filteredColleges.length}</span> colleges
+              Found <span className="font-bold text-brand-ink">{sortedColleges.length}</span> colleges
             </span>
             <select className="px-4 py-2 bg-white border border-brand-slate/10 rounded-lg text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-neon font-medium cursor-pointer">
               <option>Sort by Match Score</option>
@@ -280,7 +304,7 @@ const CollegeExplorer: React.FC = () => {
 
         {/* College Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-8">
-          {filteredColleges.map((college) => (
+          {sortedColleges.map((college) => (
             <Card
               key={college.id}
               className="overflow-hidden border border-brand-slate/10 hover:shadow-2xl transition-all duration-300 bg-white group flex flex-col h-full"
@@ -446,7 +470,7 @@ const CollegeExplorer: React.FC = () => {
         </div>
 
         {/* Load More */}
-        {filteredColleges.length > 6 && (
+        {sortedColleges.length > 6 && (
           <div className="text-center pt-8">
              <Button
                 variant="outline"

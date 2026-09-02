@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
+import RecommendationsBanner from "../../shared/RecommendationsBanner";
 
 const getRelativeTimeLabel = (daysAhead: number) => {
   if (daysAhead < 0) return "Completed";
@@ -177,6 +178,8 @@ const AcademicGoalTracker: React.FC = () => {
             </Button>
           </div>
         </div>
+
+        <RecommendationsBanner targetFeature="study_succeed" />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 2xl:grid-cols-6 4xl:grid-cols-8 gap-6">

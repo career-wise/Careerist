@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
+import RecommendationsBanner from "../../shared/RecommendationsBanner";
 
 const StudySkillsTrainer: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
@@ -156,6 +157,8 @@ const StudySkillsTrainer: React.FC = () => {
             </div>
           </div>
         </div>
+
+        <RecommendationsBanner targetFeature="study_succeed" />
 
         {/* Weekly Progress */}
         <div className="grid grid-cols-1 md:grid-cols-4 2xl:grid-cols-6 4xl:grid-cols-8 gap-6">

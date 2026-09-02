@@ -22,7 +22,6 @@ const AuthPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [bypassMode, setBypassMode] = useState(false);
   const navigate = useNavigate();
   const { success, error: showError } = useToast();
 
@@ -64,31 +63,22 @@ const AuthPage: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Bypass authentication function
-  const handleBypassAuth = () => {
+  const handleResetPassword = async () => {
+    if (!formData.email) {
+      setErrors({ email: "Please enter your email to reset password" });
+      return;
+    }
     setLoading(true);
-
-    setTimeout(() => {
-      const mockUser = {
-        id: "demo-user-123",
-        email: formData.email || "demo@example.com",
-        full_name: formData.fullName || "Demo User",
-        created_at: new Date().toISOString(),
-        is_demo: true,
-        onboarding_completed: false,
-      };
-
-      localStorage.setItem("careerwise_token", "demo-token-" + Date.now());
-      localStorage.setItem("careerwise_user", JSON.stringify(mockUser));
-      localStorage.setItem("careerwise_needs_onboarding", "true");
-      localStorage.removeItem("careerwise_onboarding_completed");
-      localStorage.removeItem("careerist_onboarding_answers");
-      localStorage.removeItem("careerwise_user_profile");
-
-      success("Demo Access Granted!", "You are now signed in with demo mode");
+    try {
+      await authService.resetPassword(formData.email);
+      success("Reset Link Sent", "Check your email for the password reset link");
+    } catch (err) {
+      console.error("❌ Reset error:", err);
+      const errorMessage = err instanceof Error ? err.message : "Password reset failed";
+      showError("Error", errorMessage);
+    } finally {
       setLoading(false);
-      navigate("/onboarding");
-    }, 1000);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -113,10 +103,13 @@ const AuthPage: React.FC = () => {
         const needsOnboarding = !response.user.onboarding_completed;
 
         if (needsOnboarding) {
-          localStorage.setItem("careerwise_needs_onboarding", "true");
           navigate("/onboarding");
         } else {
-          navigate("/student-dashboard");
+          if (response.user.persona === 'graduate') {
+            navigate("/graduate-dashboard");
+          } else {
+            navigate("/student-dashboard");
+          }
         }
       } else {
         const response = await authService.signIn(
@@ -128,10 +121,13 @@ const AuthPage: React.FC = () => {
         const needsOnboarding = !response.user.onboarding_completed;
 
         if (needsOnboarding) {
-          localStorage.setItem("careerwise_needs_onboarding", "true");
           navigate("/onboarding");
         } else {
-          navigate("/student-dashboard");
+          if (response.user.persona === 'graduate') {
+            navigate("/graduate-dashboard");
+          } else {
+            navigate("/student-dashboard");
+          }
         }
       }
     } catch (err) {
@@ -139,7 +135,6 @@ const AuthPage: React.FC = () => {
       const errorMessage =
         err instanceof Error ? err.message : "Authentication failed";
       showError("Authentication Error", errorMessage);
-      setBypassMode(true);
     } finally {
       setLoading(false);
     }
@@ -161,7 +156,6 @@ const AuthPage: React.FC = () => {
       confirmPassword: "",
     });
     setErrors({});
-    setBypassMode(false);
   };
 
   return (
@@ -213,22 +207,7 @@ const AuthPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Bypass Mode Alert */}
-          {bypassMode && (
-            <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-2xl">
-              <div className="flex items-start">
-                <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
-                <div className="ml-3 flex-1">
-                  <h3 className="text-sm font-medium text-orange-800">
-                    Demo Mode Available
-                  </h3>
-                  <p className="mt-1 text-sm text-orange-700">
-                    Try Careerist instantly with our demo mode - no registration required.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Bypass Mode Alert removed */}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -283,30 +262,19 @@ const AuthPage: React.FC = () => {
 
             {!isSignUp && (
               <div className="flex justify-end pt-1">
-                <a
-                  href="#"
+                <button
+                  type="button"
+                  onClick={handleResetPassword}
                   className="text-sm font-bold text-red-500 hover:text-red-600 transition-colors"
                 >
                   Forgot password ?
-                </a>
+                </button>
               </div>
             )}
 
             <div className="space-y-4 pt-4">
               <Button type="submit" loading={loading} className="w-full" size="lg">
                 {isSignUp ? "Create Account" : "Sign In"}
-              </Button>
-            
-              <Button 
-                type="button" 
-                variant="secondary" 
-                onClick={handleBypassAuth} 
-                loading={loading} 
-                className="w-full"
-                size="lg"
-              >
-                <Zap className="h-5 w-5 mr-2" />
-                Try Demo Mode
               </Button>
             </div>
           </form>

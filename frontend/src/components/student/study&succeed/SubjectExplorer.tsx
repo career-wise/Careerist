@@ -18,6 +18,7 @@ import {
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
 import Input from "../../shared/ui/Input";
+import RecommendationsBanner from "../../shared/RecommendationsBanner";
 
 const SubjectExplorer: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -248,6 +249,8 @@ const SubjectExplorer: React.FC = () => {
             <div className="text-sm font-medium text-brand-slate">Students Guided</div>
           </Card>
         </div>
+
+        <RecommendationsBanner targetFeature="study_succeed" />
 
         {/* Subjects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 4xl:grid-cols-5 gap-6">

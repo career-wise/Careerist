@@ -19,11 +19,11 @@ import {
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
 import Input from "../../shared/ui/Input";
+import RecommendationsBanner from "../../shared/RecommendationsBanner";
 
 const StudyResources: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-
   const resources = [
     {
       id: 1,
@@ -176,6 +176,8 @@ const StudyResources: React.FC = () => {
             </div>
           </div>
         </div>
+
+        <RecommendationsBanner targetFeature="study_succeed" />
 
         {/* Search and Filter */}
         <Card className="p-6 border-brand-slate/10 shadow-sm flex flex-col md:flex-row gap-4">

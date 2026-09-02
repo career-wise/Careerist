@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { 
   Plus, 
   Send, 
@@ -38,117 +41,32 @@ interface Conversation {
 
 const ChatPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeConversationId, setActiveConversationId] = useState("6");
+  const [activeConversationId, setActiveConversationId] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [conversations, setConversations] = useState<Conversation[]>([
-    {
-      id: "1",
-      title: "Career Path Exploration",
-      lastMessage: "What career suits me best?",
-      messages: [
-        { id: "1", content: "What career suits me best based on my interests in technology?", isUser: true, timestamp: new Date() },
-        {
-          id: "2",
-          content: "Based on your interest in technology, I can suggest several exciting career paths! Let me help you explore options in software development, data science, AI/ML, cybersecurity, and more. What specific areas intrigue you most?",
-          isUser: false,
-          timestamp: new Date(),
-        },
-      ],
-    },
-    {
-      id: "2",
-      title: "Resume Building Tips",
-      lastMessage: "How to improve my resume?",
-      messages: [
-        { id: "1", content: "How can I improve my resume for tech jobs?", isUser: true, timestamp: new Date() },
-        {
-          id: "2",
-          content: "Great question! For tech resumes, focus on: 1) Highlighting technical skills and projects, 2) Using action verbs and quantifiable achievements, 3) Including relevant certifications, 4) Showcasing your GitHub portfolio. Would you like specific examples?",
-          isUser: false,
-          timestamp: new Date(),
-        },
-      ],
-    },
-    {
-      id: "3",
-      title: "Interview Preparation",
-      lastMessage: "Tips for tech interviews",
-      messages: [
-        { id: "1", content: "What should I prepare for tech interviews?", isUser: true, timestamp: new Date() },
-        {
-          id: "2",
-          content: "Tech interviews typically cover: coding challenges, system design, behavioral questions, and technical knowledge. I recommend practicing on LeetCode, understanding data structures, and preparing STAR method stories. Shall we practice some questions?",
-          isUser: false,
-          timestamp: new Date(),
-        },
-      ],
-    },
-    {
-      id: "4",
-      title: "Skill Development Roadmap",
-      lastMessage: "Learning path for AI",
-      messages: [
-        { id: "1", content: "What's the best learning path for AI and machine learning?", isUser: true, timestamp: new Date() },
-        {
-          id: "2",
-          content: "Excellent choice! Here's a structured roadmap: 1) Python programming fundamentals, 2) Mathematics (linear algebra, calculus, statistics), 3) ML basics and libraries (scikit-learn), 4) Deep learning (TensorFlow/PyTorch), 5) Specialized areas (NLP, Computer Vision). Would you like detailed resources?",
-          isUser: false,
-          timestamp: new Date(),
-        },
-      ],
-    },
-    {
-      id: "5",
-      title: "Salary Negotiation",
-      lastMessage: "How to negotiate salary?",
-      messages: [
-        { id: "1", content: "Tips for negotiating my first job offer?", isUser: true, timestamp: new Date() },
-        {
-          id: "2",
-          content: "Salary negotiation is crucial! Key tips: 1) Research market rates for your role, 2) Consider total compensation (benefits, equity, bonuses), 3) Express enthusiasm first, then negotiate, 4) Have a target range ready, 5) Be prepared to walk away if needed. Want to practice?",
-          isUser: false,
-          timestamp: new Date(),
-        },
-      ],
-    },
-    {
-      id: "6",
-      title: "Career Transition Strategy",
-      lastMessage: "Switching careers advice",
-      messages: [
-        {
-          id: "1",
-          content: "I want to transition from marketing to data analytics. What steps should I take?",
-          isUser: true,
-          timestamp: new Date(),
-        },
-        {
-          id: "2",
-          content:
-            "That's an exciting career move! Here's a strategic approach:\n\n1. **Build foundational skills**: Start with Excel, SQL, and basic statistics. These are essential for any data analyst role.\n\n2. **Learn data visualization**: Master tools like Tableau or Power BI to communicate insights effectively.\n\n3. **Leverage your marketing background**: Your domain knowledge is valuable! Focus on marketing analytics roles where your experience gives you an edge.\n\n4. **Create a portfolio**: Work on real projects - analyze datasets, create dashboards, and showcase your analytical thinking.\n\n5. **Network strategically**: Connect with data analysts in marketing companies. Your industry knowledge is an advantage.\n\n6. **Consider certifications**: Google Data Analytics or similar credentials can boost your credibility.\n\nYour marketing experience actually positions you well for analytics roles in marketing teams. Companies value candidates who understand both data and business context!",
-          isUser: false,
-          timestamp: new Date(),
-        },
-        {
-          id: "3",
-          content: "How long will this transition typically take?",
-          isUser: true,
-          timestamp: new Date(),
-        },
-        {
-          id: "4",
-          content:
-            "Great question! The timeline varies based on your commitment and current skills:\n\n**Accelerated path (3-6 months)**: If you dedicate 15-20 hours/week to learning and portfolio building, you could be job-ready in 3-6 months. This works well if you have some analytical background.\n\n**Moderate pace (6-12 months)**: Most career transitioners find success in 6-12 months with consistent effort (10-15 hours/week). This allows time to build skills gradually while working.\n\n**Part-time approach (12-18 months)**: If you're working full-time and can only dedicate 5-10 hours weekly, expect 12-18 months to build competitive skills and land your first role.\n\nPro tip: Try to get some analytics experience in your current marketing role - even small data projects can significantly shorten your transition timeline and make your story more compelling to employers!",
-          isUser: false,
-          timestamp: new Date(),
-        },
-      ],
-    },
-  ]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
 
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('persona, onboarding_answers')
+          .eq('id', user.id)
+          .single();
+        if (data) {
+          setUserProfile(data);
+        }
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const currentConversation = conversations.find((conv) => conv.id === activeConversationId);
   const messages = currentConversation?.messages || [];
@@ -194,8 +112,23 @@ const ChatPage: React.FC = () => {
     }
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
+
+    let targetConversationId = activeConversationId;
+    
+    // Create a new conversation if one doesn't exist
+    if (!targetConversationId) {
+      targetConversationId = Date.now().toString();
+      const newConversation: Conversation = {
+        id: targetConversationId,
+        title: inputValue.slice(0, 40) + "...",
+        lastMessage: "",
+        messages: [],
+      };
+      setConversations((prev) => [newConversation, ...prev]);
+      setActiveConversationId(targetConversationId);
+    }
 
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -206,11 +139,10 @@ const ChatPage: React.FC = () => {
 
     setConversations((prev) =>
       prev.map((conv) => {
-        if (conv.id === activeConversationId) {
-          const updatedMessages = [...conv.messages, newMessage];
+        if (conv.id === targetConversationId) {
           return {
             ...conv,
-            messages: updatedMessages,
+            messages: [...conv.messages, newMessage],
             lastMessage: inputValue,
             title: conv.title === "New Conversation" ? inputValue.slice(0, 40) + "..." : conv.title,
           };
@@ -219,21 +151,41 @@ const ChatPage: React.FC = () => {
       }),
     );
 
+    const promptText = inputValue;
     setInputValue("");
     setIsTyping(true);
+    setError(null);
 
-    // Simulate AI response with career-focused content
-    setTimeout(() => {
+    try {
+      // Send the last 6 messages for context, plus the new one
+      const historyToSend = [...(currentConversation?.messages || []), newMessage]
+        .slice(-6)
+        .map(m => ({
+          role: m.isUser ? 'user' : 'assistant',
+          content: m.content
+        }));
+
+      const { data, error: funcError } = await supabase.functions.invoke('chat', {
+        body: { 
+          prompt: promptText,
+          messages: historyToSend,
+          userContext: userProfile
+        }
+      });
+
+      if (funcError) throw funcError;
+      if (data.error) throw new Error(data.error);
+
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: "I'm Careerist AI, your career guide! I understand your question and I'm here to provide personalized career guidance. Let me help you navigate your professional journey with insights tailored to your goals and aspirations.",
+        content: data.reply || "I'm sorry, I didn't get a response. Please try again.",
         isUser: false,
         timestamp: new Date(),
       };
 
       setConversations((prev) =>
         prev.map((conv) => {
-          if (conv.id === activeConversationId) {
+          if (conv.id === targetConversationId) {
             return {
               ...conv,
               messages: [...conv.messages, aiResponse],
@@ -242,8 +194,12 @@ const ChatPage: React.FC = () => {
           return conv;
         }),
       );
+    } catch (err: any) {
+      console.error("Chat API Error:", err);
+      setError(err.message || "Failed to reach AI. Please try again.");
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -480,7 +436,38 @@ const ChatPage: React.FC = () => {
                         ? 'bg-brand-ink text-white ml-auto rounded-[1.5rem] rounded-tr-sm shadow-sm' 
                         : 'bg-brand-mist border border-brand-slate/10 text-gray-800 rounded-[1.5rem] rounded-tl-sm'
                     }`}>
-                      <p className="leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                      {message.isUser ? (
+                        <p className="leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                      ) : (
+                        <div className="prose prose-sm max-w-none leading-relaxed"
+                          style={{
+                            ['--tw-prose-body' as string]: '#374151',
+                            ['--tw-prose-headings' as string]: '#111827',
+                            ['--tw-prose-bold' as string]: '#111827',
+                          }}
+                        >
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              h1: ({children}) => <h1 className="text-lg font-bold text-gray-900 mt-3 mb-1">{children}</h1>,
+                              h2: ({children}) => <h2 className="text-base font-bold text-gray-900 mt-3 mb-1">{children}</h2>,
+                              h3: ({children}) => <h3 className="text-sm font-bold text-gray-900 mt-2 mb-1">{children}</h3>,
+                              p: ({children}) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+                              ul: ({children}) => <ul className="list-disc pl-5 mb-2 space-y-1">{children}</ul>,
+                              ol: ({children}) => <ol className="list-decimal pl-5 mb-2 space-y-1">{children}</ol>,
+                              li: ({children}) => <li className="leading-relaxed">{children}</li>,
+                              strong: ({children}) => <strong className="font-bold text-gray-900">{children}</strong>,
+                              em: ({children}) => <em className="italic">{children}</em>,
+                              code: ({children}) => <code className="bg-gray-200 text-gray-800 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
+                              blockquote: ({children}) => <blockquote className="border-l-4 border-brand-ink/30 pl-3 italic text-gray-600 my-2">{children}</blockquote>,
+                              table: ({children}) => <div className="overflow-x-auto my-2"><table className="min-w-full text-xs border-collapse">{children}</table></div>,
+                              thead: ({children}) => <thead className="bg-gray-100">{children}</thead>,
+                              th: ({children}) => <th className="border border-gray-300 px-2 py-1 font-semibold text-left">{children}</th>,
+                              td: ({children}) => <td className="border border-gray-300 px-2 py-1">{children}</td>,
+                            }}
+                          >{message.content}</ReactMarkdown>
+                        </div>
+                      )}
                     </div>
                     {!message.isUser && (
                       <div className="flex items-center gap-1.5 mt-2 flex-wrap px-1">
@@ -517,6 +504,17 @@ const ChatPage: React.FC = () => {
                     <div className="w-2 h-2 bg-brand-ink rounded-full animate-bounce"></div>
                     <div className="w-2 h-2 bg-brand-ink rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
                     <div className="w-2 h-2 bg-brand-ink rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {error && (
+              <div className="flex gap-4 justify-start">
+                <div className="flex-1 max-w-3xl">
+                  <div className="bg-red-50 border border-red-200 text-red-700 py-3 px-4 rounded-xl flex items-center gap-3">
+                    <Trash2 className="w-5 h-5 flex-shrink-0" />
+                    <p className="text-sm font-medium">{error}</p>
                   </div>
                 </div>
               </div>

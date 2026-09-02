@@ -15,6 +15,8 @@ import {
 import Button from "../../shared/ui/Button";
 import Card from "../../shared/ui/Card";
 import { useMediaStream } from "../../../contexts/MediaStreamContext";
+import { eventService } from "../../../services/eventService";
+import { EVENT_TYPES, FEATURES } from "../../../lib/constants";
 
 const AIInterviewSession: React.FC = () => {
   const { type } = useParams<{ type: "college" | "job" }>();
@@ -92,11 +94,35 @@ const AIInterviewSession: React.FC = () => {
 
   const handleStopAnswer = () => {
     setIsAnswering(false);
-    setTimeout(() => {
+    setTimeout(async () => {
       if (currentQuestion < questions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
       } else {
-        // Interview complete, go to report
+        // Interview complete, calculate weakest area
+        let weakestArea = 'eyeContact';
+        let lowestScore = metrics.eyeContact;
+        
+        Object.entries(metrics).forEach(([key, value]) => {
+          // fillerWords is lower is better, so we evaluate it differently if we wanted to
+          // for simplicity, we look at the positive metrics
+          if (key !== 'fillerWords' && value < lowestScore) {
+            lowestScore = value;
+            weakestArea = key;
+          }
+        });
+
+        // Log completion event
+        await eventService.logEvent(
+          EVENT_TYPES.INTERVIEW_COMPLETED,
+          {
+            ...metrics,
+            weakest_area: weakestArea,
+            interview_type: type
+          },
+          FEATURES.PREPARE_FUTURE
+        );
+
+        // go to report
         navigate(`/interview-practice/${type}/report`, {
           state: { finalMetrics: metrics, totalTime: timer },
         });

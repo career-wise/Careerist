@@ -72,6 +72,11 @@ const StudentSidebar: React.FC<StudentSidebarProps> = ({ onClose }) => {
           description: "Map out your career journey"
         },
         {
+          path: "/student-dashboard/planning/resume-builder",
+          label: "Resume Builder",
+          description: "Create and export your resume"
+        },
+        {
           path: "/student-dashboard/learning/interview-prep",
           label: "AI Interview Practice",
           description: "AI-powered interview practice and coaching"

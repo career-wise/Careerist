@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { 
   FileText, Users, Briefcase, Zap,
@@ -7,19 +7,8 @@ import {
 } from "lucide-react";
 import Button from "../../shared/ui/Button";
 
-// Mock Data
-const mockUser = {
-  firstName: "Sarah",
-  lastName: "Chen",
-  initials: "SC"
-};
-
-const onboardingAnswers = {
-  persona: "graduate",
-  status: "actively applying", // 'just preparing', 'actively applying', 'interviewing'
-  urgency: "high",
-  resumeStatus: "don't have one yet" // "don't have one yet" or "ready"
-};
+import { authService } from "../../../lib/auth";
+import { profileService } from "../../../services/profileService";
 
 const getStatusMessage = (status: string) => {
   switch(status) {
@@ -32,6 +21,28 @@ const getStatusMessage = (status: string) => {
 
 const GraduateDashboardHome: React.FC = () => {
   const [hoveredNode, setHoveredNode] = useState<number | null>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [authUser, setAuthUser] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const session = await authService.getSession();
+        if (session?.user) {
+          setAuthUser(session.user);
+          const data = await profileService.getProfile(session.user.id);
+          setProfile(data);
+        }
+      } catch (err) {
+        console.error("Failed to load profile", err);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const onboardingAnswers = profile?.onboarding_answers || {};
+  const firstName = authUser?.user_metadata?.full_name?.split(' ')[0] || "Graduate";
+  const initials = firstName.charAt(0).toUpperCase();
   
   const journeyNodes = [
     { id: 1, status: 'completed', label: 'Onboarding', detail: 'Profile setup complete' },
@@ -41,7 +52,68 @@ const GraduateDashboardHome: React.FC = () => {
     { id: 5, status: 'upcoming', label: 'First Interview', detail: 'Prepare for interviews' }
   ];
 
-  const needsResume = onboardingAnswers.resumeStatus === "don't have one yet";
+  const needsResume = onboardingAnswers.resumeStatus === "Don't have one yet" || onboardingAnswers.resumeStatus === "Have one, needs work";
+  const needsInterview = onboardingAnswers.interviewConfidence === "Never really done one" || onboardingAnswers.interviewConfidence === "Some experience";
+
+  const order = [];
+  if (needsResume) order.push('resume');
+  if (needsInterview) order.push('interview');
+  if (!order.includes('resume')) order.push('resume');
+  if (!order.includes('interview')) order.push('interview');
+
+  const currentFocus = order[0] || 'resume';
+  const upNext = order[1] || 'interview';
+
+  const getFocusContent = (type: string) => {
+    switch (type) {
+      case 'resume':
+        return {
+          title: "Finish Your Resume",
+          desc: "Your resume is your first impression. Let's finish your draft so you can start applying with confidence.",
+          icon: FileText,
+          progressTitle: "Resume Completion",
+          progress: "40%",
+          progressWidth: "w-[40%]",
+          btnText: "Go to Resume Builder",
+          btnLink: "/graduate-dashboard/resources/resume-builder",
+        };
+      case 'interview':
+      default:
+        return {
+          title: "Nail the Interview",
+          desc: "You've got the materials ready. Let's run through a mock interview to ensure you shine in front of employers.",
+          icon: Users,
+          progressTitle: "Interview Prep",
+          progress: "20%",
+          progressWidth: "w-[20%]",
+          btnText: "Start Mock Interview",
+          btnLink: "/graduate-dashboard/learning/interview-prep",
+        };
+    }
+  };
+
+  const getUpNextContent = (type: string) => {
+    switch (type) {
+      case 'resume':
+        return {
+          title: "Draft Your Resume",
+          desc: "A complete resume is required to apply for roles. Head over to the resources section to use our builder.",
+          btnText: "Open Resume Builder",
+          btnLink: "/graduate-dashboard/resources/resume-builder",
+        };
+      case 'interview':
+      default:
+        return {
+          title: "Practice Makes Perfect",
+          desc: "You have a solid resume! Now it's time to refine your interview skills with AI.",
+          btnText: "Start Interview Prep",
+          btnLink: "/graduate-dashboard/learning/interview-prep",
+        };
+    }
+  };
+
+  const focusData = getFocusContent(currentFocus);
+  const upNextData = getUpNextContent(upNext);
 
   return (
     <div className="bg-brand-mist min-h-screen p-4 md:p-6 lg:p-8 font-sans">
@@ -50,16 +122,16 @@ const GraduateDashboardHome: React.FC = () => {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold text-brand-ink mb-2">Welcome back, {mockUser.firstName}.</h1>
+            <h1 className="text-3xl font-display font-bold text-brand-ink mb-2">Welcome back, {firstName}.</h1>
             <p className="text-brand-slate text-lg font-medium">
-              {getStatusMessage(onboardingAnswers.status)}
+              {getStatusMessage(onboardingAnswers.status || '')}
             </p>
           </div>
           
           {/* High-level User Profile Snippet */}
           <div className="bg-white rounded-[1.5rem] p-4 flex items-center gap-4 border border-brand-slate/20 shadow-sm">
             <div className="w-12 h-12 rounded-full bg-brand-ink flex items-center justify-center border border-brand-slate/10">
-              <span className="text-white font-bold text-lg tracking-wider">{mockUser.initials}</span>
+              <span className="text-white font-bold text-lg tracking-wider">{initials}</span>
             </div>
             <div>
               <p className="text-sm font-bold text-brand-ink">Profile Setup</p>
@@ -160,33 +232,31 @@ const GraduateDashboardHome: React.FC = () => {
               <div className="relative z-10">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-8 h-8 rounded-full bg-brand-neon/20 flex items-center justify-center">
-                    {needsResume ? <FileText className="w-4 h-4 text-brand-neon" /> : <Users className="w-4 h-4 text-brand-neon" />}
+                    <focusData.icon className="w-4 h-4 text-brand-neon" />
                   </div>
                   <span className="text-brand-neon font-bold text-sm tracking-widest uppercase">Current Focus</span>
                 </div>
                 
                 <h2 className="text-3xl font-display font-bold text-white mb-4">
-                  {needsResume ? "Finish Your Resume" : "Nail the Interview"}
+                  {focusData.title}
                 </h2>
                 <p className="text-gray-300 mb-6 max-w-lg font-medium leading-relaxed">
-                  {needsResume 
-                    ? "Your resume is your first impression. Let's finish your draft so you can start applying with confidence." 
-                    : "You've got the materials ready. Let's run through a mock interview to ensure you shine in front of employers."}
+                  {focusData.desc}
                 </p>
                 
                 <div className="bg-white/10 rounded-[1.25rem] p-4 mb-6 max-w-md backdrop-blur-sm border border-white/10">
                    <div className="flex justify-between items-center mb-2">
-                     <span className="text-white text-sm font-semibold">{needsResume ? "Resume Completion" : "Interview Prep"} Progress</span>
-                     <span className="text-brand-neon text-sm font-bold">{needsResume ? "40%" : "20%"}</span>
+                     <span className="text-white text-sm font-semibold">{focusData.progressTitle}</span>
+                     <span className="text-brand-neon text-sm font-bold">{focusData.progress}</span>
                    </div>
                    <div className="w-full h-2.5 bg-brand-ink/50 rounded-full overflow-hidden">
-                     <div className={`h-full bg-brand-neon rounded-full shadow-[0_0_10px_rgba(21,193,150,0.5)] ${needsResume ? 'w-[40%]' : 'w-[20%]'}`}></div>
+                     <div className={`h-full bg-brand-neon rounded-full shadow-[0_0_10px_rgba(21,193,150,0.5)] ${focusData.progressWidth}`}></div>
                    </div>
                 </div>
 
-                <Link to={needsResume ? "/graduate-dashboard/resources" : "/graduate-dashboard/prepare/interview-setup"}>
+                <Link to={focusData.btnLink}>
                   <Button variant="primary" className="bg-white text-brand-ink hover:bg-brand-mist font-semibold px-6">
-                    {needsResume ? "Go to Resume Builder" : "Start Mock Interview"} <ArrowRight className="w-4 h-4 ml-2" />
+                    {focusData.btnText} <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
               </div>
@@ -194,7 +264,7 @@ const GraduateDashboardHome: React.FC = () => {
               {/* Decorative elements */}
               <div className="absolute -right-20 -top-20 w-80 h-80 bg-brand-neon/20 rounded-full blur-3xl"></div>
               <div className="absolute bottom-10 right-10 opacity-10">
-                 {needsResume ? <FileText className="w-32 h-32 text-white" /> : <Users className="w-32 h-32 text-white" />}
+                 <focusData.icon className="w-32 h-32 text-white" />
               </div>
             </div>
           </div>
@@ -207,10 +277,10 @@ const GraduateDashboardHome: React.FC = () => {
               <h3 className="font-bold text-brand-ink mb-4">Quick Actions</h3>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { name: 'Resume Builder', icon: FileText, link: '/graduate-dashboard/resources' },
-                  { name: 'AI Interview', icon: Users, link: '/graduate-dashboard/prepare/interview-setup' },
-                  { name: 'Skills Center', icon: Zap, link: '/graduate-dashboard/skills/tech' },
-                  { name: 'Career Path', icon: Briefcase, link: '/graduate-dashboard/career-path' }
+                  { name: 'Resume Builder', icon: FileText, link: '/graduate-dashboard/resources/resume-builder' },
+                  { name: 'AI Interview', icon: Users, link: '/graduate-dashboard/learning/interview-prep' },
+                  { name: 'Skill Gap Tool', icon: Zap, link: '/graduate-dashboard/skills/gap-analyzer' },
+                  { name: 'Career Path', icon: Briefcase, link: '/graduate-dashboard/planning/career-path' }
                 ].map((tab, i) => (
                   <Link key={i} to={tab.link}>
                     <div className="bg-brand-mist hover:bg-brand-slate/10 border border-brand-slate/10 hover:border-brand-slate/20 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all group h-full">
@@ -235,18 +305,16 @@ const GraduateDashboardHome: React.FC = () => {
                  <div className="bg-brand-mist p-5 rounded-2xl border border-brand-slate/10 mb-6 relative overflow-hidden flex-1">
                    <div className="w-1 bg-brand-neon absolute left-0 top-3 bottom-3 rounded-r-full"></div>
                    <h4 className="font-bold text-brand-ink mb-2">
-                     {needsResume ? "Draft Your Resume" : "Practice Makes Perfect"}
+                     {upNextData.title}
                    </h4>
                    <p className="text-sm font-medium text-brand-slate leading-relaxed">
-                     {needsResume 
-                       ? "A complete resume is required to apply for roles. Head over to the resources section to use our builder."
-                       : "You have a solid resume! Now it's time to refine your interview skills with AI."}
+                     {upNextData.desc}
                    </p>
                  </div>
                  
-                 <Link to={needsResume ? "/graduate-dashboard/resources" : "/graduate-dashboard/prepare/interview-setup"} className="w-full mt-auto">
+                 <Link to={upNextData.btnLink} className="w-full mt-auto">
                    <Button variant="outline" className="w-full bg-white border-brand-slate/20 hover:bg-brand-mist text-brand-ink font-semibold rounded-xl py-3">
-                     {needsResume ? "Open Resume Builder" : "Start Interview Prep"} <ArrowRight className="w-4 h-4 ml-2" />
+                     {upNextData.btnText} <ArrowRight className="w-4 h-4 ml-2" />
                    </Button>
                  </Link>
                </div>

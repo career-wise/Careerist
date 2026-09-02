@@ -310,8 +310,12 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
               12th graders get more urgent, decision-focused guidance. 11th graders get more room to explore.
             </p>
             <div className="grid gap-4 md:grid-cols-2">
-              {renderOptionCard('11th Grade', answers.grade === '11', () => setAnswers({...answers, grade: '11'}), 'p-8')}
-              {renderOptionCard('12th Grade', answers.grade === '12', () => setAnswers({...answers, grade: '12'}), 'p-8')}
+              <React.Fragment key="11">
+                {renderOptionCard('11th Grade', answers.grade === '11', () => setAnswers({...answers, grade: '11'}), 'p-8')}
+              </React.Fragment>
+              <React.Fragment key="12">
+                {renderOptionCard('12th Grade', answers.grade === '12', () => setAnswers({...answers, grade: '12'}), 'p-8')}
+              </React.Fragment>
             </div>
           </div>
         )}
@@ -325,7 +329,11 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
               Not what you're best at on paper. What doesn't feel like a chore.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              {SUBJECTS.map(subj => renderMultiChip(subj, (answers.subjects || []).includes(subj), () => toggleArrayItem('subjects', subj)))}
+              {SUBJECTS.map(subj => (
+                <React.Fragment key={subj}>
+                  {renderMultiChip(subj, (answers.subjects || []).includes(subj), () => toggleArrayItem('subjects', subj))}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         )}
@@ -339,7 +347,11 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
               Be honest — this decides how much hand-holding you get.
             </p>
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-              {CLARITY_LEVELS.map(level => renderOptionCard(level, answers.clarityLevel === level, () => setAnswers({...answers, clarityLevel: level})))}
+              {CLARITY_LEVELS.map(level => (
+                <React.Fragment key={level}>
+                  {renderOptionCard(level, answers.clarityLevel === level, () => setAnswers({...answers, clarityLevel: level}))}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         )}
@@ -350,7 +362,11 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
               Which fields are you drawn to?
             </h1>
             <div className="flex flex-wrap gap-4 justify-center mt-12">
-              {FIELDS_OF_INTEREST.map(field => renderMultiChip(field, (answers.fieldsOfInterest || []).includes(field), () => toggleArrayItem('fieldsOfInterest', field)))}
+              {FIELDS_OF_INTEREST.map(field => (
+                <React.Fragment key={field}>
+                  {renderMultiChip(field, (answers.fieldsOfInterest || []).includes(field), () => toggleArrayItem('fieldsOfInterest', field))}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         )}
@@ -361,7 +377,11 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
               What would actually help you most right now?
             </h1>
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2 mt-12">
-              {HS_GOALS.map(goal => renderOptionCard(goal, answers.goal === goal, () => setAnswers({...answers, goal})))}
+              {HS_GOALS.map(goal => (
+                <React.Fragment key={goal}>
+                  {renderOptionCard(goal, answers.goal === goal, () => setAnswers({...answers, goal}))}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         )}
@@ -376,7 +396,11 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
               This sets your urgency level — no judgment either way.
             </p>
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-              {GRAD_STATUS.map(status => renderOptionCard(status, answers.status === status, () => setAnswers({...answers, status})))}
+              {GRAD_STATUS.map(status => (
+                <React.Fragment key={status}>
+                  {renderOptionCard(status, answers.status === status, () => setAnswers({...answers, status}))}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         )}
@@ -387,9 +411,11 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
               What did you study?
             </h1>
             <div className="mt-12 space-y-4">
-              {['Computer Science/IT', 'Engineering (non-CS)', 'Commerce/Business/Finance', 'Arts/Humanities', 'Sciences', 'Design'].map(field => 
-                renderOptionCard(field, answers.fieldOfStudy === field, () => setAnswers({...answers, fieldOfStudy: field}))
-              )}
+              {['Computer Science/IT', 'Engineering (non-CS)', 'Commerce/Business/Finance', 'Arts/Humanities', 'Sciences', 'Design'].map(field => (
+                <React.Fragment key={field}>
+                  {renderOptionCard(field, answers.fieldOfStudy === field, () => setAnswers({...answers, fieldOfStudy: field}))}
+                </React.Fragment>
+              ))}
               <div className={`p-6 rounded-2xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${answers.fieldOfStudy && !['Computer Science/IT', 'Engineering (non-CS)', 'Commerce/Business/Finance', 'Arts/Humanities', 'Sciences', 'Design'].includes(answers.fieldOfStudy) ? 'bg-blue-50 border-blue-500 text-blue-900' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
                 <div className={`w-4 h-4 rounded-full border-2 mb-4 transition-colors inline-block mr-3 align-middle ${answers.fieldOfStudy && !['Computer Science/IT', 'Engineering (non-CS)', 'Commerce/Business/Finance', 'Arts/Humanities', 'Sciences', 'Design'].includes(answers.fieldOfStudy) ? 'border-blue-500 bg-blue-500' : 'border-gray-300'}`}></div>
                 <input 
@@ -418,7 +444,11 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
               Pick all that apply.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              {GRAD_LOOKING_FOR.map(item => renderMultiChip(item, (answers.lookingFor || []).includes(item), () => toggleArrayItem('lookingFor', item)))}
+              {GRAD_LOOKING_FOR.map(item => (
+                <React.Fragment key={item}>
+                  {renderMultiChip(item, (answers.lookingFor || []).includes(item), () => toggleArrayItem('lookingFor', item))}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         )}
@@ -428,17 +458,21 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
             <div>
               <h2 className="text-3xl font-display font-bold text-brand-ink mb-6 text-center">Do you have a resume ready?</h2>
               <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
-                {['Ready to go', 'Have one, needs work', "Don't have one yet"].map(status => 
-                  renderOptionCard(status, answers.resumeStatus === status, () => setAnswers({...answers, resumeStatus: status}))
-                )}
+                {['Ready to go', 'Have one, needs work', "Don't have one yet"].map(status => (
+                  <React.Fragment key={status}>
+                    {renderOptionCard(status, answers.resumeStatus === status, () => setAnswers({...answers, resumeStatus: status}))}
+                  </React.Fragment>
+                ))}
               </div>
             </div>
             <div>
               <h2 className="text-3xl font-display font-bold text-brand-ink mb-6 text-center">How do you feel about interviews?</h2>
               <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
-                {['Confident', 'Some experience', 'Never really done one'].map(conf => 
-                  renderOptionCard(conf, answers.interviewConfidence === conf, () => setAnswers({...answers, interviewConfidence: conf}))
-                )}
+                {['Confident', 'Some experience', 'Never really done one'].map(conf => (
+                  <React.Fragment key={conf}>
+                    {renderOptionCard(conf, answers.interviewConfidence === conf, () => setAnswers({...answers, interviewConfidence: conf}))}
+                  </React.Fragment>
+                ))}
               </div>
             </div>
           </div>
@@ -450,7 +484,11 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
               How soon do you need this to work?
             </h1>
             <div className="grid gap-4 grid-cols-1 mt-12">
-              {GRAD_URGENCY.map(urgency => renderOptionCard(urgency, answers.urgency === urgency, () => setAnswers({...answers, urgency})))}
+              {GRAD_URGENCY.map(urgency => (
+                <React.Fragment key={urgency}>
+                  {renderOptionCard(urgency, answers.urgency === urgency, () => setAnswers({...answers, urgency}))}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         )}

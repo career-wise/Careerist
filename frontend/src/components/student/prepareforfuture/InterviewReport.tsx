@@ -1,5 +1,7 @@
 import React from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { authService } from "../../../lib/auth";
+import { profileService } from "../../../services/profileService";
 import {
   Trophy,
   TrendingUp,
@@ -24,6 +26,24 @@ const InterviewReport: React.FC = () => {
   const { type } = useParams<{ type: "college" | "job" }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const [returnPath, setReturnPath] = React.useState("/student-dashboard");
+
+  React.useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const session = await authService.getSession();
+        if (session?.user) {
+          const profile = await profileService.getProfile(session.user.id);
+          if (profile?.onboarding_answers?.persona === 'graduate') {
+            setReturnPath("/graduate-dashboard");
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load profile for navigation", err);
+      }
+    };
+    fetchProfile();
+  }, []);
   
   // Get metrics from session or use defaults
   const finalMetrics = location.state?.finalMetrics || {
@@ -340,7 +360,7 @@ const InterviewReport: React.FC = () => {
         <div className="flex flex-wrap justify-center gap-4">
           <Button
             variant="outline"
-            onClick={() => navigate("/student-dashboard")} // Changed
+            onClick={() => navigate(returnPath)}
             className="min-w-[180px]"
             >
             <Home className="w-4 h-4 mr-2" />
