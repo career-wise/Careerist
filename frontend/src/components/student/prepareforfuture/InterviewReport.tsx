@@ -4,6 +4,7 @@ import { authService } from "../../../lib/auth";
 import { profileService } from "../../../services/profileService";
 import {
   Trophy,
+  ArrowLeft,
   TrendingUp,
   Eye,
   Volume2,
@@ -117,16 +118,26 @@ const InterviewReport: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-brand-mist/30 via-white to-brand-mist/30 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-8 text-center">
-          <div className="w-20 h-20 bg-gradient-to-br from-brand-ink to-brand-darkgreen rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
-            <Trophy className="w-10 h-10 text-white" />
+        <div className="mb-8 relative">
+          <button 
+            onClick={() => navigate(returnPath)}
+            className="absolute left-0 top-0 p-2 text-brand-slate hover:bg-brand-slate/10 hover:text-brand-ink rounded-lg flex items-center gap-2 transition-colors group"
+          >
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            <span className="font-semibold hidden sm:inline">Back</span>
+          </button>
+          
+          <div className="text-center pt-8 sm:pt-0">
+            <div className="w-20 h-20 bg-gradient-to-br from-brand-ink to-brand-darkgreen rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
+              <Trophy className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-brand-ink to-brand-darkgreen bg-clip-text text-transparent mb-2">
+              Interview Complete!
+            </h1>
+            <p className="text-brand-slate text-lg">
+              Here's your detailed performance analysis
+            </p>
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-brand-ink to-brand-darkgreen bg-clip-text text-transparent mb-2">
-            Interview Complete!
-          </h1>
-          <p className="text-brand-slate text-lg">
-            Here's your detailed performance analysis
-          </p>
         </div>
 
         {/* Overall Score */}
@@ -161,7 +172,7 @@ const InterviewReport: React.FC = () => {
           </div>
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Strengths */}
           <Card className="border-2 border-green-200 bg-green-50/50">
             <div className="flex items-center gap-3 mb-4">
@@ -212,7 +223,7 @@ const InterviewReport: React.FC = () => {
         {/* Detailed Metrics */}
         <Card className="mb-8 border-2 border-brand-slate/10">
           <h2 className="text-xl font-bold text-brand-ink mb-6">Performance Breakdown</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Eye Contact */}
             <div>
               <div className="flex items-center justify-between mb-3">

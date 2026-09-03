@@ -131,7 +131,7 @@ function App() {
   return (
     <Router>
       <MediaStreamProvider>
-        <div className="min-h-screen bg-white font-sans">
+        <div className="min-h-screen bg-white font-sans overflow-x-hidden w-full max-w-[100vw]">
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/chat" element={<ChatPage />} />

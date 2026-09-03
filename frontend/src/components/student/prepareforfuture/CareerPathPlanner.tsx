@@ -170,6 +170,8 @@ const CareerPathPlanner: React.FC = () => {
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [persona, setPersona] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [customRoadmap, setCustomRoadmap] = useState<any>(null);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -178,6 +180,9 @@ const CareerPathPlanner: React.FC = () => {
         if (session?.user) {
           const profile = await profileService.getProfile(session.user.id);
           setPersona(profile?.persona || "student");
+          if (profile?.onboarding_answers?.career_roadmap) {
+            setCustomRoadmap(profile.onboarding_answers.career_roadmap);
+          }
         }
       } catch (err) {
         console.error("Failed to load profile", err);
@@ -193,7 +198,37 @@ const CareerPathPlanner: React.FC = () => {
     return <div className="p-8 min-h-screen">Loading planner...</div>;
   }
 
-  const currentRoadmap = persona === "graduate" ? graduateRoadmap : studentRoadmap;
+  const handleGenerate = async () => {
+    try {
+      setGenerating(true);
+      const rm = await profileService.generateCareerRoadmap();
+      setCustomRoadmap(rm);
+    } catch (e) {
+      console.error(e);
+      alert("Failed to generate roadmap.");
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const baseRoadmap = persona === "graduate" ? graduateRoadmap : studentRoadmap;
+  const currentRoadmap = customRoadmap ? {
+    ...baseRoadmap,
+    title: customRoadmap.title || baseRoadmap.title,
+    branches: {
+      ...baseRoadmap.branches,
+      level1Branches: baseRoadmap.branches.level1Branches.map((b: any, i: number) => ({ ...b, label: customRoadmap.branches?.level1Branches?.[i]?.label || b.label })),
+      level2Branches: baseRoadmap.branches.level2Branches.map((b: any, i: number) => ({ ...b, label: customRoadmap.branches?.level2Branches?.[i]?.label || b.label })),
+      level3Branches: baseRoadmap.branches.level3Branches.map((b: any, i: number) => ({ ...b, label: customRoadmap.branches?.level3Branches?.[i]?.label || b.label })),
+      level4Branches: baseRoadmap.branches.level4Branches.map((b: any, i: number) => ({ ...b, label: customRoadmap.branches?.level4Branches?.[i]?.label || b.label })),
+      level5Branches: baseRoadmap.branches.level5Branches.map((b: any, i: number) => ({ ...b, label: customRoadmap.branches?.level5Branches?.[i]?.label || b.label })),
+    },
+    infoBoxes: baseRoadmap.infoBoxes.map((b: any, i: number) => ({
+      ...b,
+      title: customRoadmap.infoBoxes?.[i]?.title || b.title,
+      description: customRoadmap.infoBoxes?.[i]?.description || b.description,
+    }))
+  } : baseRoadmap;
 
   const getNodeColor = (status: string, customColor?: string) => {
     switch (status) {
@@ -268,9 +303,12 @@ const CareerPathPlanner: React.FC = () => {
                 <ExternalLink className="w-4 h-4 mr-2" />
                 Share
               </Button>
-              <Button className="bg-gradient-to-r from-brand-ink to-brand-darkgreen hover:from-brand-darkgreen hover:to-brand-ink border-none">
+              <Button 
+                onClick={handleGenerate}
+                disabled={generating}
+                className="bg-gradient-to-r from-brand-ink to-brand-darkgreen hover:from-brand-darkgreen hover:to-brand-ink border-none">
                 <Sparkles className="w-4 h-4 mr-2" />
-                Personalize
+                {generating ? "Generating..." : (customRoadmap ? "Regenerate" : "Personalize")}
               </Button>
             </div>
           </div>
@@ -295,6 +333,23 @@ const CareerPathPlanner: React.FC = () => {
         </div>
 
         {/* Roadmap Canvas */}
+        {!customRoadmap && !generating ? (
+          <div className="bg-white rounded-3xl shadow-xl p-12 text-center border border-brand-slate/10 py-32">
+             <Map className="w-16 h-16 text-brand-slate mx-auto mb-6 opacity-50" />
+             <h2 className="text-2xl font-bold text-brand-ink mb-4">Your Career Roadmap Awaits</h2>
+             <p className="text-brand-slate mb-8 max-w-lg mx-auto">Click below to generate a personalized career plan based on your onboarding answers and profile.</p>
+             <Button onClick={handleGenerate} className="bg-brand-neon text-brand-ink px-8 py-3 rounded-full text-lg shadow-lg hover:bg-brand-neon/90 font-bold">
+               <Sparkles className="w-5 h-5 mr-2 inline" />
+               Generate AI Roadmap
+             </Button>
+          </div>
+        ) : generating ? (
+          <div className="bg-white rounded-3xl shadow-xl p-12 text-center border border-brand-slate/10 py-32 flex flex-col items-center">
+             <div className="w-16 h-16 border-4 border-brand-neon border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+             <h2 className="text-2xl font-bold text-brand-ink mb-4">Analyzing Your Profile...</h2>
+             <p className="text-brand-slate max-w-lg mx-auto animate-pulse">Our AI is designing the perfect roadmap for your unique skills and goals.</p>
+          </div>
+        ) : (
         <div className="bg-white rounded-3xl shadow-xl p-12 relative overflow-hidden border border-brand-slate/10">
           {/* Subtle Grid Background */}
           <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
@@ -423,7 +478,7 @@ const CareerPathPlanner: React.FC = () => {
                     key={`question-${q.id}`}
                     x1="50%"
                     y1={q.y}
-                    x2={`calc(50% + ${q.x}px - 100)`}
+                    x2={`calc(50% + ${q.x}px)`}
                     y2={q.y}
                     stroke="rgba(92, 107, 103, 0.2)"
                     strokeWidth="2"
@@ -487,7 +542,7 @@ const CareerPathPlanner: React.FC = () => {
                 <div
                   key={node.id}
                   className="absolute"
-                  style={{ top: `${node.y}px`, left: `calc(50% + ${node.x}px)` }}
+                  style={node.x < 0 ? { top: `${node.y}px`, right: `calc(50% + ${Math.abs(node.x)}px)` } : { top: `${node.y}px`, left: `calc(50% + ${node.x}px)` }}
                   onMouseEnter={() => setHoveredNode(node.id)}
                   onMouseLeave={() => setHoveredNode(null)}
                 >
@@ -626,7 +681,7 @@ const CareerPathPlanner: React.FC = () => {
               <div
                 key={box.id}
                 className="absolute"
-                style={{ top: `${box.y}px`, left: `calc(50% + ${box.x}px)` }}
+                style={box.x < 0 ? { top: `${box.y}px`, right: `calc(50% + ${Math.abs(box.x) - 150}px)` } : { top: `${box.y}px`, left: `calc(50% + ${box.x}px)` }}
               >
                 <div className="bg-white border-l-4 border-brand-neon rounded-xl p-5 shadow-lg max-w-xs transition-transform hover:scale-105 duration-300">
                   <h4 className="font-bold text-brand-ink mb-2 text-base">
@@ -638,6 +693,7 @@ const CareerPathPlanner: React.FC = () => {
             ))}
           </div>
         </div>
+        )}
 
         {/* Legend */}
         <div className="mt-8 bg-white rounded-2xl shadow-sm p-6 border border-brand-slate/10">

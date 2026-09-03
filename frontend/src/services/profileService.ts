@@ -36,6 +36,30 @@ export class ProfileService {
 
     return data;
   }
+
+  async generateCareerRoadmap() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("Not authenticated");
+
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-roadmap`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to generate roadmap');
+    }
+
+    const result = await response.json();
+    return result.roadmap;
+  }
 }
 
 export const profileService = new ProfileService();
