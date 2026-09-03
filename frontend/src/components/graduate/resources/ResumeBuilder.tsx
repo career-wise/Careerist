@@ -40,6 +40,8 @@ const ResumeBuilder: React.FC = () => {
   const [data, setData] = useState<ResumeData>(defaultResume);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   useEffect(() => {
     const loadResume = async () => {
@@ -55,13 +57,25 @@ const ResumeBuilder: React.FC = () => {
         console.error("Failed to load resume", err);
       } finally {
         setLoading(false);
+        setIsDirty(false);
       }
     };
     loadResume();
   }, []);
 
-  const handleSave = async () => {
-    setSaving(true);
+  // Autosave effect
+  useEffect(() => {
+    if (!isDirty || loading) return;
+    
+    const handler = setTimeout(() => {
+      handleSave(true);
+    }, 1500);
+    
+    return () => clearTimeout(handler);
+  }, [data, isDirty, loading]);
+
+  const handleSave = async (isAutosave = false) => {
+    if (!isAutosave) setSaving(true);
     try {
       const session = await authService.getSession();
       if (session?.user) {
@@ -75,19 +89,23 @@ const ResumeBuilder: React.FC = () => {
           persona: profile.persona,
           ...newAnswers
         });
+        setLastSaved(new Date());
+        setIsDirty(false);
       }
     } catch (err) {
       console.error("Failed to save resume", err);
     } finally {
-      setSaving(false);
+      if (!isAutosave) setSaving(false);
     }
   };
 
   const updateBasics = (field: keyof ResumeData["basics"], value: string) => {
+    setIsDirty(true);
     setData((prev) => ({ ...prev, basics: { ...prev.basics, [field]: value } }));
   };
 
   const addExperience = () => {
+    setIsDirty(true);
     setData((prev) => ({
       ...prev,
       experience: [
@@ -98,6 +116,7 @@ const ResumeBuilder: React.FC = () => {
   };
 
   const updateExperience = (id: string, field: string, value: string) => {
+    setIsDirty(true);
     setData((prev) => ({
       ...prev,
       experience: prev.experience.map((exp) => (exp.id === id ? { ...exp, [field]: value } : exp)),
@@ -105,6 +124,7 @@ const ResumeBuilder: React.FC = () => {
   };
 
   const removeExperience = (id: string) => {
+    setIsDirty(true);
     setData((prev) => ({
       ...prev,
       experience: prev.experience.filter((exp) => exp.id !== id),
@@ -112,6 +132,7 @@ const ResumeBuilder: React.FC = () => {
   };
 
   const addEducation = () => {
+    setIsDirty(true);
     setData((prev) => ({
       ...prev,
       education: [
@@ -122,6 +143,7 @@ const ResumeBuilder: React.FC = () => {
   };
 
   const updateEducation = (id: string, field: string, value: string) => {
+    setIsDirty(true);
     setData((prev) => ({
       ...prev,
       education: prev.education.map((edu) => (edu.id === id ? { ...edu, [field]: value } : edu)),
@@ -129,6 +151,7 @@ const ResumeBuilder: React.FC = () => {
   };
 
   const removeEducation = (id: string) => {
+    setIsDirty(true);
     setData((prev) => ({
       ...prev,
       education: prev.education.filter((edu) => edu.id !== id),
@@ -157,10 +180,17 @@ const ResumeBuilder: React.FC = () => {
             <Printer className="w-4 h-4 mr-2" />
             Download PDF
           </Button>
-          <Button variant="primary" onClick={handleSave} disabled={saving}>
-            <Save className="w-4 h-4 mr-2" />
-            {saving ? "Saving..." : "Save Resume"}
-          </Button>
+          <div className="flex items-center gap-3">
+            {lastSaved && (
+              <span className="text-xs text-brand-slate font-medium hidden md:block">
+                Last saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
+            <Button variant="primary" onClick={() => handleSave(false)} disabled={saving || (!isDirty && !!lastSaved)}>
+              <Save className="w-4 h-4 mr-2" />
+              {saving ? "Saving..." : "Save Resume"}
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -353,7 +383,10 @@ const ResumeBuilder: React.FC = () => {
             <div>
               <textarea
                 value={data.skills}
-                onChange={(e) => setData((prev) => ({ ...prev, skills: e.target.value }))}
+                onChange={(e) => {
+                  setIsDirty(true);
+                  setData((prev) => ({ ...prev, skills: e.target.value }));
+                }}
                 className="w-full px-4 py-2 bg-brand-mist border-none rounded-xl focus:ring-2 focus:ring-brand-primary outline-none transition-shadow h-24 resize-none"
                 placeholder="List your skills separated by commas (e.g. JavaScript, React, Node.js...)"
               />

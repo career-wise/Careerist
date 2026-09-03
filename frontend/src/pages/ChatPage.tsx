@@ -24,6 +24,8 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import Button from '../components/shared/ui/Button';
+import { eventService } from '../services/eventService';
+import { EVENT_TYPES, FEATURES } from '../lib/constants';
 
 interface Message {
   id: string;
@@ -164,6 +166,9 @@ const ChatPage: React.FC = () => {
           role: m.isUser ? 'user' : 'assistant',
           content: m.content
         }));
+
+      // Log the event so the backend and recommendation engine have context on what the user is discussing
+      await eventService.logEvent(EVENT_TYPES.CHAT_INTERACTION, { prompt: promptText }, FEATURES.CHAT);
 
       const { data, error: funcError } = await supabase.functions.invoke('chat', {
         body: { 

@@ -52,7 +52,14 @@ const GraduateDashboardHome: React.FC = () => {
     { id: 5, status: 'upcoming', label: 'First Interview', detail: 'Prepare for interviews' }
   ];
 
-  const needsResume = onboardingAnswers.resumeStatus === "Don't have one yet" || onboardingAnswers.resumeStatus === "Have one, needs work";
+  const hasStartedResume = onboardingAnswers.resumeData && (
+    (onboardingAnswers.resumeData.experience && onboardingAnswers.resumeData.experience.length > 0) ||
+    (onboardingAnswers.resumeData.education && onboardingAnswers.resumeData.education.length > 0) ||
+    (onboardingAnswers.resumeData.skills && onboardingAnswers.resumeData.skills.length > 0) ||
+    (onboardingAnswers.resumeData.basics?.name && onboardingAnswers.resumeData.basics.name.length > 0)
+  );
+
+  const needsResume = !hasStartedResume && (onboardingAnswers.resumeStatus === "Don't have one yet" || onboardingAnswers.resumeStatus === "Have one, needs work");
   const needsInterview = onboardingAnswers.interviewConfidence === "Never really done one" || onboardingAnswers.interviewConfidence === "Some experience";
 
   const order = [];

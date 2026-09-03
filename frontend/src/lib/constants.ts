@@ -3,6 +3,7 @@ export const EVENT_TYPES = {
   GOAL_SET: 'goal_set',
   MILESTONE_REACHED: 'milestone_reached',
   INTERVIEW_COMPLETED: 'interview_completed',
+  CHAT_INTERACTION: 'chat_interaction',
 } as const;
 
 export type EventType = typeof EVENT_TYPES[keyof typeof EVENT_TYPES];

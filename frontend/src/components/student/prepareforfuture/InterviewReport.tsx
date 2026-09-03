@@ -105,41 +105,7 @@ const InterviewReport: React.FC = () => {
     },
   ];
 
-  const detailedFeedback = type === "college"
-    ? [
-        {
-          category: "Content Quality",
-          score: 87,
-          feedback: "Your responses showed genuine passion for learning. Consider adding more specific examples of your academic achievements.",
-        },
-        {
-          category: "Communication Style",
-          score: 83,
-          feedback: "You communicated clearly and effectively. Work on reducing filler words for more polished responses.",
-        },
-        {
-          category: "Engagement",
-          score: 89,
-          feedback: "Excellent enthusiasm and interest in the college. Your questions at the end were thoughtful and showed research.",
-        },
-      ]
-    : [
-        {
-          category: "Technical Competence",
-          score: 85,
-          feedback: "You demonstrated solid understanding of required skills. Consider quantifying your achievements more.",
-        },
-        {
-          category: "STAR Method Usage",
-          score: 78,
-          feedback: "Good use of examples, but some answers could benefit from clearer structure using Situation-Task-Action-Result.",
-        },
-        {
-          category: "Cultural Fit",
-          score: 90,
-          feedback: "You showed strong alignment with company values and demonstrated genuine interest in the role.",
-        },
-      ];
+  const aiFeedback = finalMetrics.feedback || "Great job completing the interview! Keep practicing to improve your pacing and eye contact.";
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -339,20 +305,15 @@ const InterviewReport: React.FC = () => {
 
         {/* Detailed Feedback */}
         <Card className="mb-8 border-2 border-brand-neon/20">
-          <h2 className="text-xl font-bold text-brand-ink mb-6">Detailed Feedback</h2>
-          <div className="space-y-4">
-            {detailedFeedback.map((item, idx) => (
-              <div key={idx} className="p-4 bg-brand-mist rounded-lg border border-brand-neon/20">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-brand-ink">{item.category}</h3>
-                  <div className="flex items-center gap-2">
-                    <Award className="w-4 h-4 text-[#C8A860]" />
-                    <span className="font-bold text-[#C8A860]">{item.score}/100</span>
-                  </div>
-                </div>
-                <p className="text-sm text-brand-slate">{item.feedback}</p>
+          <h2 className="text-xl font-bold text-brand-ink mb-6">AI Feedback</h2>
+          <div className="p-6 bg-brand-mist rounded-lg border border-brand-neon/20">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#3EBFB0] to-[#2A8278] rounded-lg flex items-center justify-center">
+                <MessageSquare className="w-5 h-5 text-white" />
               </div>
-            ))}
+              <h3 className="font-bold text-brand-ink text-lg">Interview Coach Notes</h3>
+            </div>
+            <p className="text-brand-slate text-lg leading-relaxed">{aiFeedback}</p>
           </div>
         </Card>
 

@@ -17,6 +17,8 @@ import Card from "../../shared/ui/Card";
 import { useMediaStream } from "../../../contexts/MediaStreamContext";
 import { eventService } from "../../../services/eventService";
 import { EVENT_TYPES, FEATURES } from "../../../lib/constants";
+import { FaceLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
+import { supabase } from "../../../lib/supabase";
 
 const AIInterviewSession: React.FC = () => {
   const { type } = useParams<{ type: "college" | "job" }>();
@@ -28,15 +30,22 @@ const AIInterviewSession: React.FC = () => {
   const [isAnswering, setIsAnswering] = useState(false);
   const [timer, setTimer] = useState(0);
   const [showExitModal, setShowExitModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // Real-time metrics (simulated)
-  const [metrics, setMetrics] = useState({
-    eyeContact: 75,
-    voiceClarity: 82,
-    pace: 70,
-    confidence: 78,
-    fillerWords: 5,
-  });
+  // Real-time tracking state
+  const [transcript, setTranscript] = useState("");
+  const [fillerWords, setFillerWords] = useState(0);
+  const [eyeContactScore, setEyeContactScore] = useState(100);
+
+  // MediaPipe FaceLandmarker ref
+  const faceLandmarkerRef = useRef<FaceLandmarker | null>(null);
+  const lastVideoTimeRef = useRef<number>(-1);
+  const requestRef = useRef<number>(0);
+  const totalFramesRef = useRef<number>(0);
+  const lookingFramesRef = useRef<number>(0);
+
+  // Speech Recognition ref
+  const recognitionRef = useRef<any>(null);
 
   const questions = type === "college"
     ? [
@@ -54,6 +63,41 @@ const AIInterviewSession: React.FC = () => {
         "Where do you see yourself in 5 years?",
       ];
 
+  // Initialize MediaPipe FaceLandmarker
+  useEffect(() => {
+    const initializeMediaPipe = async () => {
+      try {
+        const filesetResolver = await FilesetResolver.forVisionTasks(
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+        );
+        const faceLandmarker = await FaceLandmarker.createFromOptions(
+          filesetResolver,
+          {
+            baseOptions: {
+              modelAssetPath: `https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task`,
+              delegate: "GPU"
+            },
+            outputFaceBlendshapes: true,
+            outputFacialTransformationMatrixes: true,
+            runningMode: "VIDEO",
+            numFaces: 1,
+          }
+        );
+        faceLandmarkerRef.current = faceLandmarker;
+      } catch (err) {
+        console.error("Failed to initialize FaceLandmarker", err);
+      }
+    };
+    initializeMediaPipe();
+    
+    return () => {
+      if (faceLandmarkerRef.current) {
+        faceLandmarkerRef.current.close();
+      }
+      cancelAnimationFrame(requestRef.current);
+    };
+  }, []);
+
   // Set video source from context
   useEffect(() => {
     if (videoRef.current && stream) {
@@ -61,21 +105,85 @@ const AIInterviewSession: React.FC = () => {
     }
   }, [stream]);
 
-  // Simulate real-time metric updates
+  // Video processing loop for Eye Contact tracking
+  const predict = () => {
+    if (videoRef.current && faceLandmarkerRef.current && isAnswering) {
+      const video = videoRef.current;
+      const startTimeMs = performance.now();
+      
+      if (lastVideoTimeRef.current !== video.currentTime) {
+        lastVideoTimeRef.current = video.currentTime;
+        const results = faceLandmarkerRef.current.detectForVideo(video, startTimeMs);
+        
+        totalFramesRef.current += 1;
+
+        if (results.facialTransformationMatrixes && results.facialTransformationMatrixes.length > 0) {
+          // Extract basic head pose from transformation matrix
+          // Matrix index 2 is approx pitch, index 6 is yaw
+          const matrix = results.facialTransformationMatrixes[0].data;
+          const yaw = Math.asin(-matrix[2]);
+          const pitch = Math.atan2(matrix[6], matrix[10]);
+
+          // Simple thresholding: if absolute pitch and yaw are small, they are looking forward
+          if (Math.abs(yaw) < 0.3 && Math.abs(pitch) < 0.3) {
+            lookingFramesRef.current += 1;
+          }
+        }
+        
+        // Update eye contact score
+        if (totalFramesRef.current > 0 && totalFramesRef.current % 15 === 0) { // update UI every ~15 frames
+           const score = (lookingFramesRef.current / totalFramesRef.current) * 100;
+           setEyeContactScore(Math.round(score));
+        }
+      }
+    }
+    
+    if (isAnswering) {
+      requestRef.current = requestAnimationFrame(predict);
+    }
+  };
+
   useEffect(() => {
     if (isAnswering) {
-      const interval = setInterval(() => {
-        setMetrics(prev => ({
-          eyeContact: Math.min(95, prev.eyeContact + Math.random() * 5 - 1),
-          voiceClarity: Math.min(95, prev.voiceClarity + Math.random() * 3 - 1),
-          pace: Math.min(90, prev.pace + Math.random() * 4 - 1),
-          confidence: Math.min(92, prev.confidence + Math.random() * 3 - 1),
-          fillerWords: Math.max(0, prev.fillerWords + (Math.random() > 0.7 ? 1 : 0)),
-        }));
-      }, 2000);
-      return () => clearInterval(interval);
+      requestRef.current = requestAnimationFrame(predict);
+    } else {
+      cancelAnimationFrame(requestRef.current);
     }
+    return () => cancelAnimationFrame(requestRef.current);
   }, [isAnswering]);
+
+  // Setup Speech Recognition
+  useEffect(() => {
+    // @ts-ignore
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      
+      recognition.onresult = (event: any) => {
+        let currentTranscript = "";
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          currentTranscript += event.results[i][0].transcript;
+        }
+        setTranscript(currentTranscript);
+        
+        // Count filler words
+        const fillerMatches = currentTranscript.match(/\b(um|uh|like|you know)\b/gi);
+        if (fillerMatches) {
+          setFillerWords(fillerMatches.length);
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error", event.error);
+      };
+
+      recognitionRef.current = recognition;
+    } else {
+      console.warn("Speech Recognition not supported in this browser.");
+    }
+  }, []);
 
   // Timer
   useEffect(() => {
@@ -90,43 +198,102 @@ const AIInterviewSession: React.FC = () => {
   const handleStartAnswer = () => {
     setIsAnswering(true);
     setTimer(0);
+    setTranscript("");
+    setFillerWords(0);
+    setEyeContactScore(100);
+    totalFramesRef.current = 0;
+    lookingFramesRef.current = 0;
+    
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.start();
+      } catch (e) {
+        console.error("Could not start speech recognition:", e);
+      }
+    }
   };
 
-  const handleStopAnswer = () => {
+  const handleStopAnswer = async () => {
     setIsAnswering(false);
+    setIsProcessing(true);
+    
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+    
+    // Calculate local metrics
+    const finalPace = timer > 0 ? Math.round((transcript.split(" ").length / timer) * 60) : 0; 
+    // Normalized pace score (ideal pace is ~130-150 wpm)
+    let paceScore = 100;
+    if (finalPace < 100) paceScore = Math.max(0, 100 - (100 - finalPace));
+    if (finalPace > 180) paceScore = Math.max(0, 100 - (finalPace - 180));
+    
+    // Send to Edge Function to score the transcript using Groq
+    let confidenceScore = 50;
+    let voiceClarityScore = 50;
+    let aiFeedback = "No feedback generated.";
+    
+    try {
+      if (transcript.trim().length > 5) {
+        const { data, error } = await supabase.functions.invoke('score-interview', {
+          body: { question: questions[currentQuestion], transcript }
+        });
+        
+        if (error) throw error;
+        
+        if (data && data.confidence !== undefined) {
+           confidenceScore = data.confidence;
+           voiceClarityScore = data.voiceClarity;
+           aiFeedback = data.feedback || aiFeedback;
+        }
+      }
+    } catch (err) {
+      console.error("Error scoring interview with AI", err);
+    }
+
+    const finalMetrics = {
+      eyeContact: eyeContactScore,
+      voiceClarity: voiceClarityScore,
+      pace: paceScore,
+      confidence: confidenceScore,
+      fillerWords: fillerWords,
+      feedback: aiFeedback,
+    };
+
+    // Calculate weakest area
+    let weakestArea = 'eyeContact';
+    let lowestScore = finalMetrics.eyeContact;
+    
+    Object.entries(finalMetrics).forEach(([key, value]) => {
+      if (key !== 'fillerWords' && value < lowestScore) {
+        lowestScore = value;
+        weakestArea = key;
+      }
+    });
+
+    // Log REAL completion event to database
+    await eventService.logEvent(
+      EVENT_TYPES.INTERVIEW_COMPLETED,
+      {
+        ...finalMetrics,
+        weakest_area: weakestArea,
+        interview_type: type,
+        transcript_length: transcript.length
+      },
+      FEATURES.PREPARE_FUTURE
+    );
+    
     setTimeout(async () => {
+      setIsProcessing(false);
       if (currentQuestion < questions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
+        setTranscript(""); 
       } else {
-        // Interview complete, calculate weakest area
-        let weakestArea = 'eyeContact';
-        let lowestScore = metrics.eyeContact;
-        
-        Object.entries(metrics).forEach(([key, value]) => {
-          // fillerWords is lower is better, so we evaluate it differently if we wanted to
-          // for simplicity, we look at the positive metrics
-          if (key !== 'fillerWords' && value < lowestScore) {
-            lowestScore = value;
-            weakestArea = key;
-          }
-        });
-
-        // Log completion event
-        await eventService.logEvent(
-          EVENT_TYPES.INTERVIEW_COMPLETED,
-          {
-            ...metrics,
-            weakest_area: weakestArea,
-            interview_type: type
-          },
-          FEATURES.PREPARE_FUTURE
-        );
-
         // go to report
         navigate(`/interview-practice/${type}/report`, {
-          state: { finalMetrics: metrics, totalTime: timer },
+          state: { finalMetrics: finalMetrics, totalTime: timer },
         });
-        stopStream(); // Stop the stream when interview is complete
+        stopStream();
       }
     }, 1000);
   };
@@ -221,19 +388,16 @@ const AIInterviewSession: React.FC = () => {
                   <div className="flex-1 bg-black/70 backdrop-blur-sm rounded-lg px-3 py-2">
                     <div className="flex items-center gap-2 text-white text-xs">
                       <Eye className="w-4 h-4" />
-                      <span className="font-medium">Eye Contact</span>
-                      <span className={`ml-auto ${getMetricColor(metrics.eyeContact)}`}>
-                        {Math.round(metrics.eyeContact)}%
+                      <span className="font-medium">Live Eye Contact</span>
+                      <span className={`ml-auto ${getMetricColor(eyeContactScore)}`}>
+                        {eyeContactScore}%
                       </span>
                     </div>
                   </div>
                   <div className="flex-1 bg-black/70 backdrop-blur-sm rounded-lg px-3 py-2">
                     <div className="flex items-center gap-2 text-white text-xs">
                       <Volume2 className="w-4 h-4" />
-                      <span className="font-medium">Voice</span>
-                      <span className={`ml-auto ${getMetricColor(metrics.voiceClarity)}`}>
-                        {Math.round(metrics.voiceClarity)}%
-                      </span>
+                      <span className="font-medium">Analyzing Voice...</span>
                     </div>
                   </div>
                 </div>
@@ -254,7 +418,7 @@ const AIInterviewSession: React.FC = () => {
                     {questions[currentQuestion]}
                   </p>
                   
-                  {!isAnswering ? (
+                  {!isAnswering && !isProcessing ? (
                     <Button
                       onClick={handleStartAnswer}
                       className="bg-gradient-to-r from-brand-ink to-brand-darkgreen"
@@ -262,14 +426,22 @@ const AIInterviewSession: React.FC = () => {
                       <Mic className="w-4 h-4 mr-2" />
                       Start Answering
                     </Button>
-                  ) : (
+                  ) : isAnswering ? (
                     <Button
                       onClick={handleStopAnswer}
                       className="bg-red-500 hover:bg-red-600"
                     >
-                      Stop & Next Question
+                      Stop & Score Transcript
+                    </Button>
+                  ) : (
+                    <Button disabled className="bg-brand-slate/50">
+                      Processing with AI...
                     </Button>
                   )}
+                  {/* Debug Transcript Output */}
+                  <div className="mt-4 p-3 bg-white/50 rounded text-sm text-brand-slate italic h-24 overflow-y-auto">
+                    {transcript || "Speak to see your transcript..."}
+                  </div>
                 </div>
               </div>
             </Card>
@@ -284,9 +456,8 @@ const AIInterviewSession: React.FC = () => {
                       Real-time Tip
                     </h4>
                     <p className="text-sm text-brand-slate">
-                      {metrics.eyeContact < 70 && "Try to maintain more eye contact with the camera."}
-                      {metrics.eyeContact >= 70 && metrics.pace < 75 && "Great eye contact! Try to speak at a steady pace."}
-                      {metrics.eyeContact >= 70 && metrics.pace >= 75 && "Excellent! Keep up the confident delivery."}
+                      {eyeContactScore < 70 && "Try to maintain more eye contact with the camera."}
+                      {eyeContactScore >= 70 && "Excellent eye contact! Keep up the confident delivery."}
                     </p>
                   </div>
                 </div>
@@ -301,6 +472,7 @@ const AIInterviewSession: React.FC = () => {
               <h3 className="text-lg font-bold text-brand-ink mb-4">
                 Live Performance Metrics
               </h3>
+              <p className="text-xs text-brand-slate mb-4">Pace, Confidence, and Voice Clarity are scored by AI after you finish answering.</p>
               <div className="space-y-4">
                 {/* Eye Contact */}
                 <div>
@@ -309,71 +481,14 @@ const AIInterviewSession: React.FC = () => {
                       <Eye className="w-4 h-4 text-brand-darkgreen" />
                       <span className="text-sm font-medium">Eye Contact</span>
                     </div>
-                    <span className={`text-sm font-bold ${getMetricColor(metrics.eyeContact)}`}>
-                      {Math.round(metrics.eyeContact)}%
+                    <span className={`text-sm font-bold ${getMetricColor(eyeContactScore)}`}>
+                      {eyeContactScore}%
                     </span>
                   </div>
                   <div className="w-full rounded-full h-2 bg-brand-slate/10">
                     <div
-                      className={`h-2 rounded-full transition-all duration-500 ${getMetricBg(metrics.eyeContact)}`}
-                      style={{ width: `${metrics.eyeContact}%` }}
-                    ></div>
-                  </div>
-                </div>
-
-                {/* Voice Clarity */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Volume2 className="w-4 h-4 text-brand-darkgreen" />
-                      <span className="text-sm font-medium">Voice Clarity</span>
-                    </div>
-                    <span className={`text-sm font-bold ${getMetricColor(metrics.voiceClarity)}`}>
-                      {Math.round(metrics.voiceClarity)}%
-                    </span>
-                  </div>
-                  <div className="w-full rounded-full h-2 bg-brand-slate/10">
-                    <div
-                      className={`h-2 rounded-full transition-all duration-500 ${getMetricBg(metrics.voiceClarity)}`}
-                      style={{ width: `${metrics.voiceClarity}%` }}
-                    ></div>
-                  </div>
-                </div>
-
-                {/* Pace */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-brand-darkgreen" />
-                      <span className="text-sm font-medium">Speaking Pace</span>
-                    </div>
-                    <span className={`text-sm font-bold ${getMetricColor(metrics.pace)}`}>
-                      {Math.round(metrics.pace)}%
-                    </span>
-                  </div>
-                  <div className="w-full rounded-full h-2 bg-brand-slate/10">
-                    <div
-                      className={`h-2 rounded-full transition-all duration-500 ${getMetricBg(metrics.pace)}`}
-                      style={{ width: `${metrics.pace}%` }}
-                    ></div>
-                  </div>
-                </div>
-
-                {/* Confidence */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-brand-darkgreen" />
-                      <span className="text-sm font-medium">Confidence</span>
-                    </div>
-                    <span className={`text-sm font-bold ${getMetricColor(metrics.confidence)}`}>
-                      {Math.round(metrics.confidence)}%
-                    </span>
-                  </div>
-                  <div className="w-full rounded-full h-2 bg-brand-slate/10">
-                    <div
-                      className={`h-2 rounded-full transition-all duration-500 ${getMetricBg(metrics.confidence)}`}
-                      style={{ width: `${metrics.confidence}%` }}
+                      className={`h-2 rounded-full transition-all duration-500 ${getMetricBg(eyeContactScore)}`}
+                      style={{ width: `${eyeContactScore}%` }}
                     ></div>
                   </div>
                 </div>
@@ -383,10 +498,10 @@ const AIInterviewSession: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4 text-yellow-600" />
-                      <span className="text-sm font-medium">Filler Words</span>
+                      <span className="text-sm font-medium">Live Filler Words</span>
                     </div>
                     <span className="text-sm font-bold text-yellow-600">
-                      {metrics.fillerWords}
+                      {fillerWords}
                     </span>
                   </div>
                   <p className="text-xs text-brand-slate mt-1">

@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AppState, College, Major, Goal, JourneyNode, UserProfile } from '../types';
 import { initialMockState } from '../data/mockDatabase';
+import { eventService } from '../services/eventService';
+import { EVENT_TYPES, FEATURES } from '../lib/constants';
 
 interface AppContextType {
   state: AppState;
@@ -77,13 +79,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ...prev,
       goals: [...prev.goals, goal]
     }));
+    eventService.logEvent(EVENT_TYPES.GOAL_SET, { title: goal.title, category: goal.category }, FEATURES.STUDY_SUCCEED);
   };
 
   const updateGoalStatus = (goalId: string, status: Goal['status']) => {
-    setState(prev => ({
-      ...prev,
-      goals: prev.goals.map(g => g.id === goalId ? { ...g, status } : g)
-    }));
+    setState(prev => {
+      const updatedGoals = prev.goals.map(g => g.id === goalId ? { ...g, status } : g);
+      const goal = updatedGoals.find(g => g.id === goalId);
+      if (goal && status === 'completed') {
+        eventService.logEvent(EVENT_TYPES.MILESTONE_REACHED, { title: goal.title, type: 'goal_completed' }, FEATURES.STUDY_SUCCEED);
+      }
+      return { ...prev, goals: updatedGoals };
+    });
   };
 
   const deleteGoal = (goalId: string) => {
