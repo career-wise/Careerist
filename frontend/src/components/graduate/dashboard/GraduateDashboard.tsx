@@ -15,7 +15,7 @@ import ResumeBuilder from "../resources/ResumeBuilder";
 import SkillGapAnalyzer from "../skills/SkillGapAnalyzer";
 import BasicTechSkills from "../../student/learn&develop/BasicTechSkills";
 import SoftSkills from "../../student/learn&develop/SoftSkills";
-import OnlineCourses from "../../student/learn&develop/OnlineCourses";
+import OnlineCourses from "../../student/study&succeed/OnlineCourses";
 import ProjectIdeas from "../../student/learn&develop/ProjectIdeas";
 
 const GraduateDashboard: React.FC = () => {

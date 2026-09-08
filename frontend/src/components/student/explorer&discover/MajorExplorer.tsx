@@ -28,7 +28,7 @@ import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
 import RecommendationsBanner from "../../shared/RecommendationsBanner";
 import { FEATURES } from "../../../lib/constants";
-import { Recommendation } from "../../../services/recommendationService";
+import { Recommendation, recommendationService } from "../../../services/recommendationService";
 
 import { useAppContext } from "../../../contexts/AppContext";
 
@@ -36,16 +36,52 @@ const MajorExplorer: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [activeRecs, setActiveRecs] = useState<Recommendation[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
   const { state, toggleShortlistedMajor } = useAppContext();
   const savedMajors = state.shortlistedMajors.map(m => m.name);
 
-  const majors = [
+  const fetchRecommendations = async () => {
+    const data = await recommendationService.getActiveRecommendations(FEATURES.EXPLORER);
+    setActiveRecs(data);
+  };
+
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    try {
+      await recommendationService.generateExplorerPicks();
+      await fetchRecommendations();
+    } catch (err: any) {
+      console.error(err);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const MAJOR_IMAGES = [
+    "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop&q=80",
+  ];
+
+  const MAJOR_ICONS = [
+    <Monitor key="monitor" className="w-8 h-8 text-brand-neon" />,
+    <PieChart key="pie" className="w-8 h-8 text-brand-darkgreen" />,
+    <Briefcase key="briefcase" className="w-8 h-8 text-brand-ink" />,
+    <Brain key="brain" className="w-8 h-8 text-brand-neon" />,
+    <Settings key="settings" className="w-8 h-8 text-brand-darkgreen" />,
+    <Activity key="activity" className="w-8 h-8 text-brand-ink" />
+  ];
+
+  const fallbackMajors = [
     {
       name: "Computer Science",
       category: "STEM",
       description: "Study algorithms, programming, and computational systems to build the future of technology",
-      averageSalary: "$125,000",
-      entryLevelSalary: "$85,000",
+      averageSalary: "₹12,00,000",
+      entryLevelSalary: "₹6,00,000",
       jobGrowth: "+22%",
       difficulty: "High",
       timeToComplete: "4 years",
@@ -69,8 +105,8 @@ const MajorExplorer: React.FC = () => {
       name: "Data Science & Analytics",
       category: "STEM",
       description: "Transform data into actionable insights using statistics, machine learning, and visualization",
-      averageSalary: "$115,000",
-      entryLevelSalary: "$75,000",
+      averageSalary: "₹14,00,000",
+      entryLevelSalary: "₹8,00,000",
       jobGrowth: "+36%",
       difficulty: "High",
       timeToComplete: "4 years",
@@ -94,11 +130,11 @@ const MajorExplorer: React.FC = () => {
       name: "Business Administration",
       category: "Business",
       description: "Master management, finance, and organizational leadership to drive business success",
-      averageSalary: "$95,000",
-      entryLevelSalary: "$55,000",
+      averageSalary: "₹9,00,000",
+      entryLevelSalary: "₹4,50,000",
       jobGrowth: "+8%",
       difficulty: "Medium",
-      timeToComplete: "4 years",
+      timeToComplete: "3-4 years",
       careers: [
         "Business Manager",
         "Management Consultant",
@@ -119,11 +155,11 @@ const MajorExplorer: React.FC = () => {
       name: "Psychology",
       category: "Social Sciences",
       description: "Understand human behavior, mental processes, and emotional wellness to help others thrive",
-      averageSalary: "$82,000",
-      entryLevelSalary: "$48,000",
+      averageSalary: "₹6,00,000",
+      entryLevelSalary: "₹3,50,000",
       jobGrowth: "+6%",
       difficulty: "Medium",
-      timeToComplete: "4 years",
+      timeToComplete: "3-4 years",
       careers: [
         "Clinical Psychologist",
         "Counselor",
@@ -150,8 +186,8 @@ const MajorExplorer: React.FC = () => {
       name: "Mechanical Engineering",
       category: "Engineering",
       description: "Design, analyze, and manufacture mechanical systems from robotics to renewable energy",
-      averageSalary: "$95,000",
-      entryLevelSalary: "$68,000",
+      averageSalary: "₹7,00,000",
+      entryLevelSalary: "₹4,00,000",
       jobGrowth: "+4%",
       difficulty: "High",
       timeToComplete: "4 years",
@@ -175,8 +211,8 @@ const MajorExplorer: React.FC = () => {
       name: "Nursing",
       category: "Healthcare",
       description: "Provide essential patient care and promote health and wellness in clinical settings",
-      averageSalary: "$77,000",
-      entryLevelSalary: "$60,000",
+      averageSalary: "₹5,00,000",
+      entryLevelSalary: "₹3,00,000",
       jobGrowth: "+9%",
       difficulty: "High",
       timeToComplete: "4 years",
@@ -200,7 +236,17 @@ const MajorExplorer: React.FC = () => {
 
   const categories = ["All", "STEM", "Business", "Social Sciences", "Engineering", "Healthcare", "Arts", "Humanities"];
 
-  const filteredMajors = majors.filter(
+  const activeMajorRecs = activeRecs.filter(r => r.type === 'major');
+  
+  const displayMajors = activeMajorRecs.length > 0
+    ? activeMajorRecs.map((rec, index) => ({
+        ...rec.payload,
+        image: MAJOR_IMAGES[index % MAJOR_IMAGES.length],
+        icon: MAJOR_ICONS[index % MAJOR_ICONS.length]
+      }))
+    : fallbackMajors;
+
+  const filteredMajors = displayMajors.filter(
     (major) =>
       (selectedCategory === "all" || major.category.toLowerCase() === selectedCategory.toLowerCase()) &&
       (major.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -256,8 +302,19 @@ const MajorExplorer: React.FC = () => {
                 </div>
                 <span className="text-lg font-bold ml-4">Computer Science</span>
               </div>
-              <Button className="w-full bg-brand-neon text-brand-ink hover:bg-brand-mist hover:text-brand-ink transition-colors font-semibold border-none">
-                Take Assessment
+              <Button 
+                onClick={handleGenerate}
+                disabled={isGenerating}
+                className="w-full bg-brand-neon text-brand-ink hover:bg-brand-mist hover:text-brand-ink transition-colors font-semibold border-none"
+              >
+                {isGenerating ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-brand-ink border-t-transparent rounded-full animate-spin"></div>
+                    Generating...
+                  </span>
+                ) : (
+                  "Take Assessment"
+                )}
               </Button>
             </div>
           </div>

@@ -6,7 +6,7 @@ Replace placeholder/simulated interview metrics with a true, real-time telemetry
 ## Core Technologies
 - **Speech Recognition**: Browser-native `window.webkitSpeechRecognition` or `window.SpeechRecognition`.
 - **Eye-Contact/Head Pose**: MediaPipe Tasks Vision (`@mediapipe/tasks-vision`) `FaceLandmarker`.
-- **Content Scoring**: Groq (Llama 3) via Supabase Edge Function.
+- **Content Scoring**: Groq (`openai/gpt-oss-120b`) via Supabase Edge Function.
 
 ## Architecture
 

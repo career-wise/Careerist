@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import astronautImage from "../../../assets/images/astronaut.png";
 
 const Hero: React.FC = () => {
@@ -12,25 +12,26 @@ const Hero: React.FC = () => {
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           <div className="lg:col-span-7">
+
             {/* Huge Headline */}
-            <h1 className="text-6xl sm:text-7xl lg:text-[6rem] font-display font-bold text-brand-ink leading-[0.9] tracking-tight mb-8">
-              FIND YOUR <br />
-              CAREER <br />
-              CLARITY.
+            <h1 className="text-5xl sm:text-7xl lg:text-[5.5rem] font-display font-bold text-brand-ink leading-[1] tracking-tight mb-8">
+              OUTSMART <br />
+              YOUR <br />
+              CAREER.
             </h1>
             
             <p className="text-xl sm:text-2xl text-brand-slate font-medium max-w-lg mb-10">
-              The AI guide that helps you navigate from high school straight through to your dream job.
+              Stop guessing. Use AI to discover the best colleges in India, generate ATS-beating resumes, and ace technical interviews.
             </p>
             
             {/* Honest CTA */}
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <Link 
                 to="/auth" 
-                className="group relative flex items-center justify-center bg-brand-ink text-brand-mist px-8 py-4 rounded-full text-lg font-bold hover:bg-brand-neon hover:text-brand-ink transition-all duration-300 w-full sm:w-auto overflow-hidden"
+                className="group relative flex items-center justify-center bg-brand-ink text-brand-mist px-8 py-4 rounded-full text-lg font-bold hover:bg-brand-neon hover:text-brand-ink transition-all duration-300 w-full sm:w-auto overflow-hidden shadow-xl hover:shadow-2xl"
               >
                 <span className="relative z-10 flex items-center">
-                  Start your career journey
+                  Accelerate Your Career Now
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Link>

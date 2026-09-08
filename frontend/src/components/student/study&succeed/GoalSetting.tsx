@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
  Target, 
  Plus, 
@@ -24,22 +24,43 @@ import Button from "../../shared/ui/Button";
 import Input from "../../shared/ui/Input";
 import RecommendationsBanner from "../../shared/RecommendationsBanner";
 
-const getRelativeTimeLabel = (daysAhead: number) => {
- if (daysAhead < 0) return "Completed";
- if (daysAhead === 0) return "Due Today";
- if (daysAhead < 7) return `In ${daysAhead} days`;
- if (daysAhead < 30) return `In ${Math.floor(daysAhead / 7)} weeks`;
- return `In ${Math.floor(daysAhead / 30)} months`;
-};
 
-import { useAppContext } from "../../../contexts/AppContext";
+
+import { eventService } from "../../../services/eventService";
+import { goalService } from "../../../services/goalService";
+import { EVENT_TYPES, FEATURES } from "../../../lib/constants";
+import { Goal } from "../../../types";
 
 export const GoalSetting: React.FC = () => {
- const [showAddGoal, setShowAddGoal] = useState(false);
- const [selectedCategory, setSelectedCategory] = useState("all");
+  const [showAddGoal, setShowAddGoal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [goals, setGoals] = useState<Goal[]>([]);
 
- const { state, addGoal, updateGoalStatus, deleteGoal } = useAppContext();
- const goals = state.goals;
+  useEffect(() => {
+    loadGoals();
+  }, []);
+
+  const loadGoals = async () => {
+    const fetchedGoals = await goalService.fetchGoals();
+    setGoals(fetchedGoals);
+  };
+
+  const handleAddGoal = async (newGoal: Partial<Goal>) => {
+    const created = await goalService.createGoal(newGoal);
+    if (created) {
+      await loadGoals();
+      eventService.logEvent(EVENT_TYPES.GOAL_SET, { title: created.title, category: created.category }, FEATURES.STUDY_SUCCEED);
+      setShowAddGoal(false);
+    }
+  };
+
+
+  const handleDeleteGoal = async (goalId: string) => {
+    const success = await goalService.deleteGoal(goalId);
+    if (success) {
+      await loadGoals();
+    }
+  };
 
  const categories = [
  { id: "all", name: "All Goals", icon: Target },
@@ -103,7 +124,9 @@ export const GoalSetting: React.FC = () => {
  },
  {
  label: "Avg Progress",
- value: `${Math.round(goals.reduce((acc, g) => acc + g.progress, 0) / goals.length)}%`,
+ value: `${Math.round(
+        goals.length ? goals.reduce((acc, g) => acc + (g.progress || 0), 0) / goals.length : 0
+      )}%`,
  icon: TrendingUp,
  bgColor: "bg-brand-darkgreen/10",
  iconColor: "text-brand-darkgreen"
@@ -180,7 +203,7 @@ export const GoalSetting: React.FC = () => {
  {filteredGoals.map((goal) => (
  <Card
  key={goal.id}
- className={`border-l-4 ${getPriorityColor(goal.priority)} border-y-brand-slate/10 border-r-brand-slate/10 hover:shadow-xl transition-all duration-300`}
+ className={`border-l-4 ${getPriorityColor(goal.priority || 'medium')} border-y-brand-slate/10 border-r-brand-slate/10 hover:shadow-xl transition-all duration-300`}
  >
  <div className="flex flex-col md:flex-row items-start justify-between gap-6 p-6">
  <div className="flex-1 w-full">
@@ -203,7 +226,7 @@ export const GoalSetting: React.FC = () => {
  </div>
  <div className="flex items-center bg-brand-mist px-3 py-1.5 rounded-lg border border-brand-slate/10">
  <TrendingUp className="h-4 w-4 mr-2 text-brand-darkgreen" />
- {goal.progress}%
+ {goal.progress || 0}%
  </div>
  <div className="flex items-center bg-brand-mist px-3 py-1.5 rounded-lg border border-brand-slate/10">
  <Flag className={`h-4 w-4 mr-2 ${
@@ -220,13 +243,13 @@ export const GoalSetting: React.FC = () => {
  className={`h-full rounded-full transition-all duration-1000 ${
  goal.status === "completed"
  ? "bg-brand-darkgreen"
- : goal.progress >= 75
+ : (goal.progress || 0) >= 75
  ? "bg-brand-neon"
- : goal.progress >= 50
+ : (goal.progress || 0) >= 50
  ? "bg-yellow-400"
  : "bg-red-400"
  }`}
- style={{ width: `${goal.progress}%` }}
+ style={{ width: `${goal.progress || 0}%` }}
  ></div>
  </div>
 
@@ -260,7 +283,7 @@ export const GoalSetting: React.FC = () => {
  <Button variant="outline" className="border-brand-slate/20 hover:bg-brand-mist text-brand-ink">
  <Edit className="h-4 w-4" />
  </Button>
- <Button variant="outline" className="border-red-200 text-red-500 hover:bg-red-50" onClick={() => deleteGoal(goal.id as string)}>
+ <Button variant="outline" className="border-red-200 text-red-500 hover:bg-red-50" onClick={() => handleDeleteGoal(goal.id as string)}>
  <Trash2 className="h-4 w-4" />
  </Button>
  </div>
@@ -388,33 +411,78 @@ export const GoalSetting: React.FC = () => {
  </div>
  </div>
 
- {/* Add Goal Modal Placeholder */}
  {showAddGoal && (
- <div className="fixed inset-0 bg-brand-ink/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
- <Card className="max-w-md w-full border-none shadow-2xl bg-white overflow-hidden">
- <div className="bg-brand-mist p-6 flex items-center justify-between border-b border-brand-slate/10">
- <h3 className="text-xl font-bold text-brand-ink flex items-center gap-2">
- <Target className="w-5 h-5 text-brand-neon" />
- Add New Goal
- </h3>
- <button
- onClick={() => setShowAddGoal(false)}
- className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white text-brand-slate hover:text-brand-ink transition-colors"
- >
- ×
- </button>
- </div>
- <div className="p-6">
- <p className="text-brand-slate mb-8 font-medium">
- Goal creation form will be implemented here. For now, you can explore the existing goals and templates.
- </p>
- <Button onClick={() => setShowAddGoal(false)} className="w-full bg-brand-ink hover:bg-brand-darkgreen text-white font-bold py-3">
- Close
- </Button>
- </div>
- </Card>
- </div>
- )}
+  <div className="fixed inset-0 bg-brand-ink/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  <Card className="max-w-md w-full border-none shadow-2xl bg-white overflow-hidden">
+  <div className="bg-brand-mist p-6 flex items-center justify-between border-b border-brand-slate/10">
+  <h3 className="text-xl font-bold text-brand-ink flex items-center gap-2">
+  <Target className="w-5 h-5 text-brand-neon" />
+  Add New Goal
+  </h3>
+  <button
+  onClick={() => setShowAddGoal(false)}
+  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white text-brand-slate hover:text-brand-ink transition-colors"
+  >
+  ×
+  </button>
+  </div>
+  <form onSubmit={(e) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    handleAddGoal({
+      title: formData.get("title") as string,
+      description: formData.get("description") as string,
+      category: formData.get("category") as string,
+      priority: formData.get("priority") as string,
+      dueDate: formData.get("dueDate") as string,
+    });
+  }}>
+    <div className="p-6 space-y-4">
+      <div>
+        <label className="block text-sm font-semibold text-brand-ink mb-1">Title</label>
+        <Input name="title" required placeholder="e.g. Maintain 3.8 GPA" />
+      </div>
+      <div>
+        <label className="block text-sm font-semibold text-brand-ink mb-1">Description</label>
+        <textarea name="description" required className="w-full rounded-xl border border-brand-slate/20 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-neon focus:border-brand-neon transition-all" rows={3} placeholder="Briefly describe your goal..."></textarea>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-semibold text-brand-ink mb-1">Category</label>
+          <select name="category" required className="w-full rounded-xl border border-brand-slate/20 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-neon bg-white">
+            <option value="academic">Academic</option>
+            <option value="skill">Skill</option>
+            <option value="personal">Personal</option>
+            <option value="career">Career</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-brand-ink mb-1">Priority</label>
+          <select name="priority" required className="w-full rounded-xl border border-brand-slate/20 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-neon bg-white">
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label className="block text-sm font-semibold text-brand-ink mb-1">Target Date</label>
+        <Input type="date" name="dueDate" required />
+      </div>
+      
+      <div className="pt-4 flex gap-3">
+        <Button type="button" variant="outline" onClick={() => setShowAddGoal(false)} className="flex-1">
+          Cancel
+        </Button>
+        <Button type="submit" className="flex-1 bg-brand-ink hover:bg-brand-darkgreen text-white font-bold">
+          Save Goal
+        </Button>
+      </div>
+    </div>
+  </form>
+  </Card>
+  </div>
+  )}
  </div>
  </div>
  );

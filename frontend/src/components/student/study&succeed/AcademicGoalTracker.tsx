@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Target,
   Plus,
@@ -15,67 +15,22 @@ import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
 import RecommendationsBanner from "../../shared/RecommendationsBanner";
 
-const getRelativeTimeLabel = (daysAhead: number) => {
-  if (daysAhead < 0) return "Completed";
-  if (daysAhead === 0) return "Due Today";
-  if (daysAhead < 7) return `In ${daysAhead} days`;
-  if (daysAhead < 30) return `In ${Math.floor(daysAhead / 7)} weeks`;
-  return `In ${Math.floor(daysAhead / 30)} months`;
-};
+
+
+import { goalService } from "../../../services/goalService";
+import { Goal } from "../../../types";
 
 const AcademicGoalTracker: React.FC = () => {
-  const [goals, setGoals] = useState([
-    {
-      id: 1,
-      title: "Maintain 3.8 GPA",
-      description: "Keep my cumulative GPA above 3.8 for college applications",
-      category: "GPA",
-      targetLabel: getRelativeTimeLabel(45),
-      progress: 85,
-      status: "in-progress",
-      priority: "high",
-    },
-    {
-      id: 2,
-      title: "Complete AP Chemistry",
-      description: "Finish AP Chemistry with a grade of A- or better",
-      category: "Course",
-      targetLabel: getRelativeTimeLabel(30),
-      progress: 70,
-      status: "in-progress",
-      priority: "high",
-    },
-    {
-      id: 3,
-      title: "SAT Score 1450+",
-      description: "Achieve a SAT score of 1450 or higher",
-      category: "Test Prep",
-      targetLabel: getRelativeTimeLabel(-10),
-      progress: 100,
-      status: "completed",
-      priority: "high",
-    },
-    {
-      id: 4,
-      title: "Complete 40 Community Service Hours",
-      description: "Volunteer at local animal shelter and food bank",
-      category: "Extracurricular",
-      targetLabel: getRelativeTimeLabel(15),
-      progress: 60,
-      status: "in-progress",
-      priority: "medium",
-    },
-    {
-      id: 5,
-      title: "Join National Honor Society",
-      description: "Meet requirements and apply for NHS membership",
-      category: "Achievement",
-      targetLabel: getRelativeTimeLabel(-20),
-      progress: 90,
-      status: "in-progress",
-      priority: "medium",
-    },
-  ]);
+  const [goals, setGoals] = useState<Goal[]>([]);
+  
+  useEffect(() => {
+    loadGoals();
+  }, []);
+
+  const loadGoals = async () => {
+    const fetchedGoals = await goalService.fetchGoals();
+    setGoals(fetchedGoals);
+  };
 
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [activeFilter, setActiveFilter] = useState("all");
@@ -131,7 +86,7 @@ const AcademicGoalTracker: React.FC = () => {
     {
       label: "Avg Progress",
       value: `${Math.round(
-        goals.reduce((acc, g) => acc + g.progress, 0) / goals.length
+        goals.length ? goals.reduce((acc, g) => acc + (g.progress || 0), 0) / goals.length : 0
       )}%`,
       icon: TrendingUp,
       bgColor: "bg-brand-darkgreen/10",
@@ -224,7 +179,7 @@ const AcademicGoalTracker: React.FC = () => {
           {filteredGoals.map((goal) => (
             <Card
               key={goal.id}
-              className={`border-l-4 ${getPriorityColor(goal.priority)} border-y-brand-slate/10 border-r-brand-slate/10 hover:shadow-xl transition-all duration-300`}
+              className={`border-l-4 ${getPriorityColor(goal.priority || 'medium')} border-y-brand-slate/10 border-r-brand-slate/10 hover:shadow-xl transition-all duration-300`}
             >
               <div className="flex flex-col md:flex-row items-start justify-between gap-6 p-6">
                 <div className="flex-1 w-full">
@@ -253,7 +208,7 @@ const AcademicGoalTracker: React.FC = () => {
                     </div>
                     <div className="flex items-center bg-brand-mist px-3 py-1.5 rounded-lg border border-brand-slate/10">
                       <TrendingUp className="h-4 w-4 mr-2 text-brand-darkgreen" />
-                      {goal.progress}%
+                      {goal.progress || 0}%
                     </div>
                   </div>
 
@@ -263,13 +218,13 @@ const AcademicGoalTracker: React.FC = () => {
                       className={`h-full rounded-full transition-all duration-1000 ${
                         goal.status === "completed"
                           ? "bg-brand-darkgreen"
-                          : goal.progress >= 75
+                          : (goal.progress || 0) >= 75
                           ? "bg-brand-neon"
-                          : goal.progress >= 50
+                          : (goal.progress || 0) >= 50
                           ? "bg-yellow-400"
                           : "bg-red-400"
                       }`}
-                      style={{ width: `${goal.progress}%` }}
+                      style={{ width: `${goal.progress || 0}%` }}
                     ></div>
                   </div>
                 </div>

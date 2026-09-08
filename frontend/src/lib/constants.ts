@@ -14,6 +14,8 @@ export const RECOMMENDATION_TYPES = {
   ACTION_ITEM: 'action_item',
   MOTIVATIONAL_NUDGE: 'motivational_nudge',
   GOAL_SUGGESTION: 'goal_suggestion',
+  COLLEGE: 'college',
+  MAJOR: 'major',
 } as const;
 
 export type RecommendationType = typeof RECOMMENDATION_TYPES[keyof typeof RECOMMENDATION_TYPES];

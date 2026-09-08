@@ -1,28 +1,28 @@
 import React from "react";
-import { Mic, Target, TrendingUp, CheckCircle, ArrowRight } from "lucide-react";
+import { FileText, Target, Mic, CheckCircle, ArrowRight, Brain, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Features: React.FC = () => {
  const features = [
  {
- icon: <Mic className="w-10 h-10 text-brand-ink" />,
- title: "AI Interview Practice",
- description: "Nail your next interview with realistic AI mock sessions. Get instant, actionable feedback on your answers, tone, and pacing before you face the real hiring manager.",
- bullets: ["Role-specific mock interviews", "Instant audio & text feedback", "Confidence scoring"],
- bgColor: "bg-white",
- },
- {
  icon: <Target className="w-10 h-10 text-brand-ink" />,
- title: "Career Discovery",
- description: "Stop guessing what to do next. Take our targeted assessments to uncover career paths that actually align with your unique interests and natural strengths.",
- bullets: ["Data-backed path matching", "Deep-dive industry insights", "Clear next steps"],
+ title: "AI College & Career Planner",
+ description: "Stop guessing what to do next. Get highly personalized recommendations for colleges, majors, and career paths in India based on your unique goals.",
+ bullets: ["Data-backed college picks", "Step-by-step career roadmaps", "Tailored to Indian institutions"],
  bgColor: "bg-white",
  },
  {
- icon: <TrendingUp className="w-10 h-10 text-brand-ink" />,
- title: "Goal & Skill Tracking",
- description: "Turn your ambitions into a concrete roadmap. Track your study hours, set critical milestones, and learn the exact skills needed to level up.",
- bullets: ["Personalized milestone maps", "Study hour tracking", "Skill gap analysis"],
+ icon: <FileText className="w-10 h-10 text-brand-ink" />,
+ title: "AI Resume Wizard",
+ description: "Write down rough notes, and our AI will rewrite them into professional, ATS-beating bullet points that showcase your true value to recruiters.",
+ bullets: ["Instant bullet point generation", "ATS-optimized formatting", "Export directly to PDF"],
+ bgColor: "bg-white",
+ },
+ {
+ icon: <Mic className="w-10 h-10 text-brand-ink" />,
+ title: "Dynamic AI Interviews",
+ description: "Practice makes perfect. Face an AI interviewer that dynamically generates questions based on your specific target role and resume.",
+ bullets: ["Role-specific dynamic questions", "Instant feedback on answers", "Confidence building"],
  bgColor: "bg-white",
  }
  ];
@@ -33,9 +33,9 @@ const Features: React.FC = () => {
  
  <div className="text-center mb-20">
  <h2 className="text-5xl md:text-6xl font-display font-bold text-brand-ink mb-6 uppercase tracking-tight">
- Everything you need <br />
+ Your complete <br />
  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-ink to-gray-500">
- to accelerate.
+ Career Toolkit.
  </span>
  </h2>
  <p className="text-xl text-brand-slate max-w-2xl mx-auto">

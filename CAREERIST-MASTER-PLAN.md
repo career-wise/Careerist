@@ -22,12 +22,12 @@ The one thing that makes this an actual product instead of a UI shell: **every f
 |---|---|---|
 | Frontend | Existing React/Vite/TS app | Already built, keep it |
 | Backend/DB | **Supabase** (Postgres + Auth + Storage + Row Level Security) | Already a listed dependency, generous free tier, no server to host/maintain |
-| AI | **Google Gemini API** (free tier, Flash model) | Best no-card standing free tier for reasoning/conversational quality; long context; good enough for career-guidance chat at MVP volume |
+| AI | **Groq** (`openai/gpt-oss-120b`) | Best free tier for reasoning/conversational quality; long context; good enough for career-guidance chat at MVP volume |
 | State (client) | Zustand (already installed, currently unused) | Local cache/session layer only — **Supabase is the source of truth**, Zustand just avoids refetching on every navigation |
 
 Do not build a custom FastAPI backend for v1. It means self-hosting somewhere with free-tier cold starts (Render/Railway), plus you'd be building auth/DB from scratch that Supabase gives you free. Not worth it at this stage.
 
-**Privacy note for later:** Gemini's free tier trains on submitted prompts by default. Fine for MVP testing; if this scales with real student PII, budget for the paid tier or strip identifying details before sending prompts.
+**Privacy note for later:** Groq's free tier trains on submitted prompts by default. Fine for MVP testing; if this scales with real student PII, budget for the paid tier or strip identifying details before sending prompts.
 
 ---
 
@@ -78,7 +78,7 @@ Based on actually reading the current code, not assuming.
 |---|---|---|
 | `lib/auth.ts` | Fully mocked, writes fake user to `localStorage`, no real backend | **Rebuild** — real Supabase auth |
 | Onboarding flow | Well-designed question flow, branches by persona, but answers only go to `localStorage` and are never read by dashboards | **Keep the flow/copy, rebuild persistence** — write to `profiles` table |
-| `ChatPage.tsx` | 100% hardcoded seed conversation + fake `setTimeout` canned reply, zero LLM calls | **Full rebuild** — real Gemini integration + function-calling to `events`/`recommendations` |
+| `ChatPage.tsx` | 100% hardcoded seed conversation + fake `setTimeout` canned reply, zero LLM calls | **Full rebuild** — real Groq (`openai/gpt-oss-120b`) integration + function-calling to `events`/`recommendations` |
 | `StudentDashboardHome.tsx` | Hardcoded fake `onboardingAnswers` object, ignores real profile entirely | **Rebuild** — must read from `profiles`/`recommendations`, not mock data |
 | College & Major Explorer | Not yet audited line-by-line | **Audit next pass** — likely keep the concept, but data source needs to become recommendation-driven instead of a static list |
 | Study & Succeed | Content quality unconfirmed by you — this was your explicit concern | **Dedicated content pass required** — don't guess at this in this document; needs its own audit session once architecture is in place |
@@ -108,7 +108,7 @@ Default card order on `GraduateDashboardHome`: if no resume on file → Resume B
 
 1. **Supabase setup** — schema for `profiles`, `events`, `recommendations`; real auth wiring (kills `lib/auth.ts` mock)
 2. **Onboarding → Auth → DB** — hook the flow directly to Supabase inserts
-3. **Real chat** — Gemini integration + function-calling to write `events`/`recommendations` (kills the fake `setTimeout` reply)
+3. **Real chat** — Groq (`openai/gpt-oss-120b`) integration + function-calling to write `events`/`recommendations` (kills the fake `setTimeout` reply)
 4. **Student dashboard → real data** — read from `profiles`/`recommendations`, kill hardcoded mock object
 5. - [x] **06: Chat Context & Function Calling** (Feeds persona and history to LLM; allows LLM to insert recommendations).
    - [x] **07: Interview Prep writes completion event** (Captures signals for dashboard).
@@ -123,4 +123,4 @@ Default card order on `GraduateDashboardHome`: if no resume on file → Resume B
 
 - Study & Succeed content — needs its own dedicated audit once you're ready; don't want to fabricate "proper content" without going through it deliberately.
 - College/Major Explorer — needs the same line-by-line read the other features got in Section 4.
-- Exact Gemini prompt/system design for the chat buddy's personality ("vigilant, intelligent, a friend") — worth its own pass once the function-calling plumbing exists.
+- Exact Groq (`openai/gpt-oss-120b`) prompt/system design for the chat buddy's personality ("vigilant, intelligent, a friend") — worth its own pass once the function-calling plumbing exists.

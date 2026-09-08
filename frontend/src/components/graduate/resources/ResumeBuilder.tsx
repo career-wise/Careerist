@@ -1,503 +1,341 @@
-import React, { useState, useEffect } from "react";
-import { Save, Printer, Plus, Trash2, ChevronRight, FileText } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
 import { authService } from "../../../lib/auth";
-import { profileService } from "../../../services/profileService";
+import { resumeService, ResumeData } from "../../../services/resumeService";
 import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
+import { CheckCircle, Wand2, Download, ChevronRight, ChevronLeft, Plus, Trash2 } from "lucide-react";
+import html2pdf from "html2pdf.js";
+import { profileService } from "../../../services/profileService";
+import { apiFetch } from "../../../lib/api";
 
-interface ResumeData {
-  basics: {
-    name: string;
-    email: string;
-    phone: string;
-    summary: string;
-  };
-  experience: {
-    id: string;
-    company: string;
-    position: string;
-    startDate: string;
-    endDate: string;
-    description: string;
-  }[];
-  education: {
-    id: string;
-    institution: string;
-    degree: string;
-    year: string;
-  }[];
-  skills: string;
-}
-
-const defaultResume: ResumeData = {
-  basics: { name: "", email: "", phone: "", summary: "" },
-  experience: [],
-  education: [],
-  skills: "",
-};
+const STEPS = ["Experience", "Education", "Skills", "Projects", "AI Generate", "Preview & Export"];
 
 const ResumeBuilder: React.FC = () => {
-  const [data, setData] = useState<ResumeData>(defaultResume);
+  const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const resumeRef = useRef<HTMLDivElement>(null);
+
+  const [data, setData] = useState<ResumeData["content"]>({
+    workExperience: [],
+    education: [],
+    skills: "",
+    projects: []
+  });
+
+  const [aiDraft, setAiDraft] = useState<any>({
+    workExperience: [],
+    education: [],
+    skills: {},
+    projects: []
+  });
+
+  // Personal Info for the header (fetched from profile)
+  const [personalInfo, setPersonalInfo] = useState({ name: "", email: "", phone: "", targetRole: "" });
 
   useEffect(() => {
-    const loadResume = async () => {
+    const loadData = async () => {
       try {
         const session = await authService.getSession();
         if (session?.user) {
-          const profile = await profileService.getProfile(session.user.id);
-          if (profile?.onboarding_answers?.resumeData) {
-            setData(profile.onboarding_answers.resumeData);
+          // Load Profile for name/email
+          const profile = await profileService.getProfile('');
+          if (profile) {
+            setPersonalInfo({
+              name: profile.onboarding_answers?.full_name || profile.full_name || "Your Name",
+              email: session.user.email || "",
+              phone: profile.onboarding_answers?.phone || "",
+              targetRole: profile.onboarding_answers?.target_role || "Software Engineer"
+            });
+          }
+
+          const savedResume = await resumeService.getResume(session.user.id);
+          if (savedResume && savedResume.content) {
+            setData(savedResume.content);
+            setAiDraft(savedResume.content);
+            // If they already have content, skip to preview
+            if (savedResume.content.workExperience?.length > 0) {
+              setCurrentStep(5); // Skip to Preview
+            }
           }
         }
       } catch (err) {
         console.error("Failed to load resume", err);
       } finally {
         setLoading(false);
-        setIsDirty(false);
       }
     };
-    loadResume();
+    loadData();
   }, []);
 
-  // Autosave effect
-  useEffect(() => {
-    if (!isDirty || loading) return;
-    
-    const handler = setTimeout(() => {
-      handleSave(true);
-    }, 1500);
-    
-    return () => clearTimeout(handler);
-  }, [data, isDirty, loading]);
+  const handleNext = () => setCurrentStep((prev) => Math.min(prev + 1, STEPS.length - 1));
+  const handlePrev = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
 
-  const handleSave = async (isAutosave = false) => {
-    if (!isAutosave) setSaving(true);
+  const addField = (field: "workExperience" | "education" | "projects", template: any) => {
+    setData((prev) => ({ ...prev, [field]: [...prev[field], template] }));
+  };
+
+  const updateField = (field: "workExperience" | "education" | "projects", index: number, key: string, value: string) => {
+    const newList = [...data[field]];
+    newList[index][key] = value;
+    setData((prev) => ({ ...prev, [field]: newList }));
+  };
+
+  const removeField = (field: "workExperience" | "education" | "projects", index: number) => {
+    setData((prev) => ({ ...prev, [field]: prev[field].filter((_, i) => i !== index) }));
+  };
+
+  const generateAIContent = async () => {
+    setIsGenerating(true);
     try {
       const session = await authService.getSession();
-      if (session?.user) {
-        const profile = await profileService.getProfile(session.user.id);
-        const newAnswers = {
-          ...(profile.onboarding_answers || {}),
-          resumeData: data,
-          resumeStatus: "Have one, ready to use" // Updates dashboard priorities
-        };
-        await profileService.saveOnboardingData(session.user.id, {
-          persona: profile.persona,
-          ...newAnswers
+      const token = session?.session?.access_token;
+      
+      const draft = { ...aiDraft };
+
+      // Helper to call Edge Function
+      const callGroq = async (section: string, rawText: string) => {
+        const response = await apiFetch('/chat/generate-resume-bullets', {
+          method: "POST",
+          body: JSON.stringify({ section, rawText })
         });
-        setLastSaved(new Date());
-        setIsDirty(false);
+        return response;
+      };
+
+      // Process Experience
+      if (data.workExperience.length > 0) {
+        draft.workExperience = await Promise.all(data.workExperience.map(async (exp) => {
+          const raw = `Role: ${exp.role} at ${exp.company}. Duration: ${exp.duration}. Notes: ${exp.notes}`;
+          const bullets = await callGroq("Experience", raw);
+          return { ...exp, bullets };
+        }));
       }
+
+      // Process Projects
+      if (data.projects.length > 0) {
+        draft.projects = await Promise.all(data.projects.map(async (proj) => {
+          const raw = `Project: ${proj.name}. Tech: ${proj.tech}. Notes: ${proj.notes}`;
+          const bullets = await callGroq("Projects", raw);
+          return { ...proj, bullets };
+        }));
+      }
+
+      // Process Education
+      if (data.education.length > 0) {
+        const rawEdu = data.education.map(e => `${e.degree} at ${e.institution}, ${e.duration}. ${e.notes}`).join(" | ");
+        draft.education = await callGroq("Education", rawEdu);
+      }
+
+      // Process Skills
+      if (data.skills) {
+        draft.skills = await callGroq("Skills", data.skills);
+      }
+
+      setAiDraft(draft);
+      
+      // Save to DB
+      await resumeService.saveResume(session!.user.id, draft);
+      setCurrentStep(5); // Go to preview
     } catch (err) {
-      console.error("Failed to save resume", err);
+      console.error(err);
+      alert("Failed to generate AI content.");
     } finally {
-      if (!isAutosave) setSaving(false);
+      setIsGenerating(false);
     }
   };
 
-  const updateBasics = (field: keyof ResumeData["basics"], value: string) => {
-    setIsDirty(true);
-    setData((prev) => ({ ...prev, basics: { ...prev.basics, [field]: value } }));
+  const exportPDF = () => {
+    if (!resumeRef.current) return;
+    const opt = {
+      margin: 10,
+      filename: 'Resume.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(resumeRef.current).save();
   };
 
-  const addExperience = () => {
-    setIsDirty(true);
-    setData((prev) => ({
-      ...prev,
-      experience: [
-        ...prev.experience,
-        { id: Date.now().toString(), company: "", position: "", startDate: "", endDate: "", description: "" },
-      ],
-    }));
-  };
-
-  const updateExperience = (id: string, field: string, value: string) => {
-    setIsDirty(true);
-    setData((prev) => ({
-      ...prev,
-      experience: prev.experience.map((exp) => (exp.id === id ? { ...exp, [field]: value } : exp)),
-    }));
-  };
-
-  const removeExperience = (id: string) => {
-    setIsDirty(true);
-    setData((prev) => ({
-      ...prev,
-      experience: prev.experience.filter((exp) => exp.id !== id),
-    }));
-  };
-
-  const addEducation = () => {
-    setIsDirty(true);
-    setData((prev) => ({
-      ...prev,
-      education: [
-        ...prev.education,
-        { id: Date.now().toString(), institution: "", degree: "", year: "" },
-      ],
-    }));
-  };
-
-  const updateEducation = (id: string, field: string, value: string) => {
-    setIsDirty(true);
-    setData((prev) => ({
-      ...prev,
-      education: prev.education.map((edu) => (edu.id === id ? { ...edu, [field]: value } : edu)),
-    }));
-  };
-
-  const removeEducation = (id: string) => {
-    setIsDirty(true);
-    setData((prev) => ({
-      ...prev,
-      education: prev.education.filter((edu) => edu.id !== id),
-    }));
-  };
-
-  if (loading) {
-    return <div className="p-8">Loading builder...</div>;
-  }
+  if (loading) return <div className="p-8 text-center text-brand-slate">Loading your resume...</div>;
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto min-h-screen">
-      {/* Header (hidden in print) */}
-      <div className="print:hidden flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <div>
-          <div className="flex items-center text-brand-slate text-sm font-medium mb-2">
-            <span>Resources</span>
-            <ChevronRight className="w-4 h-4 mx-2" />
-            <span className="text-brand-ink">Resume Builder</span>
-          </div>
-          <h1 className="text-3xl font-display font-bold text-brand-ink">Resume Builder</h1>
-          <p className="text-brand-slate mt-1">Create a professional resume and export as PDF.</p>
-        </div>
-        <div className="mt-4 md:mt-0 flex gap-3">
-          <Button variant="outline" onClick={() => window.print()}>
-            <Printer className="w-4 h-4 mr-2" />
-            Download PDF
-          </Button>
-          <div className="flex items-center gap-3">
-            {lastSaved && (
-              <span className="text-xs text-brand-slate font-medium hidden md:block">
-                Last saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            )}
-            <Button variant="primary" onClick={() => handleSave(false)} disabled={saving || (!isDirty && !!lastSaved)}>
-              <Save className="w-4 h-4 mr-2" />
-              {saving ? "Saving..." : "Save Resume"}
-            </Button>
-          </div>
+    <div className="max-w-4xl mx-auto py-8">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold text-brand-ink">AI Resume Builder</h1>
+        <div className="flex gap-2">
+          {STEPS.map((step, idx) => (
+            <div key={idx} className={`h-2 w-12 rounded-full ${idx <= currentStep ? 'bg-brand-neon' : 'bg-brand-slate/20'}`} title={step} />
+          ))}
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Editor (hidden in print) */}
-        <div className="print:hidden flex-1 space-y-6 max-w-2xl">
-          <Card className="p-6">
-            <h2 className="text-xl font-bold text-brand-ink mb-4 flex items-center">
-              <UserIcon className="w-5 h-5 mr-2" /> Personal Details
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-brand-ink mb-1">Full Name</label>
-                <input
-                  type="text"
-                  value={data.basics.name}
-                  onChange={(e) => updateBasics("name", e.target.value)}
-                  className="w-full px-4 py-2 bg-brand-mist border-none rounded-xl focus:ring-2 focus:ring-brand-primary outline-none transition-shadow"
-                  placeholder="John Doe"
-                />
+      <Card className="p-8 bg-white border-2 border-brand-slate/10 shadow-xl relative min-h-[600px]">
+        {currentStep === 0 && (
+          <div className="animate-fade-in">
+            <h2 className="text-xl font-bold mb-4">Work Experience</h2>
+            <p className="text-brand-slate mb-6">Jot down your roles and what you did. Don't worry about phrasing, our AI will make it sound professional.</p>
+            {data.workExperience.map((exp, idx) => (
+              <div key={idx} className="mb-6 p-4 border border-brand-slate/20 rounded-lg relative">
+                <button onClick={() => removeField("workExperience", idx)} className="absolute top-4 right-4 text-red-500"><Trash2 className="w-5 h-5"/></button>
+                <input placeholder="Company" value={exp.company} onChange={e => updateField("workExperience", idx, "company", e.target.value)} className="block w-full mb-2 p-2 border rounded" />
+                <input placeholder="Role" value={exp.role} onChange={e => updateField("workExperience", idx, "role", e.target.value)} className="block w-full mb-2 p-2 border rounded" />
+                <input placeholder="Duration (e.g. 2021 - Present)" value={exp.duration} onChange={e => updateField("workExperience", idx, "duration", e.target.value)} className="block w-full mb-2 p-2 border rounded" />
+                <textarea placeholder="Rough notes on what you did..." value={exp.notes} onChange={e => updateField("workExperience", idx, "notes", e.target.value)} className="block w-full p-2 border rounded h-24" />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-brand-ink mb-1">Email</label>
-                <input
-                  type="email"
-                  value={data.basics.email}
-                  onChange={(e) => updateBasics("email", e.target.value)}
-                  className="w-full px-4 py-2 bg-brand-mist border-none rounded-xl focus:ring-2 focus:ring-brand-primary outline-none transition-shadow"
-                  placeholder="john@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-brand-ink mb-1">Phone</label>
-                <input
-                  type="text"
-                  value={data.basics.phone}
-                  onChange={(e) => updateBasics("phone", e.target.value)}
-                  className="w-full px-4 py-2 bg-brand-mist border-none rounded-xl focus:ring-2 focus:ring-brand-primary outline-none transition-shadow"
-                  placeholder="(555) 123-4567"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-brand-ink mb-1">Professional Summary</label>
-                <textarea
-                  value={data.basics.summary}
-                  onChange={(e) => updateBasics("summary", e.target.value)}
-                  className="w-full px-4 py-2 bg-brand-mist border-none rounded-xl focus:ring-2 focus:ring-brand-primary outline-none transition-shadow h-24 resize-none"
-                  placeholder="A brief summary of your professional background and goals..."
-                />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-brand-ink flex items-center">
-                <BriefcaseIcon className="w-5 h-5 mr-2" /> Experience
-              </h2>
-              <Button variant="outline" onClick={addExperience} size="sm">
-                <Plus className="w-4 h-4 mr-2" /> Add
-              </Button>
-            </div>
-            <div className="space-y-6">
-              {data.experience.map((exp, index) => (
-                <div key={exp.id} className="relative p-4 border border-brand-slate/20 rounded-xl bg-brand-mist/50">
-                  <button
-                    onClick={() => removeExperience(exp.id)}
-                    className="absolute top-4 right-4 text-brand-slate hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                    <div>
-                      <label className="block text-sm font-medium text-brand-ink mb-1">Company</label>
-                      <input
-                        type="text"
-                        value={exp.company}
-                        onChange={(e) => updateExperience(exp.id, "company", e.target.value)}
-                        className="w-full px-4 py-2 bg-white border border-brand-slate/10 rounded-xl focus:ring-2 focus:ring-brand-primary outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-brand-ink mb-1">Position</label>
-                      <input
-                        type="text"
-                        value={exp.position}
-                        onChange={(e) => updateExperience(exp.id, "position", e.target.value)}
-                        className="w-full px-4 py-2 bg-white border border-brand-slate/10 rounded-xl focus:ring-2 focus:ring-brand-primary outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-brand-ink mb-1">Start Date</label>
-                      <input
-                        type="text"
-                        value={exp.startDate}
-                        onChange={(e) => updateExperience(exp.id, "startDate", e.target.value)}
-                        className="w-full px-4 py-2 bg-white border border-brand-slate/10 rounded-xl focus:ring-2 focus:ring-brand-primary outline-none"
-                        placeholder="e.g. Jan 2020"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-brand-ink mb-1">End Date</label>
-                      <input
-                        type="text"
-                        value={exp.endDate}
-                        onChange={(e) => updateExperience(exp.id, "endDate", e.target.value)}
-                        className="w-full px-4 py-2 bg-white border border-brand-slate/10 rounded-xl focus:ring-2 focus:ring-brand-primary outline-none"
-                        placeholder="e.g. Present"
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-brand-ink mb-1">Description</label>
-                      <textarea
-                        value={exp.description}
-                        onChange={(e) => updateExperience(exp.id, "description", e.target.value)}
-                        className="w-full px-4 py-2 bg-white border border-brand-slate/10 rounded-xl focus:ring-2 focus:ring-brand-primary outline-none h-24 resize-none"
-                        placeholder="Describe your responsibilities and achievements..."
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {data.experience.length === 0 && (
-                <p className="text-brand-slate text-sm text-center py-4">No experience added yet.</p>
-              )}
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-brand-ink flex items-center">
-                <GraduationCapIcon className="w-5 h-5 mr-2" /> Education
-              </h2>
-              <Button variant="outline" onClick={addEducation} size="sm">
-                <Plus className="w-4 h-4 mr-2" /> Add
-              </Button>
-            </div>
-            <div className="space-y-6">
-              {data.education.map((edu, index) => (
-                <div key={edu.id} className="relative p-4 border border-brand-slate/20 rounded-xl bg-brand-mist/50">
-                  <button
-                    onClick={() => removeEducation(edu.id)}
-                    className="absolute top-4 right-4 text-brand-slate hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-brand-ink mb-1">Institution</label>
-                      <input
-                        type="text"
-                        value={edu.institution}
-                        onChange={(e) => updateEducation(edu.id, "institution", e.target.value)}
-                        className="w-full px-4 py-2 bg-white border border-brand-slate/10 rounded-xl focus:ring-2 focus:ring-brand-primary outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-brand-ink mb-1">Degree</label>
-                      <input
-                        type="text"
-                        value={edu.degree}
-                        onChange={(e) => updateEducation(edu.id, "degree", e.target.value)}
-                        className="w-full px-4 py-2 bg-white border border-brand-slate/10 rounded-xl focus:ring-2 focus:ring-brand-primary outline-none"
-                        placeholder="e.g. BS Computer Science"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-brand-ink mb-1">Year</label>
-                      <input
-                        type="text"
-                        value={edu.year}
-                        onChange={(e) => updateEducation(edu.id, "year", e.target.value)}
-                        className="w-full px-4 py-2 bg-white border border-brand-slate/10 rounded-xl focus:ring-2 focus:ring-brand-primary outline-none"
-                        placeholder="e.g. 2024"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {data.education.length === 0 && (
-                <p className="text-brand-slate text-sm text-center py-4">No education added yet.</p>
-              )}
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <h2 className="text-xl font-bold text-brand-ink mb-4 flex items-center">
-              <ZapIcon className="w-5 h-5 mr-2" /> Skills
-            </h2>
-            <div>
-              <textarea
-                value={data.skills}
-                onChange={(e) => {
-                  setIsDirty(true);
-                  setData((prev) => ({ ...prev, skills: e.target.value }));
-                }}
-                className="w-full px-4 py-2 bg-brand-mist border-none rounded-xl focus:ring-2 focus:ring-brand-primary outline-none transition-shadow h-24 resize-none"
-                placeholder="List your skills separated by commas (e.g. JavaScript, React, Node.js...)"
-              />
-            </div>
-          </Card>
-        </div>
-
-        {/* Live Preview / PDF Area */}
-        <div className="flex-1 lg:max-w-3xl">
-          <div className="sticky top-8 bg-white p-8 lg:p-10 shadow-sm border border-brand-slate/20 min-h-[800px] print:m-0 print:border-none print:shadow-none print:w-full font-serif">
-            {/* Resume Content */}
-            <div className="border-b-2 border-gray-800 pb-6 mb-6 text-center">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2 uppercase tracking-wide">
-                {data.basics.name || "Your Name"}
-              </h1>
-              <div className="text-sm text-gray-600 space-x-4">
-                {data.basics.email && <span>{data.basics.email}</span>}
-                {data.basics.phone && (
-                  <>
-                    <span>•</span>
-                    <span>{data.basics.phone}</span>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {data.basics.summary && (
-              <div className="mb-6">
-                <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest border-b border-gray-300 pb-1 mb-3">
-                  Summary
-                </h2>
-                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  {data.basics.summary}
-                </p>
-              </div>
-            )}
-
-            {data.experience.length > 0 && (
-              <div className="mb-6">
-                <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest border-b border-gray-300 pb-1 mb-3">
-                  Experience
-                </h2>
-                <div className="space-y-4">
-                  {data.experience.map((exp) => (
-                    <div key={exp.id}>
-                      <div className="flex justify-between items-baseline mb-1">
-                        <h3 className="font-bold text-gray-900">{exp.position}</h3>
-                        <span className="text-xs font-semibold text-gray-600">
-                          {exp.startDate} {exp.startDate && exp.endDate && "—"} {exp.endDate}
-                        </span>
-                      </div>
-                      <div className="text-sm font-medium text-gray-700 mb-2">{exp.company}</div>
-                      {exp.description && (
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap pl-4 border-l-2 border-gray-200">
-                          {exp.description}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {data.education.length > 0 && (
-              <div className="mb-6">
-                <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest border-b border-gray-300 pb-1 mb-3">
-                  Education
-                </h2>
-                <div className="space-y-3">
-                  {data.education.map((edu) => (
-                    <div key={edu.id} className="flex justify-between items-baseline">
-                      <div>
-                        <h3 className="font-bold text-gray-900">{edu.institution}</h3>
-                        <div className="text-sm text-gray-700">{edu.degree}</div>
-                      </div>
-                      <span className="text-xs font-semibold text-gray-600">{edu.year}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {data.skills && (
-              <div className="mb-6">
-                <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest border-b border-gray-300 pb-1 mb-3">
-                  Skills
-                </h2>
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  {data.skills}
-                </p>
-              </div>
-            )}
+            ))}
+            <Button onClick={() => addField("workExperience", { company: "", role: "", duration: "", notes: "" })} variant="outline" className="w-full border-dashed"><Plus className="w-4 h-4 mr-2" /> Add Experience</Button>
           </div>
-        </div>
+        )}
+
+        {currentStep === 1 && (
+          <div className="animate-fade-in">
+            <h2 className="text-xl font-bold mb-4">Education</h2>
+            <p className="text-brand-slate mb-6">Add your degrees and relevant coursework or grades.</p>
+            {data.education.map((edu, idx) => (
+              <div key={idx} className="mb-6 p-4 border border-brand-slate/20 rounded-lg relative">
+                <button onClick={() => removeField("education", idx)} className="absolute top-4 right-4 text-red-500"><Trash2 className="w-5 h-5"/></button>
+                <input placeholder="Institution" value={edu.institution} onChange={e => updateField("education", idx, "institution", e.target.value)} className="block w-full mb-2 p-2 border rounded" />
+                <input placeholder="Degree" value={edu.degree} onChange={e => updateField("education", idx, "degree", e.target.value)} className="block w-full mb-2 p-2 border rounded" />
+                <input placeholder="Duration" value={edu.duration} onChange={e => updateField("education", idx, "duration", e.target.value)} className="block w-full mb-2 p-2 border rounded" />
+                <textarea placeholder="Coursework / Grades..." value={edu.notes} onChange={e => updateField("education", idx, "notes", e.target.value)} className="block w-full p-2 border rounded h-24" />
+              </div>
+            ))}
+            <Button onClick={() => addField("education", { institution: "", degree: "", duration: "", notes: "" })} variant="outline" className="w-full border-dashed"><Plus className="w-4 h-4 mr-2" /> Add Education</Button>
+          </div>
+        )}
+
+        {currentStep === 2 && (
+          <div className="animate-fade-in">
+            <h2 className="text-xl font-bold mb-4">Skills</h2>
+            <p className="text-brand-slate mb-6">List your skills (comma separated). AI will categorize them for you.</p>
+            <textarea placeholder="e.g. JavaScript, React, Python, Docker, Agile, Team Leadership" value={data.skills} onChange={e => setData(prev => ({...prev, skills: e.target.value}))} className="block w-full p-4 border rounded h-32" />
+          </div>
+        )}
+
+        {currentStep === 3 && (
+          <div className="animate-fade-in">
+            <h2 className="text-xl font-bold mb-4">Projects</h2>
+            <p className="text-brand-slate mb-6">List notable projects. Our AI will craft strong bullet points from your rough notes.</p>
+            {data.projects.map((proj, idx) => (
+              <div key={idx} className="mb-6 p-4 border border-brand-slate/20 rounded-lg relative">
+                <button onClick={() => removeField("projects", idx)} className="absolute top-4 right-4 text-red-500"><Trash2 className="w-5 h-5"/></button>
+                <input placeholder="Project Name" value={proj.name} onChange={e => updateField("projects", idx, "name", e.target.value)} className="block w-full mb-2 p-2 border rounded" />
+                <input placeholder="Tech Stack (e.g. React, Firebase)" value={proj.tech} onChange={e => updateField("projects", idx, "tech", e.target.value)} className="block w-full mb-2 p-2 border rounded" />
+                <textarea placeholder="What did you build and why?" value={proj.notes} onChange={e => updateField("projects", idx, "notes", e.target.value)} className="block w-full p-2 border rounded h-24" />
+              </div>
+            ))}
+            <Button onClick={() => addField("projects", { name: "", tech: "", notes: "" })} variant="outline" className="w-full border-dashed"><Plus className="w-4 h-4 mr-2" /> Add Project</Button>
+          </div>
+        )}
+
+        {currentStep === 4 && (
+          <div className="animate-fade-in text-center py-20">
+            <Wand2 className="w-16 h-16 text-brand-neon mx-auto mb-6" />
+            <h2 className="text-2xl font-bold mb-4">Ready for Magic?</h2>
+            <p className="text-brand-slate mb-8 max-w-md mx-auto">We'll now send your rough notes to our AI, which will rewrite everything into highly professional, ATS-friendly resume points.</p>
+            <Button onClick={generateAIContent} disabled={isGenerating} className="bg-brand-neon text-brand-ink font-bold px-8 py-3 text-lg">
+              {isGenerating ? "Generating..." : "Generate My Resume"}
+            </Button>
+          </div>
+        )}
+
+        {currentStep === 5 && (
+          <div className="animate-fade-in">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold">Preview & Export</h2>
+              <Button onClick={exportPDF} className="bg-brand-ink text-white"><Download className="w-4 h-4 mr-2" /> Download PDF</Button>
+            </div>
+            
+            {/* JAKE'S RESUME TEMPLATE (Single Column, Plain) */}
+            <div ref={resumeRef} className="bg-white text-black p-8 mx-auto" style={{ width: '210mm', minHeight: '297mm', fontFamily: 'Arial, sans-serif' }}>
+              <div className="text-center mb-6">
+                <h1 className="text-3xl font-bold uppercase mb-1">{personalInfo.name}</h1>
+                <p className="text-sm">{personalInfo.phone} | {personalInfo.email} | {personalInfo.targetRole}</p>
+              </div>
+
+              {aiDraft.education && aiDraft.education.length > 0 && (
+                <div className="mb-4">
+                  <h2 className="text-lg font-bold uppercase border-b-2 border-black mb-2 pb-1">Education</h2>
+                  {aiDraft.education.map((edu: any, i: number) => (
+                    <div key={i} className="mb-2">
+                      <div className="flex justify-between font-bold">
+                        <span>{edu.institution}</span>
+                        <span>{edu.duration}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="italic">{edu.degree}</span>
+                      </div>
+                      {edu.details && <p className="text-sm mt-1">{edu.details}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {aiDraft.workExperience && aiDraft.workExperience.length > 0 && (
+                <div className="mb-4">
+                  <h2 className="text-lg font-bold uppercase border-b-2 border-black mb-2 pb-1">Experience</h2>
+                  {aiDraft.workExperience.map((exp: any, i: number) => (
+                    <div key={i} className="mb-3">
+                      <div className="flex justify-between font-bold">
+                        <span>{exp.company}</span>
+                        <span>{exp.duration}</span>
+                      </div>
+                      <div className="flex justify-between italic mb-1">
+                        <span>{exp.role}</span>
+                      </div>
+                      <ul className="list-disc pl-5 text-sm space-y-1">
+                        {exp.bullets && exp.bullets.map((b: string, j: number) => (
+                          <li key={j}>{b}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {aiDraft.projects && aiDraft.projects.length > 0 && (
+                <div className="mb-4">
+                  <h2 className="text-lg font-bold uppercase border-b-2 border-black mb-2 pb-1">Projects</h2>
+                  {aiDraft.projects.map((proj: any, i: number) => (
+                    <div key={i} className="mb-2">
+                      <div className="font-bold">
+                        {proj.name} <span className="font-normal font-italic text-sm">| {proj.tech}</span>
+                      </div>
+                      <ul className="list-disc pl-5 text-sm space-y-1 mt-1">
+                        {proj.bullets && proj.bullets.map((b: string, j: number) => (
+                          <li key={j}>{b}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {aiDraft.skills && Object.keys(aiDraft.skills).length > 0 && (
+                <div className="mb-4">
+                  <h2 className="text-lg font-bold uppercase border-b-2 border-black mb-2 pb-1">Technical Skills</h2>
+                  <div className="text-sm">
+                    {Object.entries(aiDraft.skills).map(([category, skills]: any, i) => (
+                      <div key={i} className="mb-1">
+                        <span className="font-bold">{category}:</span> {skills}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </Card>
+
+      <div className="flex justify-between mt-6">
+        <Button onClick={handlePrev} disabled={currentStep === 0} variant="outline"><ChevronLeft className="w-4 h-4 mr-2" /> Back</Button>
+        {currentStep < 4 && <Button onClick={handleNext} className="bg-brand-ink text-white">Next <ChevronRight className="w-4 h-4 ml-2" /></Button>}
+        {currentStep === 5 && <Button onClick={() => setCurrentStep(0)} variant="outline">Edit Raw Info</Button>}
       </div>
     </div>
   );
 };
-
-// Helper icons
-const UserIcon = (props: any) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-);
-const BriefcaseIcon = (props: any) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-);
-const GraduationCapIcon = (props: any) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21.42 10.922a2 2 0 0 0-.019-3.838L12.83 4.33a2 2 0 0 0-1.66 0L2.6 7.08a2 2 0 0 0 0 3.832l8.57 3.698a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
-);
-const ZapIcon = (props: any) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-);
 
 export default ResumeBuilder;

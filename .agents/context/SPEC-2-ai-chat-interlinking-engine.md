@@ -8,7 +8,7 @@
 
 ## Solution
 
-Replace the fake chat with a real Gemini API integration (free tier). On every message, assemble context from the user's `profiles` row plus recent relevant `events`/active `recommendations` (not the full raw conversation history dumped in — that's slow and unnecessary). Give the model function-calling tools to write new `events` and `recommendations` rows when it identifies something worth acting on (a struggle, a goal, an interest, a recommendation). Other features write `events` too (e.g., a completed mock interview writes a confidence-signal event), so the chat becomes reactive to things that happened outside the chat window, not just inside it. Target features (dashboard, explorer, study & succeed, goal setter, resources) read from `recommendations` filtered to themselves — they never call the LLM directly to "remember" something.
+Replace the fake chat with a real Groq (`openai/gpt-oss-120b`) integration (free tier). On every message, assemble context from the user's `profiles` row plus recent relevant `events`/active `recommendations` (not the full raw conversation history dumped in — that's slow and unnecessary). Give the model function-calling tools to write new `events` and `recommendations` rows when it identifies something worth acting on (a struggle, a goal, an interest, a recommendation). Other features write `events` too (e.g., a completed mock interview writes a confidence-signal event), so the chat becomes reactive to things that happened outside the chat window, not just inside it. Target features (dashboard, explorer, study & succeed, goal setter, resources) read from `recommendations` filtered to themselves — they never call the LLM directly to "remember" something.
 
 ## User Stories
 
@@ -24,14 +24,14 @@ Replace the fake chat with a real Gemini API integration (free tier). On every m
 10. As a user, I want a resource I've completed to be marked done everywhere it's referenced (dashboard, chat's memory of me), so I'm not asked to do the same thing twice.
 11. As a developer, I want the chat's context window built from structured data (profile + recent events + active recommendations) rather than full raw chat history, so response latency and free-tier token usage stay predictable as conversations get long.
 12. As a developer, I want a defined, small vocabulary of `event_type` and `recommendation.type` values (not an open free-text field the model invents new values for on a whim), so downstream features can reliably query for exactly what they expect.
-13. As a product owner, I want a rate/quota guard around the Gemini free tier, so a burst of usage doesn't silently fail requests with no fallback message to the user.
+13. As a product owner, I want a rate/quota guard around the Groq free tier, so a burst of usage doesn't silently fail requests with no fallback message to the user.
 14. As a user, I want a clear "the AI is thinking" state and a graceful error message if the AI call fails, so the chat doesn't look broken when it's just a network/API hiccup.
 15. As a developer, I want the interview-prep module to write a `events` row on session completion (score, confidence signal, weak areas) using the same event schema the chat consumes, so the interlink in story 3 actually has data to read.
 16. As a product owner, I want the chat's system prompt/personality (vigilant, intelligent, a genuine friend — not a generic corporate assistant) defined and reviewable as its own artifact, so tone can be iterated on without touching the function-calling plumbing.
 
 ## Implementation Decisions
 
-- **AI provider**: Google Gemini API, free tier (Flash model). API key stored server-side/via environment variable, never exposed to the client directly — calls proxied through a lightweight server function (Supabase Edge Function is the natural fit given Spec 1's stack, avoiding a second backend).
+- **AI provider**: Groq (`openai/gpt-oss-120b`), free tier. API key stored server-side/via environment variable, never exposed to the client directly — calls proxied through a lightweight server function (Supabase Edge Function is the natural fit given Spec 1's stack, avoiding a second backend).
 - **Context assembly per message**: `profiles` row + last N (start with ~10–15) relevant `events` for that user + all `active` `recommendations` for that user, serialized into the system/context portion of the prompt. Full raw chat history is not replayed in full on every call — recent turns only (e.g., last 6–10 messages) plus the structured context above.
 - **Function-calling tools exposed to the model**:
   - `write_event(event_type, payload, feature_source)` — for signals worth logging (frustration detected, interest expressed, struggle mentioned).
@@ -50,13 +50,13 @@ Builds on Spec 1's Vitest + RTL setup.
   - Sending a message that should trigger `write_recommendation` results in a new row in `recommendations` with the expected `target_feature`.
   - A feature reading `recommendations` renders what's actually in the table (mock the table content, assert the UI reflects it — decouples UI tests from live model calls).
   - The interview-prep completion writer produces an `events` row with the correct `event_type` and payload shape.
-  - A failed Gemini API call surfaces the graceful error state, not a silent hang or crash.
-- Mock the Gemini API call in unit/component tests; a small number of manual/integration smoke tests against the real API are acceptable for verifying the function-calling contract actually works, but shouldn't run on every CI build against a rate-limited free tier.
+  - A failed Groq API call surfaces the graceful error state, not a silent hang or crash.
+- Mock the Groq API call in unit/component tests; a small number of manual/integration smoke tests against the real API are acceptable for verifying the function-calling contract actually works, but shouldn't run on every CI build against a rate-limited free tier.
 
 ## Out of Scope
 
 - Wiring every single feature (Goal Setter, all of Resources, Career Path Planner) into the recommendation-reading pattern — this spec proves the pattern on Study & Succeed and Explorer; the rest is incremental, tracked separately.
-- Any paid-tier fallback (Groq, OpenRouter) if Gemini free tier is exceeded — noted as a future item, not built here.
+- Any paid-tier fallback if Groq free tier is exceeded — noted as a future item, not built here.
 - Graduate-specific chat behavior beyond what the shared context/tooling already supports generically (Spec 3 covers graduate-specific features).
 - Content/copy quality of Study & Succeed itself — this spec makes it interlink-aware, it does not fix its underlying content (that's a separate audit per the master plan).
 

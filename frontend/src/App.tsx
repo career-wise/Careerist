@@ -48,7 +48,6 @@ const LandingPage: React.FC = () => {
         <Testimonials />
       </main>
       <Footer />
-      <FloatingChatButton />
     </div>
   );
 };
@@ -145,6 +144,7 @@ function App() {
             <Route path="/interview-practice/:type/session" element={<AIInterviewSession />} />
             <Route path="/interview-practice/:type/report" element={<InterviewReport />} />
           </Routes>
+          <FloatingChatButton />
           <ToastContainer toasts={toasts} onRemove={removeToast} />
         </div>
       </MediaStreamProvider>

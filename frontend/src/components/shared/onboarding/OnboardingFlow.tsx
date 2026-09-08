@@ -3,20 +3,7 @@ import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 import Button from '../ui/Button';
 
 export interface OnboardingAnswers {
-  persona: 'high-school' | 'graduate' | '';
-  // high-school fields
-  grade?: string;
-  subjects?: string[];
-  clarityLevel?: string;
-  fieldsOfInterest?: string[];
-  goal?: string;
-  // graduate fields
-  status?: string;
-  fieldOfStudy?: string;
-  lookingFor?: string[];
-  resumeStatus?: string;
-  interviewConfidence?: string;
-  urgency?: string;
+  [key: string]: any;
 }
 
 interface OnboardingFlowProps {
@@ -24,78 +11,209 @@ interface OnboardingFlowProps {
   onSkip: () => void;
 }
 
-const SUBJECTS = [
-  'Math', 'Physics', 'Biology', 'Chemistry', 'Computer Science',
-  'Economics/Commerce', 'Languages & Literature', 'History/Social Studies',
-  'Art & Design', 'Sports/Physical Ed'
-];
+type QuestionType = 'single' | 'multi' | 'custom_persona';
 
-const CLARITY_LEVELS = [
-  'No idea what I want to do',
-  'I know the general field, not the specifics',
-  'I know the field, torn on college/major',
-  'Deciding between 2-3 very different paths'
-];
+interface QuestionNode {
+  id: string;
+  type: QuestionType;
+  title: string;
+  subtitle?: string;
+  allowOther?: boolean;
+  options?: {
+    id: string;
+    label: string;
+    next?: string | ((answers: Record<string, any>) => string | null);
+    image?: string;
+    description?: string;
+  }[];
+}
 
-const FIELDS_OF_INTEREST = [
-  'Engineering & Tech', 'Medicine & Healthcare', 'Business & Commerce',
-  'Law', 'Arts, Design & Media', 'Pure Sciences & Research', 'Humanities & Social Sciences'
-];
+const QUESTION_GRAPH: Record<string, QuestionNode> = {
+  persona: {
+    id: 'persona',
+    type: 'custom_persona',
+    title: 'Where are you right now?',
+    subtitle: 'This changes everything you see next — pick what\'s actually true today.',
+    options: [
+      {
+        id: 'high-school',
+        label: 'I\'m in 11th or 12th grade',
+        description: 'Figuring out what to study and where.',
+        image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&h=600&fit=crop&q=80',
+        next: 'grade'
+      },
+      {
+        id: 'graduate',
+        label: 'I\'ve graduated',
+        description: 'Looking for a job, internship, or what\'s next.',
+        image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=600&fit=crop&q=80',
+        next: 'status'
+      }
+    ]
+  },
+  // HIGH SCHOOL TRACK
+  grade: {
+    id: 'grade',
+    type: 'single',
+    title: 'Which year are you in?',
+    subtitle: '12th graders get more urgent, decision-focused guidance. 11th graders get more room to explore.',
+    options: [
+      { id: '11', label: '11th Grade', next: 'subjects' },
+      { id: '12', label: '12th Grade', next: 'entrance_exams' } // Branch differently based on grade!
+    ]
+  },
+  subjects: {
+    id: 'subjects',
+    type: 'multi',
+    title: 'What do you actually enjoy studying?',
+    subtitle: 'Not what you\'re best at on paper. What doesn\'t feel like a chore.',
+    options: [
+      { id: 'Math', label: 'Math' },
+      { id: 'Physics', label: 'Physics' },
+      { id: 'Biology', label: 'Biology' },
+      { id: 'Chemistry', label: 'Chemistry' },
+      { id: 'Computer Science', label: 'Computer Science' },
+      { id: 'Economics/Commerce', label: 'Economics/Commerce' },
+      { id: 'Languages & Literature', label: 'Languages & Literature' },
+      { id: 'History/Social Studies', label: 'History/Social Studies' },
+      { id: 'Art & Design', label: 'Art & Design' },
+      { id: 'Sports/Physical Ed', label: 'Sports/Physical Ed' }
+    ].map(o => ({ ...o, next: 'clarityLevel' }))
+  },
+  entrance_exams: {
+    id: 'entrance_exams',
+    type: 'multi',
+    title: 'Are you preparing for any entrance exams?',
+    subtitle: 'Select all that apply.',
+    options: [
+      { id: 'JEE', label: 'JEE (Main/Advanced)' },
+      { id: 'NEET', label: 'NEET' },
+      { id: 'CUET', label: 'CUET' },
+      { id: 'CLAT', label: 'CLAT' },
+      { id: 'IPMAT', label: 'IPMAT / BBA entrances' },
+      { id: 'None', label: 'None / Undecided' }
+    ].map(o => ({ ...o, next: 'clarityLevel' }))
+  },
+  clarityLevel: {
+    id: 'clarityLevel',
+    type: 'single',
+    title: 'How clear is your path right now?',
+    subtitle: 'Be honest — this decides how much hand-holding you get.',
+    options: [
+      { id: 'No idea what I want to do', label: 'No idea what I want to do', next: 'goal' },
+      { id: 'I know the general field, not the specifics', label: 'I know the general field, not the specifics', next: 'fieldsOfInterest' },
+      { id: 'I know the field, torn on college/major', label: 'I know the field, torn on college/major', next: 'fieldsOfInterest' },
+      { id: 'Deciding between 2-3 very different paths', label: 'Deciding between 2-3 very different paths', next: 'fieldsOfInterest' }
+    ]
+  },
+  fieldsOfInterest: {
+    id: 'fieldsOfInterest',
+    type: 'multi',
+    title: 'Which fields are you drawn to?',
+    options: [
+      { id: 'Engineering & Tech', label: 'Engineering & Tech' },
+      { id: 'Medicine & Healthcare', label: 'Medicine & Healthcare' },
+      { id: 'Business & Commerce', label: 'Business & Commerce' },
+      { id: 'Law', label: 'Law' },
+      { id: 'Arts, Design & Media', label: 'Arts, Design & Media' },
+      { id: 'Pure Sciences & Research', label: 'Pure Sciences & Research' },
+      { id: 'Humanities & Social Sciences', label: 'Humanities & Social Sciences' }
+    ].map(o => ({ ...o, next: 'goal' }))
+  },
+  goal: {
+    id: 'goal',
+    type: 'single',
+    title: 'What would actually help you most right now?',
+    options: [
+      { id: 'Help me explore options broadly', label: 'Help me explore options broadly' },
+      { id: 'Help me choose the right degree/major', label: 'Help me choose the right degree/major' },
+      { id: 'Help me shortlist the right colleges', label: 'Help me shortlist the right colleges' },
+      { id: 'Help me start building relevant skills early', label: 'Help me start building relevant skills early' }
+    ]
+  },
 
-const HS_GOALS = [
-  'Help me explore options broadly',
-  'Help me choose the right degree/major',
-  'Help me shortlist the right colleges',
-  'Help me start building relevant skills early'
-];
-
-const GRAD_STATUS = [
-  'Final year — about to graduate',
-  'Graduated, actively job hunting',
-  'Graduated, employed but looking to switch',
-  'Graduated, taking time before deciding next steps'
-];
-
-const GRAD_LOOKING_FOR = [
-  'First full-time job', 'Internship', 'Switching fields entirely',
-  'Freelance/contract work', 'Still deciding'
-];
-
-const GRAD_URGENCY = [
-  'ASAP — actively applying now',
-  'Within the next 1-3 months',
-  'No fixed timeline, just preparing'
-];
+  // GRADUATE TRACK
+  status: {
+    id: 'status',
+    type: 'single',
+    title: 'What\'s your current situation?',
+    subtitle: 'This sets your urgency level — no judgment either way.',
+    options: [
+      { id: 'Final year — about to graduate', label: 'Final year — about to graduate', next: 'fieldOfStudy' },
+      { id: 'Graduated, actively job hunting', label: 'Graduated, actively job hunting', next: 'fieldOfStudy' },
+      { id: 'Graduated, employed but looking to switch', label: 'Graduated, employed but looking to switch', next: 'fieldOfStudy' },
+      { id: 'Graduated, taking time before deciding next steps', label: 'Graduated, taking time before deciding next steps', next: 'fieldOfStudy' }
+    ]
+  },
+  fieldOfStudy: {
+    id: 'fieldOfStudy',
+    type: 'single',
+    title: 'What did you study?',
+    allowOther: true,
+    options: [
+      { id: 'Computer Science/IT', label: 'Computer Science/IT' },
+      { id: 'Engineering (non-CS)', label: 'Engineering (non-CS)' },
+      { id: 'Commerce/Business/Finance', label: 'Commerce/Business/Finance' },
+      { id: 'Arts/Humanities', label: 'Arts/Humanities' },
+      { id: 'Sciences', label: 'Sciences' },
+      { id: 'Design', label: 'Design' }
+    ].map(o => ({ ...o, next: 'lookingFor' }))
+  },
+  lookingFor: {
+    id: 'lookingFor',
+    type: 'multi',
+    title: 'What are you actually looking for?',
+    subtitle: 'Pick all that apply.',
+    options: [
+      { id: 'First full-time job', label: 'First full-time job' },
+      { id: 'Internship', label: 'Internship' },
+      { id: 'Switching fields entirely', label: 'Switching fields entirely' },
+      { id: 'Freelance/contract work', label: 'Freelance/contract work' },
+      { id: 'Still deciding', label: 'Still deciding' }
+    ].map(o => ({ ...o, next: 'resumeStatus' }))
+  },
+  resumeStatus: {
+    id: 'resumeStatus',
+    type: 'single',
+    title: 'Do you have a resume ready?',
+    options: [
+      { id: 'Ready to go', label: 'Ready to go', next: 'interviewConfidence' },
+      { id: 'Have one, needs work', label: 'Have one, needs work', next: 'interviewConfidence' },
+      { id: 'Don\'t have one yet', label: 'Don\'t have one yet', next: 'interviewConfidence' }
+    ]
+  },
+  interviewConfidence: {
+    id: 'interviewConfidence',
+    type: 'single',
+    title: 'How do you feel about interviews?',
+    options: [
+      { id: 'Confident', label: 'Confident', next: 'urgency' },
+      { id: 'Some experience', label: 'Some experience', next: 'urgency' },
+      { id: 'Never really done one', label: 'Never really done one', next: 'urgency' }
+    ]
+  },
+  urgency: {
+    id: 'urgency',
+    type: 'single',
+    title: 'How soon do you need this to work?',
+    options: [
+      { id: 'ASAP — actively applying now', label: 'ASAP — actively applying now' },
+      { id: 'Within the next 1-3 months', label: 'Within the next 1-3 months' },
+      { id: 'No fixed timeline, just preparing', label: 'No fixed timeline, just preparing' }
+    ]
+  }
+};
 
 const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) => {
-  const [answers, setAnswers] = useState<OnboardingAnswers>({
-    persona: '',
-    subjects: [],
-    fieldsOfInterest: [],
-    lookingFor: []
-  });
-
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [answers, setAnswers] = useState<OnboardingAnswers>({});
+  const [history, setHistory] = useState<string[]>(['persona']);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const getActiveSteps = () => {
-    if (answers.persona === 'high-school') {
-      if (answers.clarityLevel === 'No idea what I want to do') {
-        return ['grade', 'subjects', 'clarityLevel', 'goal'];
-      }
-      return ['grade', 'subjects', 'clarityLevel', 'fieldsOfInterest', 'goal'];
-    }
-    if (answers.persona === 'graduate') {
-      return ['status', 'fieldOfStudy', 'lookingFor', 'readiness', 'urgency'];
-    }
-    return [];
-  };
-
-  const activeSteps = getActiveSteps();
-  const totalSteps = answers.persona ? activeSteps.length + 1 : 6;
+  const currentStepId = history[history.length - 1];
+  const currentNode = QUESTION_GRAPH[currentStepId];
 
   const handleSkip = () => {
-    // defaults to high-school with empty answers if skipped on step 0
+    // defaults to high-school if completely skipped
     if (!answers.persona) {
       onComplete({ ...answers, persona: 'high-school' });
     } else {
@@ -103,17 +221,46 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
     }
   };
 
+  const resolveNextStep = (nodeId: string, currentAnswers: OnboardingAnswers): string | null => {
+    const node = QUESTION_GRAPH[nodeId];
+    if (!node || !node.options) return null;
+    
+    // For single choice, we use the selected option's 'next' field
+    if (node.type === 'single' || node.type === 'custom_persona') {
+      const selectedId = currentAnswers[nodeId];
+      const opt = node.options.find(o => o.id === selectedId);
+      if (opt && typeof opt.next === 'string') return opt.next;
+      if (opt && typeof opt.next === 'function') return opt.next(currentAnswers);
+      // Fallback for custom text inputs ('allowOther')
+      if (node.allowOther && selectedId && !opt) {
+          // just grab the first option's next as fallback
+          const fallbackOpt = node.options[0];
+          if (typeof fallbackOpt.next === 'string') return fallbackOpt.next;
+      }
+    }
+    
+    // For multi choice, we just look at the first option's next field
+    // (Assuming all options in a multi-choice lead to the same next step)
+    if (node.type === 'multi') {
+        const fallbackOpt = node.options[0];
+        if (typeof fallbackOpt.next === 'string') return fallbackOpt.next;
+    }
+    
+    return null;
+  };
+
   const handleNext = () => {
-    if (currentStepIndex < activeSteps.length) {
-      setCurrentStepIndex(prev => prev + 1);
+    const nextStep = resolveNextStep(currentStepId, answers);
+    if (nextStep && QUESTION_GRAPH[nextStep]) {
+      setHistory(prev => [...prev, nextStep]);
     } else {
       setIsGenerating(true);
     }
   };
 
   const handleBack = () => {
-    if (currentStepIndex > 0) {
-      setCurrentStepIndex(prev => prev - 1);
+    if (history.length > 1) {
+      setHistory(prev => prev.slice(0, -1));
     }
   };
 
@@ -127,32 +274,23 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
   }, [isGenerating, answers, onComplete]);
 
   const canProceed = () => {
-    if (currentStepIndex === 0) return answers.persona !== '';
-    
-    const stepId = activeSteps[currentStepIndex - 1];
-    switch (stepId) {
-      // High School
-      case 'grade': return !!answers.grade;
-      case 'subjects': return answers.subjects && answers.subjects.length > 0;
-      case 'clarityLevel': return !!answers.clarityLevel;
-      case 'fieldsOfInterest': return answers.fieldsOfInterest && answers.fieldsOfInterest.length > 0;
-      case 'goal': return !!answers.goal;
-      // Graduate
-      case 'status': return !!answers.status;
-      case 'fieldOfStudy': return !!answers.fieldOfStudy;
-      case 'lookingFor': return answers.lookingFor && answers.lookingFor.length > 0;
-      case 'readiness': return !!answers.resumeStatus && !!answers.interviewConfidence;
-      case 'urgency': return !!answers.urgency;
-      default: return false;
+    const val = answers[currentStepId];
+    if (currentNode.type === 'multi') {
+      return Array.isArray(val) && val.length > 0;
     }
+    return !!val; // works for single strings, numbers, etc.
   };
 
-  const toggleArrayItem = (field: 'subjects' | 'fieldsOfInterest' | 'lookingFor', val: string) => {
+  const setAnswer = (val: any) => {
+    setAnswers(prev => ({ ...prev, [currentStepId]: val }));
+  };
+
+  const toggleMultiAnswer = (val: string) => {
     setAnswers(prev => {
-      const current = prev[field] || [];
+      const current = Array.isArray(prev[currentStepId]) ? prev[currentStepId] : [];
       return {
         ...prev,
-        [field]: current.includes(val) ? current.filter(i => i !== val) : [...current, val]
+        [currentStepId]: current.includes(val) ? current.filter((i: string) => i !== val) : [...current, val]
       };
     });
   };
@@ -223,21 +361,19 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
     );
   }
 
-  const currentStepId = currentStepIndex === 0 ? 'persona' : activeSteps[currentStepIndex - 1];
-
   return (
     <div className="min-h-screen bg-brand-mist flex flex-col items-center pt-10 pb-20 px-6">
       {/* Floating Header */}
       <div className="w-full max-w-4xl flex items-center justify-between mb-16">
         <div className="bg-brand-ink text-white px-6 py-3 rounded-full flex items-center space-x-3 shadow-xl">
-          {currentStepIndex > 0 ? (
+          {history.length > 1 ? (
             <button onClick={handleBack} className="p-1 hover:bg-white/10 rounded-full transition-colors group">
               <ArrowLeft className="h-5 w-5 text-brand-neon group-hover:text-white transition-colors" />
             </button>
           ) : (
             <div className="w-7"></div>
           )}
-          <span className="font-bold tracking-wide">STEP {currentStepIndex + 1} OF {totalSteps}</span>
+          <span className="font-bold tracking-wide">STEP {history.length}</span>
           <div className="w-7"></div>
         </div>
         <button onClick={handleSkip} className="text-brand-slate font-semibold hover:text-brand-ink transition-colors px-4 py-2">
@@ -245,253 +381,83 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
         </button>
       </div>
 
-      <div className="w-full max-w-4xl flex-1 flex flex-col justify-center">
+      <div className="w-full max-w-4xl flex-1 flex flex-col justify-center animate-fade-in">
         
-        {currentStepId === 'persona' && (
-          <div className="animate-fade-in">
-            <h1 className="text-5xl lg:text-6xl font-display font-bold text-brand-ink mb-4 leading-tight tracking-tight text-center">
-              Where are you right now?
-            </h1>
-            <p className="text-xl text-brand-slate mb-12 text-center">
-              This changes everything you see next — pick what's actually true today.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+        <h1 className="text-5xl lg:text-6xl font-display font-bold text-brand-ink mb-4 leading-tight tracking-tight text-center">
+          {currentNode.title}
+        </h1>
+        {currentNode.subtitle && (
+          <p className="text-xl text-brand-slate mb-12 text-center">
+            {currentNode.subtitle}
+          </p>
+        )}
+
+        {currentNode.type === 'custom_persona' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 mt-8">
+            {currentNode.options?.map(opt => (
               <div 
-                className={`group relative rounded-2xl overflow-hidden bg-white border-2 cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md ${answers.persona === 'high-school' ? 'border-blue-500' : 'border-gray-200 hover:border-gray-300'}`}
-                onClick={() => setAnswers({...answers, persona: 'high-school'})}
+                key={opt.id}
+                className={`group relative rounded-2xl overflow-hidden bg-white border-2 cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md ${answers[currentStepId] === opt.id ? 'border-blue-500' : 'border-gray-200 hover:border-gray-300'}`}
+                onClick={() => setAnswer(opt.id)}
               >
                 <div className="aspect-[4/3] w-full overflow-hidden">
                   <img 
-                    src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&h=600&fit=crop&q=80" 
-                    alt="High School" 
+                    src={opt.image} 
+                    alt={opt.label} 
                     className="w-full h-full object-cover transition-all duration-700 transform group-hover:scale-105"
                   />
                 </div>
                 <div className="p-8 lg:p-10 absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900/90 via-gray-900/60 to-transparent pt-32">
                   <h3 className="text-3xl font-display font-bold text-white mb-3">
-                    I'm in 11th or 12th grade
+                    {opt.label}
                   </h3>
                   <p className="text-gray-200 text-lg">
-                    Figuring out what to study and where.
+                    {opt.description}
                   </p>
                 </div>
               </div>
-              <div 
-                className={`group relative rounded-2xl overflow-hidden bg-white border-2 cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md ${answers.persona === 'graduate' ? 'border-blue-500' : 'border-gray-200 hover:border-gray-300'}`}
-                onClick={() => setAnswers({...answers, persona: 'graduate'})}
-              >
-                <div className="aspect-[4/3] w-full overflow-hidden">
-                  <img 
-                    src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=600&fit=crop&q=80" 
-                    alt="Graduate" 
-                    className="w-full h-full object-cover transition-all duration-700 transform group-hover:scale-105"
-                  />
-                </div>
-                <div className="p-8 lg:p-10 absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900/90 via-gray-900/60 to-transparent pt-32">
-                  <h3 className="text-3xl font-display font-bold text-white mb-3">
-                    I've graduated
-                  </h3>
-                  <p className="text-gray-200 text-lg">
-                    Looking for a job, internship, or what's next.
-                  </p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         )}
 
-        {/* High School Track */}
-        {currentStepId === 'grade' && (
-          <div className="animate-fade-in max-w-3xl mx-auto">
-            <h1 className="text-5xl lg:text-6xl font-display font-bold text-brand-ink mb-4 leading-tight tracking-tight text-center">
-              Which year are you in?
-            </h1>
-            <p className="text-xl text-brand-slate mb-12 text-center">
-              12th graders get more urgent, decision-focused guidance. 11th graders get more room to explore.
-            </p>
-            <div className="grid gap-4 md:grid-cols-2">
-              <React.Fragment key="11">
-                {renderOptionCard('11th Grade', answers.grade === '11', () => setAnswers({...answers, grade: '11'}), 'p-8')}
+        {currentNode.type === 'single' && (
+          <div className={`mt-8 ${currentNode.options?.length && currentNode.options.length > 4 ? 'grid gap-4 md:grid-cols-2' : 'grid gap-4 md:grid-cols-2 max-w-3xl mx-auto w-full'}`}>
+            {currentNode.options?.map(opt => (
+              <React.Fragment key={opt.id}>
+                {renderOptionCard(opt.label, answers[currentStepId] === opt.id, () => setAnswer(opt.id))}
               </React.Fragment>
-              <React.Fragment key="12">
-                {renderOptionCard('12th Grade', answers.grade === '12', () => setAnswers({...answers, grade: '12'}), 'p-8')}
-              </React.Fragment>
-            </div>
-          </div>
-        )}
-
-        {currentStepId === 'subjects' && (
-          <div className="animate-fade-in">
-            <h1 className="text-5xl lg:text-6xl font-display font-bold text-brand-ink mb-4 leading-tight tracking-tight text-center">
-              What do you actually enjoy studying?
-            </h1>
-            <p className="text-xl text-brand-slate mb-12 text-center">
-              Not what you're best at on paper. What doesn't feel like a chore.
-            </p>
-            <div className="flex flex-wrap gap-4 justify-center">
-              {SUBJECTS.map(subj => (
-                <React.Fragment key={subj}>
-                  {renderMultiChip(subj, (answers.subjects || []).includes(subj), () => toggleArrayItem('subjects', subj))}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {currentStepId === 'clarityLevel' && (
-          <div className="animate-fade-in max-w-3xl mx-auto">
-            <h1 className="text-5xl lg:text-6xl font-display font-bold text-brand-ink mb-4 leading-tight tracking-tight text-center">
-              How clear is your path right now?
-            </h1>
-            <p className="text-xl text-brand-slate mb-12 text-center">
-              Be honest — this decides how much hand-holding you get.
-            </p>
-            <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-              {CLARITY_LEVELS.map(level => (
-                <React.Fragment key={level}>
-                  {renderOptionCard(level, answers.clarityLevel === level, () => setAnswers({...answers, clarityLevel: level}))}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {currentStepId === 'fieldsOfInterest' && (
-          <div className="animate-fade-in">
-            <h1 className="text-5xl lg:text-6xl font-display font-bold text-brand-ink mb-4 leading-tight tracking-tight text-center">
-              Which fields are you drawn to?
-            </h1>
-            <div className="flex flex-wrap gap-4 justify-center mt-12">
-              {FIELDS_OF_INTEREST.map(field => (
-                <React.Fragment key={field}>
-                  {renderMultiChip(field, (answers.fieldsOfInterest || []).includes(field), () => toggleArrayItem('fieldsOfInterest', field))}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {currentStepId === 'goal' && (
-          <div className="animate-fade-in max-w-3xl mx-auto">
-            <h1 className="text-5xl lg:text-6xl font-display font-bold text-brand-ink mb-4 leading-tight tracking-tight text-center">
-              What would actually help you most right now?
-            </h1>
-            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 mt-12">
-              {HS_GOALS.map(goal => (
-                <React.Fragment key={goal}>
-                  {renderOptionCard(goal, answers.goal === goal, () => setAnswers({...answers, goal}))}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Graduate Track */}
-        {currentStepId === 'status' && (
-          <div className="animate-fade-in max-w-3xl mx-auto">
-            <h1 className="text-5xl lg:text-6xl font-display font-bold text-brand-ink mb-4 leading-tight tracking-tight text-center">
-              What's your current situation?
-            </h1>
-            <p className="text-xl text-brand-slate mb-12 text-center">
-              This sets your urgency level — no judgment either way.
-            </p>
-            <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-              {GRAD_STATUS.map(status => (
-                <React.Fragment key={status}>
-                  {renderOptionCard(status, answers.status === status, () => setAnswers({...answers, status}))}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {currentStepId === 'fieldOfStudy' && (
-          <div className="animate-fade-in max-w-3xl mx-auto">
-            <h1 className="text-5xl lg:text-6xl font-display font-bold text-brand-ink mb-4 leading-tight tracking-tight text-center">
-              What did you study?
-            </h1>
-            <div className="mt-12 space-y-4">
-              {['Computer Science/IT', 'Engineering (non-CS)', 'Commerce/Business/Finance', 'Arts/Humanities', 'Sciences', 'Design'].map(field => (
-                <React.Fragment key={field}>
-                  {renderOptionCard(field, answers.fieldOfStudy === field, () => setAnswers({...answers, fieldOfStudy: field}))}
-                </React.Fragment>
-              ))}
-              <div className={`p-6 rounded-2xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${answers.fieldOfStudy && !['Computer Science/IT', 'Engineering (non-CS)', 'Commerce/Business/Finance', 'Arts/Humanities', 'Sciences', 'Design'].includes(answers.fieldOfStudy) ? 'bg-blue-50 border-blue-500 text-blue-900' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
-                <div className={`w-4 h-4 rounded-full border-2 mb-4 transition-colors inline-block mr-3 align-middle ${answers.fieldOfStudy && !['Computer Science/IT', 'Engineering (non-CS)', 'Commerce/Business/Finance', 'Arts/Humanities', 'Sciences', 'Design'].includes(answers.fieldOfStudy) ? 'border-blue-500 bg-blue-500' : 'border-gray-300'}`}></div>
+            ))}
+            
+            {currentNode.allowOther && (
+              <div className={`p-6 rounded-2xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${answers[currentStepId] && !currentNode.options?.map(o => o.id).includes(answers[currentStepId]) ? 'bg-blue-50 border-blue-500 text-blue-900' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
+                <div className={`w-4 h-4 rounded-full border-2 mb-4 transition-colors inline-block mr-3 align-middle ${answers[currentStepId] && !currentNode.options?.map(o => o.id).includes(answers[currentStepId]) ? 'border-blue-500 bg-blue-500' : 'border-gray-300'}`}></div>
                 <input 
                   type="text" 
                   placeholder="Other (please specify)" 
-                  className={`w-[80%] bg-transparent outline-none text-xl font-bold align-middle ${answers.fieldOfStudy && !['Computer Science/IT', 'Engineering (non-CS)', 'Commerce/Business/Finance', 'Arts/Humanities', 'Sciences', 'Design'].includes(answers.fieldOfStudy) ? 'text-blue-900 placeholder-blue-300' : 'text-gray-800 placeholder-gray-400'}`}
-                  onChange={(e) => setAnswers({...answers, fieldOfStudy: e.target.value})}
+                  className={`w-[80%] bg-transparent outline-none text-xl font-bold align-middle ${answers[currentStepId] && !currentNode.options?.map(o => o.id).includes(answers[currentStepId]) ? 'text-blue-900 placeholder-blue-300' : 'text-gray-800 placeholder-gray-400'}`}
+                  onChange={(e) => setAnswer(e.target.value)}
                   onClick={() => {
-                    if (['Computer Science/IT', 'Engineering (non-CS)', 'Commerce/Business/Finance', 'Arts/Humanities', 'Sciences', 'Design'].includes(answers.fieldOfStudy || '')) {
-                      setAnswers({...answers, fieldOfStudy: ''});
+                    if (currentNode.options?.map(o => o.id).includes(answers[currentStepId] || '')) {
+                      setAnswer('');
                     }
                   }}
-                  value={(!['Computer Science/IT', 'Engineering (non-CS)', 'Commerce/Business/Finance', 'Arts/Humanities', 'Sciences', 'Design'].includes(answers.fieldOfStudy || '')) ? answers.fieldOfStudy || '' : ''}
+                  value={(!currentNode.options?.map(o => o.id).includes(answers[currentStepId] || '')) ? answers[currentStepId] || '' : ''}
                 />
               </div>
-            </div>
+            )}
           </div>
         )}
 
-        {currentStepId === 'lookingFor' && (
-          <div className="animate-fade-in">
-            <h1 className="text-5xl lg:text-6xl font-display font-bold text-brand-ink mb-4 leading-tight tracking-tight text-center">
-              What are you actually looking for?
-            </h1>
-            <p className="text-xl text-brand-slate mb-12 text-center">
-              Pick all that apply.
-            </p>
-            <div className="flex flex-wrap gap-4 justify-center">
-              {GRAD_LOOKING_FOR.map(item => (
-                <React.Fragment key={item}>
-                  {renderMultiChip(item, (answers.lookingFor || []).includes(item), () => toggleArrayItem('lookingFor', item))}
-                </React.Fragment>
-              ))}
-            </div>
+        {currentNode.type === 'multi' && (
+          <div className="flex flex-wrap gap-4 justify-center mt-12">
+            {currentNode.options?.map(opt => (
+              <React.Fragment key={opt.id}>
+                {renderMultiChip(opt.label, (answers[currentStepId] || []).includes(opt.id), () => toggleMultiAnswer(opt.id))}
+              </React.Fragment>
+            ))}
           </div>
         )}
 
-        {currentStepId === 'readiness' && (
-          <div className="animate-fade-in max-w-4xl mx-auto space-y-16">
-            <div>
-              <h2 className="text-3xl font-display font-bold text-brand-ink mb-6 text-center">Do you have a resume ready?</h2>
-              <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
-                {['Ready to go', 'Have one, needs work', "Don't have one yet"].map(status => (
-                  <React.Fragment key={status}>
-                    {renderOptionCard(status, answers.resumeStatus === status, () => setAnswers({...answers, resumeStatus: status}))}
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h2 className="text-3xl font-display font-bold text-brand-ink mb-6 text-center">How do you feel about interviews?</h2>
-              <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
-                {['Confident', 'Some experience', 'Never really done one'].map(conf => (
-                  <React.Fragment key={conf}>
-                    {renderOptionCard(conf, answers.interviewConfidence === conf, () => setAnswers({...answers, interviewConfidence: conf}))}
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {currentStepId === 'urgency' && (
-          <div className="animate-fade-in max-w-3xl mx-auto">
-            <h1 className="text-5xl lg:text-6xl font-display font-bold text-brand-ink mb-4 leading-tight tracking-tight text-center">
-              How soon do you need this to work?
-            </h1>
-            <div className="grid gap-4 grid-cols-1 mt-12">
-              {GRAD_URGENCY.map(urgency => (
-                <React.Fragment key={urgency}>
-                  {renderOptionCard(urgency, answers.urgency === urgency, () => setAnswers({...answers, urgency}))}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       <div className="w-full max-w-3xl mt-16 flex justify-center">
@@ -501,7 +467,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, onSkip }) =
           disabled={!canProceed()}
           className="w-full md:w-auto min-w-[240px] flex items-center justify-center group"
         >
-          {currentStepIndex > 0 && currentStepIndex >= activeSteps.length ? "Complete Setup" : "Continue"}
+          {!resolveNextStep(currentStepId, answers) ? "Complete Setup" : "Continue"}
           <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
         </Button>
       </div>

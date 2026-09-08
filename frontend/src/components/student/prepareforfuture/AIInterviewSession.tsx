@@ -18,7 +18,7 @@ import { useMediaStream } from "../../../contexts/MediaStreamContext";
 import { eventService } from "../../../services/eventService";
 import { EVENT_TYPES, FEATURES } from "../../../lib/constants";
 import { FaceLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
-import { supabase } from "../../../lib/supabase";
+import { apiFetch } from '../../../lib/api';
 
 const AIInterviewSession: React.FC = () => {
  const { type } = useParams<{ type: "college" | "job" }>();
@@ -47,21 +47,48 @@ const AIInterviewSession: React.FC = () => {
  // Speech Recognition ref
  const recognitionRef = useRef<any>(null);
 
- const questions = type === "college"
- ? [
- "Tell me about yourself and why you're interested in our college.",
- "What are your academic interests and how do you plan to pursue them here?",
- "Describe a challenge you've overcome and what you learned from it.",
- "How have you contributed to your community?",
- "What questions do you have for us about our college?",
- ]
- : [
- "Tell me about yourself and your background.",
- "Why are you interested in this position?",
- "Describe a time when you faced a challenge at work or school. How did you handle it?",
- "What are your greatest strengths and how would they benefit our team?",
- "Where do you see yourself in 5 years?",
+ const [questions, setQuestions] = useState<any[]>([]);
+ const [isLoadingQuestions, setIsLoadingQuestions] = useState(true);
+
+ const FALLBACK_COLLEGE_QUESTIONS = [
+   "Tell me about yourself and why you're interested in our college.",
+   "What are your academic interests and how do you plan to pursue them here?",
+   "Describe a challenge you've overcome and what you learned from it.",
+   "How have you contributed to your community?",
+   "What questions do you have for us about our college?",
  ];
+
+ const FALLBACK_JOB_QUESTIONS = [
+   "Tell me about yourself and your background.",
+   "Why are you interested in this position?",
+   "Describe a time when you faced a challenge at work or school. How did you handle it?",
+   "What are your greatest strengths and how would they benefit our team?",
+   "Where do you see yourself in 5 years?",
+ ];
+
+ useEffect(() => {
+   const fetchQuestions = async () => {
+     setIsLoadingQuestions(true);
+     try {
+       const data = await apiFetch('/chat/generate-interview-questions', {
+         method: "POST",
+         body: JSON.stringify({ interviewType: type })
+       });
+
+        if (data.questions && Array.isArray(data.questions) && data.questions.length > 0) {
+          setQuestions(data.questions.map((q: any) => typeof q === 'string' ? q : q.text));
+        } else {
+         throw new Error("Invalid format");
+       }
+     } catch (err) {
+       console.error("Failed to generate questions, using fallback", err);
+       setQuestions(type === "college" ? FALLBACK_COLLEGE_QUESTIONS : FALLBACK_JOB_QUESTIONS);
+     } finally {
+       setIsLoadingQuestions(false);
+     }
+   };
+   fetchQuestions();
+ }, [type]);
 
  // Initialize MediaPipe FaceLandmarker
  useEffect(() => {
@@ -235,16 +262,18 @@ const AIInterviewSession: React.FC = () => {
  
  try {
  if (transcript.trim().length > 5) {
- const { data, error } = await supabase.functions.invoke('score-interview', {
- body: { question: questions[currentQuestion], transcript }
+ const data = await apiFetch('/chat/score-interview', {
+   method: 'POST',
+   body: JSON.stringify({
+     question: questions[currentQuestion],
+     transcript
+   })
  });
- 
- if (error) throw error;
- 
+
  if (data && data.confidence !== undefined) {
- confidenceScore = data.confidence;
- voiceClarityScore = data.voiceClarity;
- aiFeedback = data.feedback || aiFeedback;
+   confidenceScore = data.confidence;
+   voiceClarityScore = data.voiceClarity;
+   aiFeedback = data.feedback || aiFeedback;
  }
  }
  } catch (err) {
@@ -411,6 +440,13 @@ const AIInterviewSession: React.FC = () => {
  <MessageSquare className="w-6 h-6 text-white" />
  </div>
  <div className="flex-1">
+ {isLoadingQuestions ? (
+ <div className="flex flex-col items-center justify-center py-6">
+ <div className="w-8 h-8 border-4 border-brand-neon border-t-transparent rounded-full animate-spin mb-4"></div>
+ <p className="text-brand-slate animate-pulse">Generating personalized questions...</p>
+ </div>
+ ) : (
+ <>
  <h3 className="text-lg font-bold text-brand-ink mb-3">
  Question {currentQuestion + 1}
  </h3>
@@ -437,6 +473,8 @@ const AIInterviewSession: React.FC = () => {
  <Button disabled className="bg-brand-slate/50">
  Processing with AI...
  </Button>
+ )}
+ </>
  )}
  {/* Debug Transcript Output */}
  <div className="mt-4 p-3 bg-white/50 rounded text-sm text-brand-slate italic h-24 overflow-y-auto">

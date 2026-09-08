@@ -9,9 +9,6 @@ interface AppContextType {
   updateUser: (user: Partial<UserProfile>) => void;
   toggleShortlistedCollege: (college: College) => void;
   toggleShortlistedMajor: (major: Major) => void;
-  addGoal: (goal: Goal) => void;
-  updateGoalStatus: (goalId: string, status: Goal['status']) => void;
-  deleteGoal: (goalId: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -74,41 +71,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     });
   };
 
-  const addGoal = (goal: Goal) => {
-    setState(prev => ({
-      ...prev,
-      goals: [...prev.goals, goal]
-    }));
-    eventService.logEvent(EVENT_TYPES.GOAL_SET, { title: goal.title, category: goal.category }, FEATURES.STUDY_SUCCEED);
-  };
 
-  const updateGoalStatus = (goalId: string, status: Goal['status']) => {
-    setState(prev => {
-      const updatedGoals = prev.goals.map(g => g.id === goalId ? { ...g, status } : g);
-      const goal = updatedGoals.find(g => g.id === goalId);
-      if (goal && status === 'completed') {
-        eventService.logEvent(EVENT_TYPES.MILESTONE_REACHED, { title: goal.title, type: 'goal_completed' }, FEATURES.STUDY_SUCCEED);
-      }
-      return { ...prev, goals: updatedGoals };
-    });
-  };
-
-  const deleteGoal = (goalId: string) => {
-    setState(prev => ({
-      ...prev,
-      goals: prev.goals.filter(g => g.id !== goalId)
-    }));
-  };
 
   return (
     <AppContext.Provider value={{ 
       state, 
       updateUser, 
       toggleShortlistedCollege, 
-      toggleShortlistedMajor, 
-      addGoal, 
-      updateGoalStatus,
-      deleteGoal
+      toggleShortlistedMajor 
     }}>
       {children}
     </AppContext.Provider>

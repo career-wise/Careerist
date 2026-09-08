@@ -100,6 +100,11 @@ const StudentSidebar: React.FC<StudentSidebarProps> = ({ onClose }) => {
           label: "Track Progress",
           description: "Monitor your academic progress",
         },
+        {
+          path: "/student-dashboard/academics/online-courses",
+          label: "Online Courses",
+          description: "Explore recommended online courses",
+        },
       ],
     },
   ];

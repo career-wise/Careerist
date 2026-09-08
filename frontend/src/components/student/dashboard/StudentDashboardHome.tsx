@@ -316,7 +316,7 @@ const StudentDashboardHome: React.FC = () => {
  <h3 className="font-bold text-brand-ink mb-4">Explore</h3>
  <div className="grid grid-cols-2 gap-3">
  {[
- { name: 'Learning', icon: BookOpen, link: '/student-dashboard/learning/courses' },
+ { name: 'Learning', icon: BookOpen, link: '/student-dashboard/academics/online-courses' },
  { name: 'Resumes', icon: FileText, link: '/student-dashboard/resources/document-manager' },
  { name: 'Projects', icon: Zap, link: '/student-dashboard/learning/projects' },
  { name: 'Interviews', icon: Users, link: '/student-dashboard/learning/interview-prep' }

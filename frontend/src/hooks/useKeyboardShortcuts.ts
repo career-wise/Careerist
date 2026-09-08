@@ -24,7 +24,7 @@ export const useKeyboardShortcuts = (shortcuts: KeyboardShortcut[]) => {
         } = shortcut;
 
         if (
-          event.key.toLowerCase() === key.toLowerCase() &&
+          event.key?.toLowerCase() === key?.toLowerCase() &&
           event.ctrlKey === ctrlKey &&
           event.metaKey === metaKey &&
           event.shiftKey === shiftKey &&

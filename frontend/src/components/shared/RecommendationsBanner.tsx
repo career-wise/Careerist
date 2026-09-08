@@ -51,7 +51,7 @@ const RecommendationsBanner: React.FC<RecommendationsBannerProps> = ({ targetFea
     }
   };
 
-  if (recommendations.length === 0) return null;
+  if (recommendations.filter(r => r.type !== 'college' && r.type !== 'major').length === 0) return null;
 
   return (
     <div className="space-y-4 mb-8">
@@ -60,7 +60,7 @@ const RecommendationsBanner: React.FC<RecommendationsBannerProps> = ({ targetFea
         Recommended for You
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {recommendations.map((rec) => (
+        {recommendations.filter(r => r.type !== 'college' && r.type !== 'major').map((rec) => (
           <Card key={rec.id} className="p-6 border-brand-neon/50 bg-brand-neon/5 relative flex flex-col">
             <div className="absolute top-4 right-4 flex space-x-2">
               <button onClick={() => handleComplete(rec.id)} className="p-1 rounded-full text-brand-darkgreen hover:bg-brand-neon/20 transition-colors" title="Mark Completed">

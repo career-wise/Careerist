@@ -10,7 +10,6 @@ import MajorExplorer from "../explorer&discover/MajorExplorer";
 import BasicTechSkills from "../learn&develop/BasicTechSkills";
 import SoftSkills from "../learn&develop/SoftSkills";
 import CreativeSkills from "../learn&develop/CreativeSkills";
-import OnlineCourses from "../learn&develop/OnlineCourses";
 import ProjectIdeas from "../learn&develop/ProjectIdeas";
 import InterviewPreparation from "../prepareforfuture/InterviewPreparation";
 import CareerPathPlanner from "../prepareforfuture/CareerPathPlanner";
@@ -21,6 +20,7 @@ import SubjectExplorer from "../study&succeed/SubjectExplorer";
 import StudySkillsTrainer from "../study&succeed/StudySkillsTrainer";
 import TestPrepStrategies from "../study&succeed/TestPrepStrategies";
 import AcademicGoalTracker from "../study&succeed/AcademicGoalTracker";
+import OnlineCourses from "../study&succeed/OnlineCourses";
 import ResumeBuilder from "../../graduate/resources/ResumeBuilder";
 
 const StudentDashboard: React.FC = () => {
@@ -67,6 +67,7 @@ const StudentDashboard: React.FC = () => {
           <Route path="/resources/study" element={<StudyResources />} />
           <Route path="/academics/study-resources" element={<StudyResources />} />
           <Route path="/academics/goal-tracker" element={<AcademicGoalTracker />} />
+          <Route path="/academics/online-courses" element={<OnlineCourses />} />
           <Route path="/academics/subject-explorer" element={<SubjectExplorer />} />
 
           {/* College Routes */}
@@ -79,7 +80,6 @@ const StudentDashboard: React.FC = () => {
           <Route path="/skills/creative" element={<CreativeSkills />} />
 
           {/* Learning Routes */}
-          <Route path="/learning/courses" element={<OnlineCourses />} />
           <Route path="/learning/projects" element={<ProjectIdeas />} />
           <Route path="/learning/interview-prep" element={<InterviewPreparation />} />
 

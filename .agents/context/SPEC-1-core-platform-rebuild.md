@@ -57,7 +57,7 @@ No test framework currently exists in this repo (`package.json` has no test runn
 
 ## Out of Scope
 
-- AI chat, Gemini integration, function-calling (Spec 2).
+- AI chat, Groq (`openai/gpt-oss-120b`) integration, function-calling (Spec 2).
 - Any `events`/`recommendations` writers or readers beyond the schema/RLS existing (Spec 2/3).
 - Graduate-specific features beyond persona-based routing and profile field storage (Spec 3).
 - Social login, MFA, email verification flows beyond Supabase's defaults.

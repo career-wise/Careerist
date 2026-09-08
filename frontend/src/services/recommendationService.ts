@@ -1,52 +1,32 @@
-import { supabase } from '../lib/supabase';
-import { RecommendationType, FeatureType } from '../lib/constants';
+import { apiFetch } from '../lib/api';
 
 export interface Recommendation {
   id: string;
-  user_id: string;
-  type: RecommendationType | string;
+  type: string;
+  source_feature: string;
+  target_feature: string;
   payload: any;
-  source_feature: FeatureType | string;
-  target_feature: FeatureType | string;
-  status: 'active' | 'dismissed' | 'completed';
+  status: 'active' | 'dismissed' | 'saved';
   created_at: string;
 }
 
-export const recommendationService = {
-  async getActiveRecommendations(userId: string, targetFeature?: string) {
-    let query = supabase
-      .from('recommendations')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('status', 'active');
-      
-    if (targetFeature) {
-      query = query.eq('target_feature', targetFeature);
-    }
-    
-    const { data, error } = await query.order('created_at', { ascending: false });
-    
-    if (error) {
-      console.error('Error fetching recommendations:', error);
-      throw error;
-    }
-    
-    return data as Recommendation[];
-  },
-
-  async updateStatus(id: string, status: 'dismissed' | 'completed') {
-    const { data, error } = await supabase
-      .from('recommendations')
-      .update({ status })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error updating recommendation:', error);
-      throw error;
-    }
-    
-    return data as Recommendation;
+export class RecommendationService {
+  async getActiveRecommendations(targetFeature: string): Promise<Recommendation[]> {
+    return await apiFetch(`/recommendations/active?target_feature=${targetFeature}`);
   }
-};
+
+  async updateRecommendationStatus(id: string, status: 'dismissed' | 'saved'): Promise<void> {
+    await apiFetch(`/recommendations/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status })
+    });
+  }
+
+  async generateExplorerPicks(): Promise<void> {
+    await apiFetch('/recommendations/generate-picks', {
+      method: 'POST'
+    });
+  }
+}
+
+export const recommendationService = new RecommendationService();

@@ -22,7 +22,7 @@ import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
 import RecommendationsBanner from "../../shared/RecommendationsBanner";
 import { FEATURES } from "../../../lib/constants";
-import { Recommendation } from "../../../services/recommendationService";
+import { Recommendation, recommendationService } from "../../../services/recommendationService";
 
 const getFutureDateString = (monthsAhead: number) => {
  const d = new Date();
@@ -37,112 +37,149 @@ const CollegeExplorer: React.FC = () => {
  const [selectedFilter, setSelectedFilter] = useState("all");
  const [activeRecs, setActiveRecs] = useState<Recommendation[]>([]);
  
+ const [isGenerating, setIsGenerating] = useState(false);
  const { state, toggleShortlistedCollege } = useAppContext();
  const savedColleges = state.shortlistedColleges.map(c => c.id);
 
- const colleges = [
+ const fetchRecommendations = async () => {
+    const data = await recommendationService.getActiveRecommendations(FEATURES.EXPLORER);
+    setActiveRecs(data);
+ };
+
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    try {
+      await recommendationService.generateExplorerPicks();
+      await fetchRecommendations();
+    } catch (err: any) {
+      console.error(err);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+ const COLLEGE_IMAGES = [
+  "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=800&h=600&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1607237138185-eedd9c632b0b?w=800&h=600&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1564981797816-1043664bf78d?w=800&h=600&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1562774053-701939374585?w=800&h=600&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=600&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop&q=80",
+ ];
+
+ const fallbackColleges = [
  {
  id: 1,
- name: "Stanford University",
- location: "Stanford, CA",
- type: "Private",
- ranking: 6,
- acceptance: "4%",
- tuition: "$56,169",
- enrollment: "17,249",
- satRange: "1470-1570",
- programs: ["Computer Science", "Engineering", "Business", "Medicine", "Data Science"],
+ name: "Indian Institute of Technology (IIT) Bombay",
+ location: "Mumbai, Maharashtra",
+ type: "Public",
+ ranking: 1,
+ acceptance: "1%",
+ tuition: "₹2,00,000/yr",
+ enrollment: "10,000+",
+ satRange: "JEE Advanced",
+ programs: ["Computer Science", "Mechanical Eng.", "Electrical Eng.", "Design"],
  image: "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=800&h=600&fit=crop&q=80",
  matchScore: 95,
- highlights: ["Top CS Program", "Silicon Valley Location", "Strong Alumni Network"],
- applicationDeadline: getFutureDateString(5),
- },
- {
- id: 2,
- name: "University of California, Berkeley",
- location: "Berkeley, CA",
- type: "Public",
- ranking: 22,
- acceptance: "17%",
- tuition: "$14,253 (in-state)",
- enrollment: "45,057",
- satRange: "1330-1530",
- programs: ["Engineering", "Computer Science", "Business", "Liberal Arts", "Data Science"],
- image: "https://images.unsplash.com/photo-1607237138185-eedd9c632b0b?w=800&h=600&fit=crop&q=80",
- matchScore: 88,
- highlights: ["Public Ivy", "Research Opportunities", "Diverse Community"],
+ highlights: ["Top Engineering Institute", "Excellent Placements", "Strong Alumni Network"],
  applicationDeadline: getFutureDateString(3),
  },
  {
- id: 3,
- name: "Massachusetts Institute of Technology",
- location: "Cambridge, MA",
+ id: 2,
+ name: "Birla Institute of Technology and Science (BITS)",
+ location: "Pilani, Rajasthan",
  type: "Private",
- ranking: 2,
- acceptance: "7%",
- tuition: "$53,790",
- enrollment: "11,934",
- satRange: "1510-1570",
- programs: ["Engineering", "Computer Science", "Physics", "Mathematics", "AI/ML"],
+ ranking: 5,
+ acceptance: "3%",
+ tuition: "₹5,00,000/yr",
+ enrollment: "17,000+",
+ satRange: "BITSAT",
+ programs: ["Computer Science", "Electronics", "Information Systems", "Mechanical Eng."],
+ image: "https://images.unsplash.com/photo-1607237138185-eedd9c632b0b?w=800&h=600&fit=crop&q=80",
+ matchScore: 88,
+ highlights: ["Zero Attendance Policy", "Practice School", "Startup Culture"],
+ applicationDeadline: getFutureDateString(4),
+ },
+ {
+ id: 3,
+ name: "Delhi University (DU)",
+ location: "New Delhi, Delhi",
+ type: "Public",
+ ranking: 10,
+ acceptance: "Varies",
+ tuition: "₹15,000/yr",
+ enrollment: "500,000+",
+ satRange: "CUET",
+ programs: ["Economics", "Commerce", "Political Science", "English"],
  image: "https://images.unsplash.com/photo-1564981797816-1043664bf78d?w=800&h=600&fit=crop&q=80",
  matchScore: 92,
- highlights: ["World-Class Research", "Innovation Hub", "Tech Focus"],
- applicationDeadline: getFutureDateString(4),
+ highlights: ["Top Liberal Arts/Commerce", "Vibrant Campus Life", "Affordable"],
+ applicationDeadline: getFutureDateString(2),
  },
  {
  id: 4,
- name: "Harvard University",
- location: "Cambridge, MA",
- type: "Private",
- ranking: 3,
- acceptance: "5%",
- tuition: "$54,269",
- enrollment: "23,731",
- satRange: "1460-1580",
- programs: ["Liberal Arts", "Business", "Law", "Medicine", "Government"],
+ name: "Indian Institute of Science (IISc)",
+ location: "Bengaluru, Karnataka",
+ type: "Public",
+ ranking: 2,
+ acceptance: "1%",
+ tuition: "₹50,000/yr",
+ enrollment: "4,000+",
+ satRange: "JEE/KVPY",
+ programs: ["Physics", "Mathematics", "Biology", "Materials Science"],
  image: "https://images.unsplash.com/photo-1562774053-701939374585?w=800&h=600&fit=crop&q=80",
  matchScore: 90,
- highlights: ["Prestigious", "Global Network", "Financial Aid"],
- applicationDeadline: getFutureDateString(4),
+ highlights: ["Premier Research", "Beautiful Campus", "High Impact Factor"],
+ applicationDeadline: getFutureDateString(5),
  },
  {
  id: 5,
- name: "Carnegie Mellon University",
- location: "Pittsburgh, PA",
- type: "Private",
- ranking: 28,
- acceptance: "17%",
- tuition: "$59,864",
- enrollment: "15,818",
- satRange: "1460-1560",
- programs: ["Computer Science", "Robotics", "AI", "Engineering", "Drama"],
+ name: "National Institute of Technology (NIT) Trichy",
+ location: "Tiruchirappalli, Tamil Nadu",
+ type: "Public",
+ ranking: 8,
+ acceptance: "2%",
+ tuition: "₹1,50,000/yr",
+ enrollment: "6,000+",
+ satRange: "JEE Main",
+ programs: ["Computer Science", "Architecture", "Chemical Eng.", "Production Eng."],
  image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=600&fit=crop&q=80",
  matchScore: 87,
- highlights: ["Top CS School", "AI Research", "Interdisciplinary"],
+ highlights: ["Top NIT", "Excellent ROE", "Cultural Fests"],
  applicationDeadline: getFutureDateString(4),
  },
  {
  id: 6,
- name: "University of Michigan",
- location: "Ann Arbor, MI",
+ name: "Indian Institute of Management (IIM) Ahmedabad",
+ location: "Ahmedabad, Gujarat",
  type: "Public",
- ranking: 23,
- acceptance: "23%",
- tuition: "$15,948 (in-state)",
- enrollment: "47,907",
- satRange: "1340-1530",
- programs: ["Engineering", "Business", "Medicine", "Liberal Arts", "Music"],
+ ranking: 1,
+ acceptance: "1%",
+ tuition: "₹25,00,000",
+ enrollment: "1,200+",
+ satRange: "CAT",
+ programs: ["MBA", "Food & Agribusiness", "Executive Education"],
  image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop&q=80",
  matchScore: 85,
- highlights: ["Big Ten", "Research University", "School Spirit"],
+ highlights: ["Top B-School", "Global Ranking", "Case Method"],
  applicationDeadline: getFutureDateString(6),
  },
  ];
 
+  const activeCollegeRecs = activeRecs.filter(r => r.type === 'college');
+  
+  const displayColleges = activeCollegeRecs.length > 0 
+    ? activeCollegeRecs.map((rec, index) => ({
+        id: rec.id,
+        ...rec.payload,
+        image: COLLEGE_IMAGES[index % COLLEGE_IMAGES.length]
+      }))
+    : fallbackColleges;
+
  const stats = [
  {
  label: "Colleges Tracked",
- value: colleges.length.toString(),
+ value: displayColleges.length.toString(),
  icon: Building2,
  bgColor: "bg-brand-mist/50 border border-brand-slate/10",
  textColor: "text-brand-ink",
@@ -170,11 +207,11 @@ const CollegeExplorer: React.FC = () => {
  toggleShortlistedCollege(college);
  };
 
- const filteredColleges = colleges.filter(college =>
- college.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
- college.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
- college.programs.some(p => p.toLowerCase().includes(searchQuery.toLowerCase()))
- );
+  const filteredColleges = displayColleges.filter(college =>
+    college.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    college.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    college.programs.some((p: string) => p.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
  const recKeywords = activeRecs
  .map(r => (r.payload?.keyword || r.payload?.title || r.payload?.major || r.payload?.college || '').toLowerCase())
@@ -217,10 +254,23 @@ const CollegeExplorer: React.FC = () => {
  </p>
  </div>
  </div>
- <div className="flex items-center gap-3">
- <Button className="bg-brand-neon text-brand-ink hover:bg-white hover:text-brand-ink border-none shadow-lg font-bold">
- <Target className="w-5 h-5 mr-2" />
- Find My Match
+ <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+ <Button 
+   onClick={handleGenerate} 
+   disabled={isGenerating}
+   className="bg-brand-neon text-brand-ink hover:bg-white hover:text-brand-ink border-none shadow-lg font-bold w-full sm:w-auto"
+ >
+ {isGenerating ? (
+   <span className="flex items-center gap-2">
+     <div className="w-5 h-5 border-2 border-brand-ink border-t-transparent rounded-full animate-spin"></div>
+     Generating Matches...
+   </span>
+ ) : (
+   <>
+     <Target className="w-5 h-5 mr-2" />
+     Find My Match
+   </>
+ )}
  </Button>
  </div>
  </div>

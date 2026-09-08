@@ -28,22 +28,6 @@ export const initialMockState: AppState = {
       matchScore: 95
     }
   ],
-  goals: [
-    {
-      id: "g1",
-      title: "Complete SAT Prep Course",
-      status: "in-progress",
-      category: "academic",
-      dueDate: "Oct 15"
-    },
-    {
-      id: "g2",
-      title: "Submit Common App Draft",
-      status: "pending",
-      category: "academic",
-      dueDate: "Nov 1"
-    }
-  ],
   journey: [
     { id: 1, status: 'completed', label: 'Onboarding', detail: 'Profile & goals set up' },
     { id: 2, status: 'completed', label: 'First Field', detail: 'Explored Computer Science' },

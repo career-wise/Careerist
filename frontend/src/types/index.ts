@@ -74,6 +74,5 @@ export interface AppState {
   user: UserProfile;
   shortlistedColleges: College[];
   shortlistedMajors: Major[];
-  goals: Goal[];
   journey: JourneyNode[];
 }

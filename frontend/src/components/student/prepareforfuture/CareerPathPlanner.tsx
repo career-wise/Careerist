@@ -1,177 +1,17 @@
 import React, { useState, useEffect } from "react";
-import {
-  Map,
-  Target,
-  TrendingUp,
-  Sparkles,
-  CheckCircle,
-  Circle,
-  Lock,
-  Star,
-  BookOpen,
-  Briefcase,
-  Users,
-  Lightbulb,
-  Award,
-  Zap,
-  Code,
-  Brain,
-  Trophy,
-  ExternalLink,
-  MessageCircle,
-  Info,
-  ArrowRight,
-  Settings,
-  HelpCircle,
-} from "lucide-react";
+import { Sparkles, CheckCircle, Circle, ArrowRight, Target, Briefcase, GraduationCap, Trophy, Map } from "lucide-react";
+import Card from "../../shared/ui/Card";
 import Button from "../../shared/ui/Button";
-
-import { useAppContext } from "../../../contexts/AppContext";
-import { profileService } from "../../../services/profileService";
 import { authService } from "../../../lib/auth";
-
-const studentRoadmap = {
-  title: "Your High School to College Career Journey",
-  progress: "0 of 52 Done",
-  
-  mainPath: [
-    { id: "start", label: "Start Your Journey", type: "start", status: "completed", y: 50 },
-    { id: "assessment", label: "Career Assessment", type: "primary", status: "completed", description: "Discover your interests and strengths", y: 150 },
-    { id: "academic-foundation", label: "Academic Foundation", type: "primary", status: "in-progress", description: "Build strong fundamentals in core subjects", y: 250 },
-    { id: "skill-exploration", label: "Explore Career Paths", type: "primary", status: "available", description: "Research different career options", y: 400 },
-    { id: "specialization", label: "Choose Specialization", type: "primary", status: "locked", description: "Select your focus area", y: 650 },
-    { id: "build-portfolio", label: "Build Portfolio", type: "primary", status: "locked", description: "Create projects and experiences", y: 850 },
-    { id: "advanced-prep", label: "Advanced Preparation", type: "primary", status: "locked", description: "AP courses and standardized tests", y: 1050 },
-    { id: "college-apps", label: "College Applications", type: "primary", status: "locked", description: "Apply to your dream schools", y: 1250 },
-    { id: "success", label: "College & Career Success", type: "end", status: "locked", y: 1400 },
-  ],
-
-  branches: {
-    level1Branches: [
-      { id: "mathematics", label: "Mathematics", status: "in-progress", x: -250, y: 250 },
-      { id: "sciences", label: "Sciences", status: "in-progress", x: -250, y: 310 },
-      { id: "english", label: "English & Writing", status: "available", x: -250, y: 370 },
-    ],
-    level2Branches: [
-      { id: "tech-path", label: "Technology", status: "available", x: -300, y: 450, color: "brand-mist" },
-      { id: "business-path", label: "Business", status: "available", x: -300, y: 520, color: "brand-mist" },
-      { id: "creative-path", label: "Creative Arts", status: "available", x: -300, y: 590, color: "brand-mist" },
-      { id: "stem-path", label: "STEM Research", status: "available", x: 300, y: 450, color: "brand-mist" },
-      { id: "healthcare-path", label: "Healthcare", status: "available", x: 300, y: 520, color: "brand-mist" },
-      { id: "social-path", label: "Social Sciences", status: "available", x: 300, y: 590, color: "brand-mist" },
-    ],
-    level3Branches: [
-      { id: "web-dev", label: "Web Development", status: "locked", x: -280, y: 700 },
-      { id: "app-dev", label: "Mobile Apps", status: "locked", x: -280, y: 760 },
-      { id: "data-science", label: "Data Science", status: "locked", x: -280, y: 820 },
-      { id: "ai-ml", label: "AI & Machine Learning", status: "locked", x: 280, y: 700 },
-      { id: "cybersecurity", label: "Cybersecurity", status: "locked", x: 280, y: 760 },
-      { id: "game-dev", label: "Game Development", status: "locked", x: 280, y: 820 },
-    ],
-    level4Branches: [
-      { id: "projects", label: "Personal Projects", status: "locked", x: -250, y: 850, color: "brand-mist" },
-      { id: "internship", label: "Internships", status: "locked", x: -250, y: 910, color: "brand-mist" },
-      { id: "competitions", label: "Competitions", status: "locked", x: 250, y: 850, color: "brand-mist" },
-      { id: "leadership", label: "Leadership Roles", status: "locked", x: 250, y: 910, color: "brand-mist" },
-    ],
-    level5Branches: [
-      { id: "ap-courses", label: "AP/IB Courses", status: "locked", x: -230, y: 1050, color: "brand-mist" },
-      { id: "sat-act", label: "SAT/ACT Prep", status: "locked", x: -230, y: 1110, color: "brand-mist" },
-      { id: "subject-tests", label: "Subject Tests", status: "locked", x: 230, y: 1050, color: "brand-mist" },
-      { id: "research", label: "Research Papers", status: "locked", x: 230, y: 1110, color: "brand-mist" },
-    ],
-    questions: [
-      { id: "q1", label: "What are my strengths?", x: 400, y: 150, type: "question" },
-      { id: "q2", label: "Which subjects interest me?", x: 400, y: 250, type: "question" },
-      { id: "q3", label: "What career fits me?", x: 400, y: 400, type: "question" },
-      { id: "q4", label: "What skills do I need?", x: 400, y: 650, type: "question" },
-      { id: "q5", label: "How do I stand out?", x: 400, y: 850, type: "question" },
-    ],
-  },
-  infoBoxes: [
-    { id: "info1", title: "Foundation Years", description: "Focus on building strong academic fundamentals and exploring different interests", x: -450, y: 150 },
-    { id: "info2", title: "Exploration Phase", description: "Try different activities, join clubs, and discover what you're passionate about", x: -480, y: 400 },
-    { id: "info3", title: "Build Your Brand", description: "Create a portfolio of projects and experiences that showcase your unique abilities", x: -450, y: 750 },
-  ],
-};
-
-const graduateRoadmap = {
-  title: "Your Professional Career Journey",
-  progress: "1 of 7 Steps",
-  
-  mainPath: [
-    { id: "start", label: "Assess Current Position", type: "start", status: "completed", y: 50 },
-    { id: "assessment", label: "Define Target Role", type: "primary", status: "completed", description: "Decide whether to advance or switch fields", y: 150 },
-    { id: "academic-foundation", label: "Identify Skill Gaps", type: "primary", status: "in-progress", description: "Compare current skills to target requirements", y: 250 },
-    { id: "skill-exploration", label: "Upskill & Certify", type: "primary", status: "available", description: "Take courses and gain required skills", y: 400 },
-    { id: "specialization", label: "Update Portfolio & Resume", type: "primary", status: "locked", description: "Showcase new skills and projects", y: 650 },
-    { id: "build-portfolio", label: "Expand Network", type: "primary", status: "locked", description: "Connect with professionals in your target field", y: 850 },
-    { id: "advanced-prep", label: "Targeted Applications", type: "primary", status: "locked", description: "Apply and interview for target roles", y: 1050 },
-    { id: "success", label: "Land Target Role", type: "end", status: "locked", y: 1250 },
-  ],
-
-  branches: {
-    level1Branches: [
-      { id: "tech-skills", label: "Technical Skills", status: "in-progress", x: -250, y: 250 },
-      { id: "soft-skills", label: "Soft Skills", status: "in-progress", x: -250, y: 310 },
-      { id: "domain-knowledge", label: "Domain Knowledge", status: "available", x: -250, y: 370 },
-    ],
-    level2Branches: [
-      { id: "online-courses", label: "Online Courses", status: "available", x: -300, y: 450, color: "brand-mist" },
-      { id: "bootcamps", label: "Bootcamps", status: "available", x: -300, y: 520, color: "brand-mist" },
-      { id: "certifications", label: "Certifications", status: "available", x: -300, y: 590, color: "brand-mist" },
-      { id: "mentorship", label: "Mentorship", status: "available", x: 300, y: 450, color: "brand-mist" },
-      { id: "self-study", label: "Self-Study", status: "available", x: 300, y: 520, color: "brand-mist" },
-      { id: "workshops", label: "Workshops", status: "available", x: 300, y: 590, color: "brand-mist" },
-    ],
-    level3Branches: [
-      { id: "github", label: "GitHub Repos", status: "locked", x: -280, y: 700 },
-      { id: "case-studies", label: "Case Studies", status: "locked", x: -280, y: 760 },
-      { id: "personal-site", label: "Personal Site", status: "locked", x: -280, y: 820 },
-      { id: "articles", label: "Published Articles", status: "locked", x: 280, y: 700 },
-      { id: "presentations", label: "Presentations", status: "locked", x: 280, y: 760 },
-      { id: "resume-tailor", label: "Tailored Resumes", status: "locked", x: 280, y: 820 },
-    ],
-    level4Branches: [
-      { id: "linkedin", label: "LinkedIn Optimization", status: "locked", x: -250, y: 850, color: "brand-mist" },
-      { id: "meetups", label: "Industry Meetups", status: "locked", x: -250, y: 910, color: "brand-mist" },
-      { id: "conferences", label: "Conferences", status: "locked", x: 250, y: 850, color: "brand-mist" },
-      { id: "cold-outreach", label: "Cold Outreach", status: "locked", x: 250, y: 910, color: "brand-mist" },
-    ],
-    level5Branches: [
-      { id: "mock-interviews", label: "Mock Interviews", status: "locked", x: -230, y: 1050, color: "brand-mist" },
-      { id: "cover-letters", label: "Cover Letters", status: "locked", x: -230, y: 1110, color: "brand-mist" },
-      { id: "salary-negotiation", label: "Salary Negotiation", status: "locked", x: 230, y: 1050, color: "brand-mist" },
-      { id: "take-home", label: "Take-Home Assignments", status: "locked", x: 230, y: 1110, color: "brand-mist" },
-    ],
-    questions: [
-      { id: "q1", label: "What is my target field?", x: 400, y: 150, type: "question" },
-      { id: "q2", label: "What skills am I missing?", x: 400, y: 250, type: "question" },
-      { id: "q3", label: "How should I upskill?", x: 400, y: 400, type: "question" },
-      { id: "q4", label: "How do I show my value?", x: 400, y: 650, type: "question" },
-      { id: "q5", label: "Who should I connect with?", x: 400, y: 850, type: "question" },
-    ],
-  },
-  infoBoxes: [
-    { id: "info1", title: "Target Selection", description: "Identify whether you are advancing in your current field or pivoting to a new one.", x: -450, y: 150 },
-    { id: "info2", title: "Bridging the Gap", description: "Find out what you're missing and actively work to gain those exact skills.", x: -480, y: 400 },
-    { id: "info3", title: "Market Yourself", description: "Update your portfolio, refine your resume, and start connecting with industry leaders.", x: -450, y: 750 },
-  ],
-};
-
+import { profileService } from "../../../services/profileService";
+import { useAppContext } from "../../../contexts/AppContext";
 
 const CareerPathPlanner: React.FC = () => {
   const { state } = useAppContext();
-  const [completedNodes, setCompletedNodes] = useState<string[]>([
-    "start",
-    "assessment",
-  ]);
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
-  const [selectedNode, setSelectedNode] = useState<string | null>(null);
-  const [persona, setPersona] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
-  const [customRoadmap, setCustomRoadmap] = useState<any>(null);
+  const [roadmap, setRoadmap] = useState<any>(null);
+  const [persona, setPersona] = useState<string>("student");
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -181,12 +21,11 @@ const CareerPathPlanner: React.FC = () => {
           const profile = await profileService.getProfile(session.user.id);
           setPersona(profile?.persona || "student");
           if (profile?.onboarding_answers?.career_roadmap) {
-            setCustomRoadmap(profile.onboarding_answers.career_roadmap);
+            setRoadmap(profile.onboarding_answers.career_roadmap);
           }
         }
       } catch (err) {
         console.error("Failed to load profile", err);
-        setPersona("student");
       } finally {
         setLoading(false);
       }
@@ -194,15 +33,11 @@ const CareerPathPlanner: React.FC = () => {
     loadProfile();
   }, []);
 
-  if (loading) {
-    return <div className="p-8 min-h-screen">Loading planner...</div>;
-  }
-
   const handleGenerate = async () => {
     try {
       setGenerating(true);
       const rm = await profileService.generateCareerRoadmap();
-      setCustomRoadmap(rm);
+      setRoadmap(rm);
     } catch (e) {
       console.error(e);
       alert("Failed to generate roadmap.");
@@ -211,517 +46,142 @@ const CareerPathPlanner: React.FC = () => {
     }
   };
 
-  const baseRoadmap = persona === "graduate" ? graduateRoadmap : studentRoadmap;
-  const currentRoadmap = customRoadmap ? {
-    ...baseRoadmap,
-    title: customRoadmap.title || baseRoadmap.title,
-    branches: {
-      ...baseRoadmap.branches,
-      level1Branches: baseRoadmap.branches.level1Branches.map((b: any, i: number) => ({ ...b, label: customRoadmap.branches?.level1Branches?.[i]?.label || b.label })),
-      level2Branches: baseRoadmap.branches.level2Branches.map((b: any, i: number) => ({ ...b, label: customRoadmap.branches?.level2Branches?.[i]?.label || b.label })),
-      level3Branches: baseRoadmap.branches.level3Branches.map((b: any, i: number) => ({ ...b, label: customRoadmap.branches?.level3Branches?.[i]?.label || b.label })),
-      level4Branches: baseRoadmap.branches.level4Branches.map((b: any, i: number) => ({ ...b, label: customRoadmap.branches?.level4Branches?.[i]?.label || b.label })),
-      level5Branches: baseRoadmap.branches.level5Branches.map((b: any, i: number) => ({ ...b, label: customRoadmap.branches?.level5Branches?.[i]?.label || b.label })),
-    },
-    infoBoxes: baseRoadmap.infoBoxes.map((b: any, i: number) => ({
-      ...b,
-      title: customRoadmap.infoBoxes?.[i]?.title || b.title,
-      description: customRoadmap.infoBoxes?.[i]?.description || b.description,
-    }))
-  } : baseRoadmap;
+  if (loading) {
+    return <div className="min-h-screen bg-brand-mist/30 flex items-center justify-center">Loading planner...</div>;
+  }
 
-  const getNodeColor = (status: string, customColor?: string) => {
-    switch (status) {
-      case "completed":
-        return {
-          bg: "bg-brand-neon",
-          border: "border-brand-neon",
-          text: "text-brand-ink",
-          hover: "hover:bg-brand-neon/90 hover:border-brand-neon/90",
-        };
-      case "in-progress":
-      case "available":
-        return {
-          bg: "bg-brand-mist",
-          border: "border-brand-neon",
-          text: "text-brand-ink",
-          hover: "hover:bg-brand-neon hover:text-brand-ink",
-        };
-      case "locked":
-        return {
-          bg: "bg-white",
-          border: "border-brand-slate/20",
-          text: "text-brand-slate",
-          hover: "hover:bg-brand-mist",
-        };
-      default:
-        return {
-          bg: "bg-white",
-          border: "border-brand-slate/20",
-          text: "text-brand-slate",
-          hover: "hover:bg-brand-mist",
-        };
-    }
-  };
+  // No more fallback dummy data. We will show an empty state if no roadmap exists.
+  const hasRoadmap = !!roadmap;
+  
+  // Adapter for the AI generated roadmap structure
+  let steps: any[] = [];
+  if (hasRoadmap && roadmap.branches) {
+    steps = [
+      { id: 1, title: "Foundation", desc: roadmap.branches.level1Branches?.map((b:any)=>b.label).join(", ") || "Build basics", status: "completed", icon: <Target className="w-6 h-6"/> },
+      { id: 2, title: "Exploration", desc: roadmap.branches.level2Branches?.map((b:any)=>b.label).join(", ") || "Explore skills", status: "in-progress", icon: <Sparkles className="w-6 h-6"/> },
+      { id: 3, title: "Specialization", desc: roadmap.branches.level3Branches?.map((b:any)=>b.label).join(", ") || "Deep dive", status: "available", icon: <GraduationCap className="w-6 h-6"/> },
+      { id: 4, title: "Application", desc: roadmap.branches.level4Branches?.map((b:any)=>b.label).join(", ") || "Apply", status: "locked", icon: <Briefcase className="w-6 h-6"/> },
+      { id: 5, title: "Success", desc: roadmap.branches.level5Branches?.map((b:any)=>b.label).join(", ") || "Land role", status: "locked", icon: <Trophy className="w-6 h-6"/> },
+    ];
+  }
 
-  const getStatusIcon = (status: string) => {
-    if (status === "completed") return <CheckCircle className="w-5 h-5 text-brand-ink" />;
-    if (status === "in-progress") return <Circle className="w-5 h-5 text-brand-neon" />;
-    if (status === "locked") return <Lock className="w-4 h-4 text-brand-slate/60" />;
-    return <Circle className="w-5 h-5 text-brand-neon" />;
-  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-mist via-white to-brand-mist/50 p-6">
-      <div className="max-w-[1400px] mx-auto">
-        
+    <div className="min-h-screen bg-gradient-to-br from-brand-mist/30 via-white to-brand-mist/30 py-12 px-6 font-sans">
+      <div className="max-w-4xl mx-auto space-y-12">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-            <div>
-              <div className="flex items-center gap-4 mb-2">
-                <div className="w-12 h-12 bg-gradient-to-br from-brand-ink to-brand-darkgreen rounded-xl flex items-center justify-center shadow-lg">
-                  <Map className="w-7 h-7 text-white" />
-                </div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-brand-ink to-brand-darkgreen bg-clip-text text-transparent">
-                  {currentRoadmap.title}
-                </h1>
-              </div>
-              <div className="flex items-center gap-4 ml-16">
-                <span className="px-3 py-1 bg-brand-neon/20 text-brand-ink border border-brand-neon/30 rounded-full text-sm font-semibold">
-                  {currentRoadmap.progress}
+        <div className="bg-brand-ink rounded-[2rem] p-8 md:p-12 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="relative z-10 max-w-2xl">
+            <h1 className="text-3xl md:text-5xl font-display font-bold mb-4">
+              {hasRoadmap ? roadmap.title : "Career Path Planner"}
+            </h1>
+            <p className="text-brand-mist/90 text-lg font-medium">
+              {hasRoadmap 
+                ? "Your personalized roadmap is ready. Follow these steps to reach your goal." 
+                : "Generate a personalized, step-by-step roadmap tailored to your specific career goals and current skills."}
+            </p>
+          </div>
+          <div className="relative z-10 shrink-0">
+            <Button
+              onClick={handleGenerate}
+              disabled={generating}
+              className="bg-brand-neon text-brand-ink hover:bg-white hover:text-brand-ink border-none shadow-lg font-bold px-8 py-4 text-lg rounded-full transition-all duration-300 transform hover:scale-105"
+            >
+              {generating ? (
+                <span className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 animate-spin" /> Generating...
                 </span>
-                <button className="text-sm text-brand-darkgreen font-medium hover:text-brand-neon transition-colors flex items-center gap-1">
-                  <MessageCircle className="w-4 h-4" />
-                  Track Progress
-                </button>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <Button variant="outline" className="border-brand-slate/20 text-brand-ink hover:bg-brand-mist">
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Share
-              </Button>
-              <Button 
-                onClick={handleGenerate}
-                disabled={generating}
-                className="bg-gradient-to-r from-brand-ink to-brand-darkgreen hover:from-brand-darkgreen hover:to-brand-ink border-none">
-                <Sparkles className="w-4 h-4 mr-2" />
-                {generating ? "Generating..." : (customRoadmap ? "Regenerate" : "Personalize")}
-              </Button>
-            </div>
+              ) : (
+                hasRoadmap ? "Regenerate Plan" : "Generate Plan"
+              )}
+            </Button>
           </div>
-
-          {/* Info Banner */}
-          <div className="bg-white border-l-4 border-brand-neon rounded-xl p-4 shadow-sm relative overflow-hidden">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-neon/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
-            <div className="flex items-start gap-4 relative z-10">
-              <div className="bg-brand-mist p-2 rounded-lg">
-                <Info className="w-5 h-5 text-brand-neon flex-shrink-0" />
-              </div>
-              <div>
-                <h3 className="font-bold text-brand-ink mb-1 text-lg">
-                  Personalized for {state.user.firstName}
-                </h3>
-                <p className="text-sm text-brand-slate max-w-3xl">
-                  This roadmap is customized based on your interests, goals, and current progress. Click on any node to view details and resources.
-                </p>
-              </div>
-            </div>
-          </div>
+          {/* Decorative elements */}
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand-neon/20 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#3EBFB0]/20 rounded-full blur-3xl"></div>
         </div>
 
-        {/* Roadmap Canvas */}
-        {!customRoadmap && !generating ? (
-          <div className="bg-white rounded-3xl shadow-xl p-12 text-center border border-brand-slate/10 py-32">
-             <Map className="w-16 h-16 text-brand-slate mx-auto mb-6 opacity-50" />
-             <h2 className="text-2xl font-bold text-brand-ink mb-4">Your Career Roadmap Awaits</h2>
-             <p className="text-brand-slate mb-8 max-w-lg mx-auto">Click below to generate a personalized career plan based on your onboarding answers and profile.</p>
-             <Button onClick={handleGenerate} className="bg-brand-neon text-brand-ink px-8 py-3 rounded-full text-lg shadow-lg hover:bg-brand-neon/90 font-bold">
-               <Sparkles className="w-5 h-5 mr-2 inline" />
-               Generate AI Roadmap
-             </Button>
-          </div>
-        ) : generating ? (
-          <div className="bg-white rounded-3xl shadow-xl p-12 text-center border border-brand-slate/10 py-32 flex flex-col items-center">
-             <div className="w-16 h-16 border-4 border-brand-neon border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-             <h2 className="text-2xl font-bold text-brand-ink mb-4">Analyzing Your Profile...</h2>
-             <p className="text-brand-slate max-w-lg mx-auto animate-pulse">Our AI is designing the perfect roadmap for your unique skills and goals.</p>
+        {/* Content Area */}
+        {!hasRoadmap ? (
+          <div className="bg-white rounded-[2rem] p-12 text-center border border-brand-slate/20 shadow-sm flex flex-col items-center">
+            <div className="w-24 h-24 rounded-full bg-brand-mist flex items-center justify-center mb-6">
+              <Map className="w-10 h-10 text-brand-slate/40" />
+            </div>
+            <h2 className="text-2xl font-bold text-brand-ink mb-3">No Roadmap Generated Yet</h2>
+            <p className="text-brand-slate max-w-md mx-auto mb-8">
+              Click the "Generate Plan" button above to use AI to build a personalized step-by-step journey based on your profile and goals.
+            </p>
           </div>
         ) : (
-        <div className="bg-white rounded-3xl shadow-xl p-12 relative overflow-hidden border border-brand-slate/10">
-          {/* Subtle Grid Background */}
-          <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+          <div className="relative py-12">
+            {/* Central Line */}
+            <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-1 bg-brand-slate/10 -translate-x-1/2 rounded-full"></div>
 
-          {/* SVG for connections */}
-          <svg
-            className="absolute inset-0 pointer-events-none z-10"
-            style={{ width: "100%", height: "100%" }}
-          >
-            <defs>
-              <marker
-                id="arrowhead"
-                markerWidth="10"
-                markerHeight="10"
-                refX="9"
-                refY="3"
-                orient="auto"
-              >
-                <polygon points="0 0, 10 3, 0 6" fill="#15C196" />
-              </marker>
-              <marker
-                id="arrowhead-inactive"
-                markerWidth="10"
-                markerHeight="10"
-                refX="9"
-                refY="3"
-                orient="auto"
-              >
-                <polygon points="0 0, 10 3, 0 6" fill="#5C6B67" opacity="0.3" />
-              </marker>
-            </defs>
+            <div className="space-y-12">
+              {steps.map((step: any, idx: number) => {
+                const isEven = idx % 2 === 0;
+                const isCompleted = step.status === "completed";
+                const isInProgress = step.status === "in-progress";
+                const isLocked = step.status === "locked";
 
-            {/* Main path connections */}
-            {currentRoadmap.mainPath.slice(0, -1).map((node, index) => {
-              const nextNode = currentRoadmap.mainPath[index + 1];
-              const isCompleted = completedNodes.includes(node.id) && completedNodes.includes(nextNode.id);
-              
-              return (
-                <line
-                  key={`main-${node.id}`}
-                  x1="50%"
-                  y1={node.y + 40}
-                  x2="50%"
-                  y2={nextNode.y - 20}
-                  stroke={isCompleted ? "#15C196" : "rgba(92, 107, 103, 0.2)"}
-                  strokeWidth="3"
-                  markerEnd={isCompleted ? "url(#arrowhead)" : "url(#arrowhead-inactive)"}
-                />
-              );
-            })}
-
-            {/* Branch connections - Level 1 */}
-            {currentRoadmap.branches.level1Branches.map((branch) => (
-              <line
-                key={`branch-${branch.id}`}
-                x1="50%"
-                y1={250}
-                x2={`calc(50% + ${branch.x}px)`}
-                y2={branch.y}
-                stroke="rgba(92, 107, 103, 0.2)"
-                strokeWidth="2"
-                strokeDasharray="5,5"
-              />
-            ))}
-
-            {/* Branch connections - Level 2 */}
-            {currentRoadmap.branches.level2Branches.map((branch) => (
-              <line
-                key={`career-${branch.id}`}
-                x1="50%"
-                y1={400}
-                x2={`calc(50% + ${branch.x}px)`}
-                y2={branch.y}
-                stroke="rgba(92, 107, 103, 0.3)"
-                strokeWidth="2"
-                strokeDasharray="5,5"
-              />
-            ))}
-
-            {/* Branch connections - Level 3 */}
-            {currentRoadmap.branches.level3Branches.map((branch) => (
-              <line
-                key={`tech-${branch.id}`}
-                x1="50%"
-                y1={650}
-                x2={`calc(50% + ${branch.x}px)`}
-                y2={branch.y}
-                stroke="rgba(92, 107, 103, 0.2)"
-                strokeWidth="2"
-                strokeDasharray="5,5"
-              />
-            ))}
-
-            {/* Branch connections - Level 4 */}
-            {currentRoadmap.branches.level4Branches.map((branch) => (
-              <line
-                key={`portfolio-${branch.id}`}
-                x1="50%"
-                y1={850}
-                x2={`calc(50% + ${branch.x}px)`}
-                y2={branch.y}
-                stroke="rgba(92, 107, 103, 0.2)"
-                strokeWidth="2"
-              />
-            ))}
-
-            {/* Branch connections - Level 5 */}
-            {currentRoadmap.branches.level5Branches.map((branch) => (
-              <line
-                key={`advanced-${branch.id}`}
-                x1="50%"
-                y1={1050}
-                x2={`calc(50% + ${branch.x}px)`}
-                y2={branch.y}
-                stroke="rgba(92, 107, 103, 0.2)"
-                strokeWidth="2"
-              />
-            ))}
-
-            {/* Question node connections */}
-            {currentRoadmap.branches.questions.map((q) => {
-              const mainNode = currentRoadmap.mainPath.find(n => n.y === q.y);
-              if (mainNode) {
                 return (
-                  <line
-                    key={`question-${q.id}`}
-                    x1="50%"
-                    y1={q.y}
-                    x2={`calc(50% + ${q.x}px)`}
-                    y2={q.y}
-                    stroke="rgba(92, 107, 103, 0.2)"
-                    strokeWidth="2"
-                    strokeDasharray="3,3"
-                  />
-                );
-              }
-              return null;
-            })}
-          </svg>
-
-          {/* Render all nodes */}
-          <div className="relative z-20" style={{ minHeight: "1500px" }}>
-            {/* Main path nodes */}
-            {currentRoadmap.mainPath.map((node) => {
-              const colors = getNodeColor(node.status);
-              const isHovered = hoveredNode === node.id;
-
-              return (
-                <div
-                  key={node.id}
-                  className="absolute left-1/2 transform -translate-x-1/2"
-                  style={{ top: `${node.y}px` }}
-                  onMouseEnter={() => setHoveredNode(node.id)}
-                  onMouseLeave={() => setHoveredNode(null)}
-                  onClick={() => setSelectedNode(node.id)}
-                >
-                  <div
-                    className={`
-                      ${colors.bg} ${colors.border} ${colors.text} ${colors.hover}
-                      border-2 rounded-2xl px-6 py-4 font-bold text-center cursor-pointer
-                      transition-all duration-300 shadow-md
-                      ${isHovered ? "scale-105 shadow-xl" : ""}
-                      ${node.type === "start" || node.type === "end" ? "px-8 py-5 text-lg" : ""}
-                      min-w-[220px] relative flex items-center justify-center gap-3
-                    `}
-                  >
-                    {getStatusIcon(node.status)}
-                    <span>{node.label}</span>
+                  <div key={idx} className={`relative flex items-center md:justify-between w-full ${isEven ? "md:flex-row-reverse" : "md:flex-row"}`}>
                     
-                    {/* Hover tooltip */}
-                    {isHovered && node.description && (
-                      <div className="absolute top-full mt-3 left-1/2 transform -translate-x-1/2 w-72 bg-white text-brand-ink p-5 rounded-2xl shadow-2xl z-50 text-sm border border-brand-slate/10 animate-in fade-in slide-in-from-top-2">
-                        <p className="font-medium text-brand-slate">{node.description}</p>
-                        <div className="mt-4 flex gap-2">
-                          <button className="flex-1 bg-gradient-to-r from-brand-ink to-brand-darkgreen text-white hover:opacity-90 px-4 py-2 rounded-lg text-sm font-semibold transition-opacity">
-                            View Details
-                          </button>
+                    {/* Timeline Node */}
+                    <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-12 h-12 rounded-full border-4 border-white flex items-center justify-center z-10 shadow-md bg-white transition-transform duration-300 hover:scale-110">
+                      {isCompleted ? (
+                        <CheckCircle className="w-8 h-8 text-brand-neon fill-brand-neon/20" />
+                      ) : isInProgress ? (
+                        <div className="w-5 h-5 rounded-full bg-brand-neon animate-pulse shadow-[0_0_15px_rgba(21,193,150,0.6)]"></div>
+                      ) : (
+                        <Circle className="w-6 h-6 text-brand-slate/20" />
+                      )}
+                    </div>
+
+                    {/* Spacer for empty side */}
+                    <div className="hidden md:block w-5/12"></div>
+
+                    {/* Card Content */}
+                    <div className={`w-full md:w-5/12 pl-24 md:pl-0 ${isEven ? "md:text-right md:pr-12" : "md:text-left md:pl-12"}`}>
+                      <div className={`p-6 md:p-8 rounded-[2rem] transition-all duration-300 hover:shadow-xl ${
+                        isCompleted ? "bg-white border-2 border-brand-neon/50 shadow-sm" :
+                        isInProgress ? "bg-brand-ink border-2 border-brand-neon shadow-lg scale-105 text-white" :
+                        "bg-white border border-brand-slate/10 opacity-75 hover:opacity-100"
+                      }`}>
+                        <div className={`flex items-center gap-4 mb-4 ${isEven ? "md:flex-row-reverse" : ""}`}>
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                            isCompleted ? "bg-brand-neon/10 text-brand-neon" :
+                            isInProgress ? "bg-brand-neon/20 text-brand-neon" :
+                            "bg-brand-slate/5 text-brand-slate"
+                          }`}>
+                            {step.icon || <Target className="w-6 h-6"/>}
+                          </div>
+                          <h3 className={`text-xl md:text-2xl font-bold ${
+                            isInProgress ? "text-white" : isLocked ? "text-brand-slate" : "text-brand-ink"
+                          }`}>{step.title}</h3>
                         </div>
+                        <p className={`text-base leading-relaxed ${
+                          isInProgress ? "text-brand-mist/90" : isLocked ? "text-brand-slate/70" : "text-brand-slate"
+                        }`}>
+                          {step.desc}
+                        </p>
+                        
+                        {isInProgress && (
+                          <div className={`mt-6 flex ${isEven ? "md:justify-end" : "justify-start"}`}>
+                            <span className="px-4 py-1.5 bg-brand-neon/20 text-brand-neon text-sm font-bold rounded-full flex items-center gap-2 border border-brand-neon/30">
+                              <Sparkles className="w-4 h-4" /> Current Focus
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    )}
+                    </div>
+
                   </div>
-                </div>
-              );
-            })}
-
-            {/* Level 1 branches */}
-            {currentRoadmap.branches.level1Branches.map((node) => {
-              const colors = getNodeColor(node.status);
-              return (
-                <div
-                  key={node.id}
-                  className="absolute"
-                  style={node.x < 0 ? { top: `${node.y}px`, right: `calc(50% + ${Math.abs(node.x)}px)` } : { top: `${node.y}px`, left: `calc(50% + ${node.x}px)` }}
-                  onMouseEnter={() => setHoveredNode(node.id)}
-                  onMouseLeave={() => setHoveredNode(null)}
-                >
-                  <div
-                    className={`
-                      ${colors.bg} ${colors.border} ${colors.text} ${colors.hover}
-                      border-2 rounded-xl px-4 py-2 text-sm font-semibold cursor-pointer
-                      transition-all duration-300 shadow-sm hover:shadow-lg flex items-center gap-2
-                      whitespace-nowrap
-                    `}
-                  >
-                    {getStatusIcon(node.status)} {node.label}
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Level 2 branches */}
-            {currentRoadmap.branches.level2Branches.map((node) => {
-              const colors = getNodeColor(node.status, node.color);
-              return (
-                <div
-                  key={node.id}
-                  className="absolute"
-                  style={{ top: `${node.y}px`, left: `calc(50% + ${node.x}px)` }}
-                  onMouseEnter={() => setHoveredNode(node.id)}
-                  onMouseLeave={() => setHoveredNode(null)}
-                >
-                  <div
-                    className={`
-                      ${colors.bg} ${colors.border} ${colors.text} ${colors.hover}
-                      border-2 rounded-xl px-4 py-2 text-sm font-semibold cursor-pointer
-                      transition-all duration-300 shadow-sm hover:shadow-lg flex items-center gap-2
-                      whitespace-nowrap
-                    `}
-                  >
-                    {node.label}
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Level 3 branches */}
-            {currentRoadmap.branches.level3Branches.map((node) => {
-              const colors = getNodeColor(node.status);
-              return (
-                <div
-                  key={node.id}
-                  className="absolute"
-                  style={{ top: `${node.y}px`, left: `calc(50% + ${node.x}px)` }}
-                  onMouseEnter={() => setHoveredNode(node.id)}
-                  onMouseLeave={() => setHoveredNode(null)}
-                >
-                  <div
-                    className={`
-                      ${colors.bg} ${colors.border} ${colors.text} ${colors.hover}
-                      border-2 rounded-xl px-4 py-2 text-sm font-semibold cursor-pointer
-                      transition-all duration-300 shadow-sm
-                      whitespace-nowrap flex items-center gap-2
-                    `}
-                  >
-                    {getStatusIcon(node.status)} {node.label}
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Level 4 branches */}
-            {currentRoadmap.branches.level4Branches.map((node) => {
-              const colors = getNodeColor(node.status, node.color);
-              return (
-                <div
-                  key={node.id}
-                  className="absolute"
-                  style={{ top: `${node.y}px`, left: `calc(50% + ${node.x}px)` }}
-                  onMouseEnter={() => setHoveredNode(node.id)}
-                  onMouseLeave={() => setHoveredNode(null)}
-                >
-                  <div
-                    className={`
-                      ${colors.bg} ${colors.border} ${colors.text} ${colors.hover}
-                      border-2 rounded-xl px-4 py-2 text-sm font-semibold cursor-pointer
-                      transition-all duration-300 shadow-sm hover:shadow-lg
-                      whitespace-nowrap
-                    `}
-                  >
-                    {node.label}
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Level 5 branches */}
-            {currentRoadmap.branches.level5Branches.map((node) => {
-              const colors = getNodeColor(node.status, node.color);
-              return (
-                <div
-                  key={node.id}
-                  className="absolute"
-                  style={{ top: `${node.y}px`, left: `calc(50% + ${node.x}px)` }}
-                  onMouseEnter={() => setHoveredNode(node.id)}
-                  onMouseLeave={() => setHoveredNode(null)}
-                >
-                  <div
-                    className={`
-                      ${colors.bg} ${colors.border} ${colors.text} ${colors.hover}
-                      border-2 rounded-xl px-4 py-2 text-sm font-semibold cursor-pointer
-                      transition-all duration-300 shadow-sm hover:shadow-lg
-                      whitespace-nowrap
-                    `}
-                  >
-                    {node.label}
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Question nodes */}
-            {currentRoadmap.branches.questions.map((node) => (
-              <div
-                key={node.id}
-                className="absolute"
-                style={{ top: `${node.y}px`, left: `calc(50% + ${node.x}px)` }}
-                onMouseEnter={() => setHoveredNode(node.id)}
-                onMouseLeave={() => setHoveredNode(null)}
-              >
-                <div className="bg-white border border-brand-slate/20 shadow-sm rounded-xl px-4 py-3 text-sm text-brand-ink cursor-pointer hover:bg-brand-mist hover:border-brand-neon transition-all whitespace-nowrap flex items-center font-medium">
-                  <HelpCircle className="w-4 h-4 text-brand-neon mr-2" />
-                  {node.label}
-                </div>
-              </div>
-            ))}
-
-            {/* Info boxes */}
-            {currentRoadmap.infoBoxes.map((box) => (
-              <div
-                key={box.id}
-                className="absolute"
-                style={box.x < 0 ? { top: `${box.y}px`, right: `calc(50% + ${Math.abs(box.x) - 150}px)` } : { top: `${box.y}px`, left: `calc(50% + ${box.x}px)` }}
-              >
-                <div className="bg-white border-l-4 border-brand-neon rounded-xl p-5 shadow-lg max-w-xs transition-transform hover:scale-105 duration-300">
-                  <h4 className="font-bold text-brand-ink mb-2 text-base">
-                    {box.title}
-                  </h4>
-                  <p className="text-sm text-brand-slate leading-relaxed">{box.description}</p>
-                </div>
-              </div>
-            ))}
+                );
+              })}
+            </div>
           </div>
-        </div>
         )}
-
-        {/* Legend */}
-        <div className="mt-8 bg-white rounded-2xl shadow-sm p-6 border border-brand-slate/10">
-          <div className="flex flex-wrap items-center justify-center gap-8 text-sm font-medium">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-brand-neon rounded-md flex items-center justify-center">
-                 <CheckCircle className="w-3 h-3 text-brand-ink" />
-              </div>
-              <span className="text-brand-ink">Completed</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-brand-mist border-2 border-brand-neon rounded-md"></div>
-              <span className="text-brand-ink">In Progress / Available</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-white border-2 border-brand-slate/20 rounded-md flex items-center justify-center">
-                <Lock className="w-3 h-3 text-brand-slate/60" />
-              </div>
-              <span className="text-brand-slate">Locked</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-white border border-brand-slate/20 rounded-md flex items-center justify-center">
-                 <HelpCircle className="w-3 h-3 text-brand-neon" />
-              </div>
-              <span className="text-brand-ink">Tips & Questions</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { apiFetch } from '../lib/api';
+import { profileService } from '../services/profileService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { 
@@ -52,22 +53,22 @@ const ChatPage: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('persona, onboarding_answers')
-          .eq('id', user.id)
-          .single();
-        if (data) {
-          setUserProfile(data);
+    const initChat = async () => {
+      try {
+        const profile = await profileService.getProfile('');
+        if (profile) {
+          setUserProfile(profile);
         }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchProfile();
+    initChat();
   }, []);
 
   const currentConversation = conversations.find((conv) => conv.id === activeConversationId);
@@ -170,20 +171,18 @@ const ChatPage: React.FC = () => {
       // Log the event so the backend and recommendation engine have context on what the user is discussing
       await eventService.logEvent(EVENT_TYPES.CHAT_INTERACTION, { prompt: promptText }, FEATURES.CHAT);
 
-      const { data, error: funcError } = await supabase.functions.invoke('chat', {
-        body: { 
+      const response = await apiFetch('/chat/', {
+        method: 'POST',
+        body: JSON.stringify({
           prompt: promptText,
           messages: historyToSend,
           userContext: userProfile
-        }
+        })
       });
-
-      if (funcError) throw funcError;
-      if (data.error) throw new Error(data.error);
 
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: data.reply || "I'm sorry, I didn't get a response. Please try again.",
+        content: response.reply || "I'm sorry, I didn't get a response. Please try again.",
         isUser: false,
         timestamp: new Date(),
       };
