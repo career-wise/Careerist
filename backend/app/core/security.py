@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import jwt
 import os
 
-env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
+env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), ".env")
 load_dotenv(env_path)
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "fallback_secret_key_if_missing")
 ALGORITHM = "HS256"

@@ -3,7 +3,7 @@ import json
 from dotenv import load_dotenv
 from groq import Groq
 
-env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
+env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), ".env")
 load_dotenv(env_path)
 
 # We load the API key from the environment.
@@ -11,7 +11,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 client = Groq(api_key=GROQ_API_KEY)
 # We will use llama3-70b-8192 as requested earlier in the project.
-MODEL_NAME = "llama3-70b-8192"
+MODEL_NAME = "openai/gpt-oss-120b"
 
 def _generate_json(prompt: str) -> dict:
     if not GROQ_API_KEY:
